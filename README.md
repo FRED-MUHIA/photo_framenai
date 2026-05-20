@@ -1,4 +1,4 @@
-# nairobi-printers
+# nai-ken
 
 NaiPrinters - Web-to-Print eCommerce (Laravel + Blade + Tailwind + Alpine)
 
