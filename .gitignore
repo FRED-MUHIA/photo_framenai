@@ -10,6 +10,10 @@
 /storage/framework/views/*
 /storage/logs/*.log
 /vendor
+*.zip
+*.dump
+*.bak
+*.backup
 .env
 .env.backup
 .env.production
