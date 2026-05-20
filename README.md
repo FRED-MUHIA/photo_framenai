@@ -70,6 +70,20 @@ php artisan migrate:fresh --seed
 php artisan storage:link
 ```
 
+For production/cPanel SQLite deployments, make sure the deployed `.env` uses the
+absolute SQLite path for that server, then clear cached configuration:
+
+```bash
+DB_CONNECTION=sqlite
+DB_DATABASE=/home/cleansur/naiprinters.co.ke/database/database.sqlite
+
+php artisan config:clear
+php artisan migrate --seed
+```
+
+The app will create the SQLite file if it is missing, but migrations still need
+to run once so the required tables are present.
+
 4. Build assets and serve
 
 ```bash
