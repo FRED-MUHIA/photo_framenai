@@ -46,7 +46,7 @@ NaiPrinters is a complete online printing platform inspired by onlineprinters-st
 - Laravel 10.x
 - Blade templates
 - TailwindCSS + Alpine.js
-- SQLite (default local setup in this project)
+- MySQL / MariaDB
 - Laravel Queue (sync default)
 
 ## Setup
@@ -60,8 +60,8 @@ npm install
 
 2. Configure environment
 
-- `.env` is already configured for SQLite.
-- Ensure `database/database.sqlite` exists (included).
+- `.env` is already configured for MySQL.
+- Create the configured database before running migrations.
 
 3. Run migrations + seeders
 
@@ -70,19 +70,25 @@ php artisan migrate:fresh --seed
 php artisan storage:link
 ```
 
-For production/cPanel SQLite deployments, make sure the deployed `.env` uses the
-absolute SQLite path for that server, then clear cached configuration:
+For production/cPanel MySQL deployments, create a MySQL database and user in
+cPanel, grant the user access to the database, then update the deployed `.env`
+with those exact credentials:
 
 ```bash
-DB_CONNECTION=sqlite
-DB_DATABASE=/home/cleansur/naiprinters.co.ke/database/database.sqlite
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=cpaneluser_database
+DB_USERNAME=cpaneluser_dbuser
+DB_PASSWORD=your_database_password
 
 php artisan config:clear
 php artisan migrate --seed
 ```
 
-The app will create the SQLite file if it is missing, but migrations still need
-to run once so the required tables are present.
+If you see a `forge@localhost` error, Laravel is still missing the live MySQL
+credentials or is using a stale cached config. Recheck `.env`, then run
+`php artisan config:clear`.
 
 4. Build assets and serve
 

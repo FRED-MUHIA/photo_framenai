@@ -8,7 +8,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,8 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->ensureSqliteDatabaseExists();
-
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
@@ -50,28 +47,5 @@ class AppServiceProvider extends ServiceProvider
             $view->with('shopConfig', config('shop'));
             $view->with('siteSettings', $siteSettings);
         });
-    }
-
-    private function ensureSqliteDatabaseExists(): void
-    {
-        if (config('database.default') !== 'sqlite') {
-            return;
-        }
-
-        $database = config('database.connections.sqlite.database');
-
-        if (! is_string($database) || $database === ':memory:' || Str::startsWith($database, 'file:')) {
-            return;
-        }
-
-        $directory = dirname($database);
-
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        if (! file_exists($database)) {
-            touch($database);
-        }
     }
 }
