@@ -10,6 +10,7 @@ class EnsureAdminUser extends Command
 {
     protected $signature = 'admin:ensure
         {--email= : Admin email address}
+        {--username= : Admin username}
         {--password= : Admin password}
         {--name=NaiPrinters Admin : Admin display name}';
 
@@ -18,19 +19,26 @@ class EnsureAdminUser extends Command
     public function handle(): int
     {
         $email = (string) ($this->option('email') ?: env('ADMIN_EMAIL', 'admin@naiprinters.co.ke'));
-        $password = (string) ($this->option('password') ?: env('ADMIN_PASSWORD', '-robba8688@Fred'));
+        $username = (string) ($this->option('username') ?: env('ADMIN_USERNAME', 'Govoh'));
+        $password = (string) ($this->option('password') ?: env('ADMIN_PASSWORD', 'robba8688@Fred'));
         $name = (string) $this->option('name');
 
-        if ($email === '' || $password === '') {
-            $this->error('Admin email and password are required.');
+        if ($email === '' || $username === '' || $password === '') {
+            $this->error('Admin email, username and password are required.');
 
             return self::FAILURE;
         }
+
+        User::query()
+            ->where('username', $username)
+            ->where('email', '!=', $email)
+            ->update(['username' => null]);
 
         $user = User::query()->updateOrCreate(
             ['email' => $email],
             [
                 'name' => $name,
+                'username' => $username,
                 'phone' => '+254700000000',
                 'role' => 'admin',
                 'preferred_locale' => 'en',
@@ -39,7 +47,7 @@ class EnsureAdminUser extends Command
             ],
         );
 
-        $this->info("Admin user ready: {$user->email}");
+        $this->info("Admin user ready: {$user->username}");
 
         return self::SUCCESS;
     }
