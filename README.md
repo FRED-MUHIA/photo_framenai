@@ -1,4 +1,6 @@
-# NaiPrinters - Web-to-Print eCommerce (Laravel + Blade + Tailwind + Alpine)
+# nairobi-printers
+
+NaiPrinters - Web-to-Print eCommerce (Laravel + Blade + Tailwind + Alpine)
 
 NaiPrinters is a complete online printing platform inspired by onlineprinters-style workflows. It supports product configuration, live pricing, artwork uploads, cart/checkout, customer dashboard, and admin operations.
 
