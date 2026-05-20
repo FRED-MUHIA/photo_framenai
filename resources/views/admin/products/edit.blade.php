@@ -1,0 +1,20 @@
+@extends('layouts.admin')
+
+@section('heading', 'Edit Product')
+
+@section('content')
+<form method="POST" action="{{ route('admin.products.update', $product) }}" enctype="multipart/form-data" class="space-y-4 rounded-xl bg-white p-6 shadow-sm">
+    @csrf
+    @method('PUT')
+    @include('admin.products.partials.form', [
+        'product' => $product,
+        'categories' => $categories,
+        'mediaItems' => $mediaItems,
+        'selectedCategoryIds' => $selectedCategoryIds,
+        'selectedMediaIds' => $selectedMediaIds,
+        'optionGroupsJson' => old('option_groups_json', $optionGroupsJson),
+        'quantityPricesJson' => old('quantity_prices_json', $quantityPricesJson),
+    ])
+    <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">Update Product</button>
+</form>
+@endsection

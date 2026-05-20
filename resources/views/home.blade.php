@@ -1,0 +1,1593 @@
+@extends('layouts.storefront')
+
+@section('meta_title', $cmsHome?->meta_title ?: 'NaiPrinters')
+@section('meta_description', $cmsHome?->meta_description ?: 'Customize and order print products online with live pricing, artwork uploads, and fast delivery.')
+
+@push('head')
+<style>
+    :root {
+        --card: #ffffff;
+        --line: #d9d9d9;
+        --red: #b10f1e;
+    }
+
+    .home-wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+
+    .home-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .pet-promo-slide {
+        position: relative;
+        min-height: 376px;
+        overflow: hidden;
+        background: transparent;
+        color: #00304a;
+    }
+
+    .pet-promo-background {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: #f7a9b7;
+    }
+
+    .pet-promo-dog {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: 1;
+        width: min(38vw, 640px);
+        height: 100%;
+        object-fit: cover;
+        object-position: center bottom;
+        transform: translate3d(var(--dog-shift-x, 0), var(--dog-shift-y, 0), 0) scale(var(--dog-scale, 1));
+        transition: transform 160ms ease-out;
+        will-change: transform;
+    }
+
+    .pet-promo-content {
+        position: relative;
+        z-index: 3;
+        width: min(42vw, 650px);
+        margin: 0 auto;
+        padding: 74px 16px 52px;
+        text-align: center;
+    }
+
+    .pet-promo-icons {
+        font-size: 29px;
+        line-height: 1;
+        letter-spacing: 0;
+        font-weight: 900;
+    }
+
+    .pet-promo-title {
+        margin-top: 32px;
+        font-family: 'Fredoka One', cursive !important;
+        font-size: clamp(2.45rem, 4vw, 4.25rem);
+        line-height: 0.95;
+        font-weight: 400;
+        letter-spacing: 0;
+    }
+
+    .pet-promo-subtitle {
+        margin-top: 18px;
+        font-family: 'Fredoka One', cursive !important;
+        font-size: clamp(1.55rem, 2.1vw, 2.55rem);
+        line-height: 1;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+    }
+
+    .pet-promo-copy {
+        margin: 28px auto 0;
+        max-width: 420px;
+        color: currentColor;
+        font-family: 'Fredoka One', cursive !important;
+        font-size: clamp(1rem, 1.35vw, 1.45rem);
+        line-height: 1.28;
+        font-weight: 400;
+    }
+
+    .pet-promo-title-accent {
+        color: var(--red);
+    }
+
+    .pet-promo-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 150px;
+        height: 46px;
+        margin-top: 30px;
+        border-radius: 9999px;
+        background: var(--red);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 400;
+        text-decoration: none;
+    }
+
+    .pet-promo-products {
+        position: absolute;
+        right: clamp(10px, 3vw, 56px);
+        bottom: 0;
+        z-index: 2;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 22px;
+        width: min(40vw, 560px);
+        pointer-events: none;
+        filter: drop-shadow(0 22px 28px rgba(0, 0, 0, 0.14));
+    }
+
+    .pet-promo-bag {
+        position: relative;
+        z-index: 1;
+        width: 234px;
+        height: 370px;
+        border-radius: 4px 4px 0 0;
+        background: linear-gradient(100deg, rgba(255,255,255,0.16), transparent 24%, rgba(0,0,0,0.08) 72%, rgba(255,255,255,0.18)), #f0c51e;
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.16);
+        transform: perspective(900px) rotateY(-5deg);
+    }
+
+    .pet-promo-bag.small {
+        width: 172px;
+        height: 265px;
+        background-color: #e48a15;
+        transform: perspective(900px) rotateY(-6deg);
+    }
+
+    .pet-promo-bag.has-image {
+        background: transparent !important;
+        box-shadow: none;
+        transform: none;
+        width: min(36vw, 430px);
+        height: 330px;
+    }
+
+    .pet-promo-bag.has-image::before {
+        display: none;
+    }
+
+    .pet-promo-bag-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: bottom center;
+    }
+
+    .pet-promo-bag::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, rgba(0,0,0,0.08), transparent 18%, transparent 82%, rgba(0,0,0,0.12));
+        pointer-events: none;
+    }
+
+    .pet-promo-badge {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 76px;
+        height: 76px;
+        border-bottom-right-radius: 100%;
+        background: #d21b1b;
+    }
+
+    .pet-promo-bag.small .pet-promo-badge {
+        width: 58px;
+        height: 58px;
+        background: #6fbd20;
+    }
+
+    .pet-promo-logo {
+        position: absolute;
+        top: 78px;
+        left: 50%;
+        display: grid;
+        width: 70px;
+        height: 70px;
+        place-items: center;
+        transform: translateX(-50%);
+        border: 3px solid #173447;
+        border-radius: 9999px;
+        color: currentColor;
+        font-size: 16px;
+        font-weight: 900;
+    }
+
+    .pet-promo-bag.small .pet-promo-logo {
+        top: 58px;
+        width: 54px;
+        height: 54px;
+        font-size: 12px;
+    }
+
+    .pet-promo-bag-title {
+        position: absolute;
+        top: 152px;
+        left: 18px;
+        right: 18px;
+        color: currentColor;
+        text-align: center;
+        font-size: 38px;
+        line-height: 0.94;
+        font-weight: 900;
+    }
+
+    .pet-promo-bag.small .pet-promo-bag-title {
+        top: 116px;
+        font-size: 26px;
+    }
+
+    .pet-promo-flavor {
+        position: absolute;
+        top: 224px;
+        left: 38px;
+        right: 38px;
+        border-radius: 9999px;
+        background: #bd1b16;
+        color: #fff5cb;
+        padding: 5px 8px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .pet-promo-bag.small .pet-promo-flavor {
+        top: 176px;
+        left: 28px;
+        right: 28px;
+        background: #6fbd20;
+        font-size: 8px;
+    }
+
+    .pet-promo-window {
+        position: absolute;
+        left: 70px;
+        right: 70px;
+        bottom: 54px;
+        height: 78px;
+        border-radius: 6px;
+        background: repeating-linear-gradient(-14deg, #29343a 0 8px, #465158 8px 16px);
+        border: 4px solid rgba(255,255,255,0.45);
+    }
+
+    .pet-promo-bag.small .pet-promo-window {
+        left: 52px;
+        right: 52px;
+        bottom: 38px;
+        height: 54px;
+        background: repeating-linear-gradient(-14deg, #d8c58d 0 8px, #b6903d 8px 16px);
+    }
+
+    .overlay-card {
+        position: relative;
+        overflow: hidden;
+        color: #fff;
+        border-radius: 10px;
+    }
+
+    .overlay-card-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .overlay-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.48);
+        z-index: 1;
+    }
+
+    .overlay-card-content {
+        position: relative;
+        z-index: 2;
+        padding: 16px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .overlay-card-title {
+        font-size: clamp(1.2rem, 1.4vw, 1.85rem);
+        line-height: 1.2;
+        font-weight: 800;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+        max-width: 90%;
+    }
+
+    .overlay-card-link {
+        margin-top: 8px;
+        color: #fff;
+        text-decoration: underline;
+        font-size: 14px;
+        font-weight: 600;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
+    }
+
+    .section-title {
+        font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .hero-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-template-rows: 220px 220px 180px;
+    }
+
+    .hero-promo { grid-column: 1 / span 6; grid-row: 1 / span 2; }
+    .hero-newsletter { grid-column: 7 / span 3; grid-row: 1; }
+    .hero-trust { grid-column: 7 / span 3; grid-row: 2 / span 2; }
+    .hero-ai { grid-column: 10 / span 3; grid-row: 1 / span 2; }
+    .hero-office { grid-column: 10 / span 3; grid-row: 3; }
+    .hero-sticker { grid-column: 1 / span 3; grid-row: 3; }
+    .hero-quote { grid-column: 4 / span 3; grid-row: 3; }
+
+    .thumb-grid-5 {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .thumb-grid-4 {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .top-category-card {
+        position: relative;
+        display: block;
+        height: 180px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #cbcbcb;
+        background: #d8d8d8;
+    }
+
+    .top-category-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .top-category-card::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 64px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.52), rgba(0, 0, 0, 0));
+        pointer-events: none;
+    }
+
+    .top-category-label {
+        position: absolute;
+        top: 12px;
+        left: 18px;
+        z-index: 2;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.05;
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+    }
+
+    .product-showcase-card {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #cecece;
+        border-radius: 8px;
+        background: #fff;
+        padding: 10px;
+        min-height: 348px;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .product-showcase-media {
+        height: 265px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .product-showcase-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-showcase-title {
+        margin-top: 10px;
+        font-size: 15px;
+        line-height: 1.12;
+        font-weight: 500;
+        color: #1f1f1f;
+    }
+
+    .product-showcase-description {
+        margin-top: 6px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 13px;
+        line-height: 1.35;
+        color: #5f6368;
+    }
+
+    .top-picks-section {
+        position: relative;
+        margin-top: 40px;
+        padding: 28px 0 34px;
+    }
+
+    .top-picks-inner {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+
+    .top-picks-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .top-picks-tabs {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .top-picks-pill {
+        display: inline-flex;
+        min-height: 34px;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #e1e1e1;
+        border-radius: 9999px;
+        background: #fff;
+        padding: 0 22px;
+        color: inherit;
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .top-picks-pill.active {
+        border-color: var(--red);
+        background: var(--red);
+        color: #fff;
+    }
+
+    .top-picks-title {
+        margin: 0;
+        font-size: clamp(1.375rem, 2vw, 1.875rem);
+        line-height: 1.2;
+        font-weight: 700;
+        color: inherit;
+    }
+
+    .top-picks-view-all {
+        display: inline-flex;
+        min-height: 34px;
+        align-items: center;
+        gap: 8px;
+        color: inherit;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .top-picks-view-all:hover {
+        color: #b10f1e;
+    }
+
+    .top-picks-row {
+        display: flex;
+        gap: 30px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .top-picks-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .top-pick-card {
+        display: flex;
+        flex: 0 0 calc((100% - 120px) / 5);
+        flex-direction: column;
+        min-width: 0;
+        min-height: 360px;
+        overflow: hidden;
+        border: 1px solid #ededed;
+        border-radius: 18px;
+        background: #fff;
+        color: #111;
+        text-decoration: none;
+        scroll-snap-align: start;
+    }
+
+    .top-pick-media {
+        position: relative;
+        display: flex;
+        height: 220px;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: #f5f5f5;
+    }
+
+    .top-pick-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 14px;
+    }
+
+    .top-pick-badge {
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        z-index: 1;
+        border-radius: 10px;
+        background: #fff;
+        padding: 9px 14px;
+        color: #4a4a4a;
+        font-size: 12px;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .top-pick-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 14px 18px 18px;
+    }
+
+    .top-pick-name {
+        margin: 0;
+        min-height: 38px;
+        font-size: 14px;
+        line-height: 1.25;
+        font-weight: 600;
+    }
+
+    .top-pick-footer {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 12px;
+        padding-top: 0;
+    }
+
+    .top-pick-price-wrap {
+        min-width: 0;
+    }
+
+    .top-pick-currency {
+        display: block;
+        color: #ff0037;
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1.15;
+    }
+
+    .top-pick-price {
+        display: block;
+        color: #ff0037;
+        font-size: 20px;
+        line-height: 1.15;
+        font-weight: 900;
+    }
+
+    .top-pick-order {
+        display: inline-flex;
+        min-height: 40px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #111;
+        border-radius: 10px;
+        padding: 0 18px;
+        color: #111;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .top-picks-arrow {
+        position: absolute;
+        top: 50%;
+        z-index: 2;
+        display: inline-flex;
+        width: 46px;
+        height: 46px;
+        align-items: center;
+        justify-content: center;
+        transform: translateY(-15%);
+        border: 1px solid #e1e1e1;
+        border-radius: 9999px;
+        background: #fff;
+        color: #2f5f9c;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .top-picks-arrow.left {
+        left: -24px;
+    }
+
+    .top-picks-arrow.right {
+        right: -24px;
+    }
+
+    .thumb-grid-3 {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .icon-grid-5 {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .favourite-product-icon {
+        display: flex;
+        width: 48px;
+        height: 48px;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid #2f2f2f;
+        border-radius: 999px;
+        background: #fff;
+        color: #111;
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .favourite-product-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .service-card {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .service-card-image {
+        height: 210px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .service-card-body {
+        padding: 16px;
+    }
+
+    .service-card-small {
+        color: #5e5e5e;
+        font-size: 14px;
+        line-height: 1.35;
+    }
+
+    .service-card-title {
+        margin-top: 4px;
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1.28;
+    }
+
+    .starlink-friday-banner {
+        display: grid;
+        grid-template-columns: minmax(250px, 1fr) minmax(340px, 1.45fr) auto;
+        align-items: center;
+        gap: clamp(18px, 2.2vw, 36px);
+        min-height: 100px;
+        margin: 0 0 28px;
+        overflow: hidden;
+        border-radius: 46px;
+        background: #002d45;
+        padding: 10px 14px 10px 30px;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .starlink-friday-sale {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        min-width: 0;
+        color: var(--red);
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .starlink-friday-tag {
+        width: clamp(42px, 4.8vw, 58px);
+        height: clamp(42px, 4.8vw, 58px);
+        flex: 0 0 auto;
+        color: var(--red);
+    }
+
+    .starlink-friday-label {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        line-height: 0.92;
+    }
+
+    .starlink-friday-black {
+        font-size: clamp(1.5rem, 2.3vw, 2.6rem);
+        letter-spacing: 0.02em;
+    }
+
+    .starlink-friday-day {
+        display: block;
+    }
+
+    .starlink-friday-percent {
+        color: #fff;
+        font-size: clamp(3rem, 5.5vw, 5.35rem);
+        line-height: 0.8;
+    }
+
+    .starlink-friday-off {
+        font-size: clamp(1.15rem, 1.85vw, 2.1rem);
+    }
+
+    .starlink-friday-copy {
+        margin: 0;
+        max-width: 620px;
+        font-size: 15px;
+        line-height: 1.45;
+        font-weight: 300;
+        text-align: center;
+    }
+
+    .starlink-friday-button {
+        display: inline-flex;
+        min-width: 172px;
+        min-height: 52px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: var(--red);
+        padding: 0 24px;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 1200px) {
+        .hero-grid {
+            grid-template-rows: 200px 200px 165px;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .pet-promo-slide {
+            min-height: 520px;
+        }
+
+    .pet-promo-dog {
+        width: 48vw;
+        height: 56%;
+    }
+
+        .pet-promo-content {
+            width: min(92vw, 660px);
+            margin-left: auto;
+            padding-top: 56px;
+        }
+
+        .pet-promo-products {
+            right: 10px;
+            gap: 12px;
+            width: min(48vw, 430px);
+        }
+
+        .pet-promo-bag {
+            width: 170px;
+            height: 270px;
+        }
+
+        .pet-promo-bag.small {
+            width: 128px;
+            height: 200px;
+        }
+
+        .pet-promo-bag.has-image {
+            width: min(44vw, 360px);
+            height: 260px;
+        }
+
+        .pet-promo-bag-title {
+            top: 116px;
+            font-size: 27px;
+        }
+
+        .pet-promo-bag.small .pet-promo-bag-title {
+            top: 90px;
+            font-size: 19px;
+        }
+
+        .pet-promo-flavor {
+            top: 172px;
+            left: 28px;
+            right: 28px;
+            font-size: 8px;
+        }
+
+        .pet-promo-window {
+            left: 50px;
+            right: 50px;
+            bottom: 38px;
+            height: 54px;
+        }
+
+        .hero-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-rows: auto;
+        }
+
+        .hero-promo,
+        .hero-newsletter,
+        .hero-trust,
+        .hero-ai,
+        .hero-office,
+        .hero-sticker,
+        .hero-quote { grid-column: auto; grid-row: auto; }
+
+        .thumb-grid-5,
+        .icon-grid-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .thumb-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .thumb-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .top-pick-card { flex-basis: calc((100% - 48px) / 3); }
+        .top-pick-media { height: 190px; }
+
+        .starlink-friday-banner {
+            grid-template-columns: 1fr auto;
+            border-radius: 32px;
+            padding: 20px;
+        }
+
+        .starlink-friday-copy {
+            max-width: none;
+            text-align: left;
+        }
+
+        .starlink-friday-button {
+            justify-self: start;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .pet-promo-slide {
+            min-height: 640px;
+        }
+
+        .pet-promo-dog {
+            left: -18%;
+            width: 76vw;
+            height: 38%;
+        }
+
+        .pet-promo-content {
+            width: min(92vw, 660px);
+            margin-left: auto;
+            padding-top: 38px;
+        }
+
+        .pet-promo-icons {
+            font-size: 23px;
+        }
+
+        .pet-promo-title {
+            margin-top: 22px;
+            font-size: clamp(2.15rem, 12vw, 3.3rem);
+        }
+
+        .pet-promo-subtitle {
+            font-size: clamp(1.2rem, 6vw, 1.7rem);
+        }
+
+        .pet-promo-copy {
+            max-width: 300px;
+        }
+
+        .pet-promo-button {
+            min-width: 176px;
+            height: 54px;
+        }
+
+        .pet-promo-products {
+            right: -18px;
+            width: min(72vw, 330px);
+        }
+
+        .pet-promo-bag {
+            width: 138px;
+            height: 220px;
+        }
+
+        .pet-promo-bag.small {
+            width: 104px;
+            height: 162px;
+        }
+
+        .pet-promo-bag.has-image {
+            width: min(66vw, 280px);
+            height: 210px;
+        }
+
+        .thumb-grid-5,
+        .thumb-grid-4,
+        .thumb-grid-3,
+        .icon-grid-5 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .thumb-grid-4 {
+            gap: 16px;
+        }
+
+        .product-showcase-card {
+            min-height: 0;
+            padding: 8px;
+        }
+
+        .product-showcase-media {
+            height: auto;
+            aspect-ratio: 1 / 1;
+            border-radius: 7px;
+            background: #f7f7f7;
+        }
+
+        .product-showcase-title {
+            margin-top: 12px;
+            min-height: 38px;
+            font-size: 16px;
+            line-height: 1.15;
+        }
+
+        .product-showcase-description {
+            margin-top: 6px;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .service-card {
+            height: 100%;
+        }
+
+        .service-card-image {
+            height: 150px;
+        }
+
+        .service-card-body {
+            padding: 12px;
+        }
+
+        .service-card-small {
+            font-size: 13px;
+            line-height: 1.32;
+        }
+
+        .service-card-title {
+            font-size: 18px;
+            line-height: 1.18;
+        }
+
+        .top-picks-row {
+            gap: 12px;
+        }
+
+        .top-pick-card {
+            flex-basis: calc((100% - 12px) / 2);
+            min-height: 255px;
+        }
+
+        .top-pick-media {
+            height: 118px;
+        }
+
+        .top-pick-name {
+            min-height: 34px;
+            font-size: 12px;
+        }
+
+        .top-pick-price {
+            font-size: 13px;
+        }
+
+        .top-pick-body {
+            padding: 10px;
+        }
+
+        .top-pick-footer {
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .top-pick-order {
+            min-height: 32px;
+            padding: 0 10px;
+            font-size: 12px;
+        }
+
+        .top-picks-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .top-picks-tabs {
+            justify-content: flex-start;
+            overflow-x: auto;
+            width: 100%;
+            padding-bottom: 2px;
+        }
+
+        .top-picks-pill {
+            min-height: 32px;
+            padding: 0 14px;
+            font-size: 13px;
+        }
+
+        .top-picks-view-all {
+            min-height: 38px;
+            font-size: 15px;
+        }
+
+        .starlink-friday-banner {
+            grid-template-columns: 1fr;
+            gap: 14px;
+            border-radius: 24px;
+            padding: 22px 18px;
+        }
+
+        .starlink-friday-sale {
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .starlink-friday-label {
+            grid-template-columns: auto auto auto;
+            gap: 6px;
+        }
+
+        .starlink-friday-copy {
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .starlink-friday-button {
+            justify-self: center;
+            min-width: 168px;
+        }
+    }
+</style>
+@endpush
+
+@section('content')
+@php
+    $sectionMap = collect($homeSections ?? [])
+        ->filter(fn ($section) => is_array($section) && ! empty($section['component']))
+        ->keyBy('component');
+
+    $heroMain = $sectionMap->get('home_hero_main', []);
+    $heroNewsletter = $sectionMap->get('home_hero_newsletter', []);
+    $heroTrust = $sectionMap->get('home_hero_trust', []);
+    $heroAi = $sectionMap->get('home_hero_ai', []);
+    $heroOffice = $sectionMap->get('home_hero_office', []);
+    $heroSticker = $sectionMap->get('home_hero_sticker', []);
+    $heroQuote = $sectionMap->get('home_hero_quote', []);
+    $showHeroMain = $sectionMap->has('home_hero_main');
+    $showHeroNewsletter = $sectionMap->has('home_hero_newsletter');
+    $showHeroTrust = $sectionMap->has('home_hero_trust');
+    $showHeroAi = $sectionMap->has('home_hero_ai');
+    $showHeroOffice = $sectionMap->has('home_hero_office');
+    $showHeroSticker = $sectionMap->has('home_hero_sticker');
+    $showHeroQuote = $sectionMap->has('home_hero_quote');
+    $homeHandledComponents = [
+        'home_pet_promo',
+        'home_hero_main',
+        'home_hero_newsletter',
+        'home_hero_trust',
+        'home_hero_ai',
+        'home_hero_office',
+        'home_hero_sticker',
+        'home_hero_quote',
+        'home_top_categories',
+        'home_product_tiles',
+        'home_top_picks',
+        'home_services',
+        'home_favourites',
+    ];
+    $genericHomeSections = collect($homeSections ?? [])
+        ->filter(fn ($section) => is_array($section) && ! in_array(data_get($section, 'component'), $homeHandledComponents, true))
+        ->values();
+    $petPromoSection = $sectionMap->get('home_pet_promo')
+        ?? collect(\App\Support\HomepageContentDefaults::sections())->firstWhere('component', 'home_pet_promo')
+        ?? [];
+    $petPromoItems = collect(data_get($petPromoSection, 'items', []))->values();
+    $petPromoDogImage = data_get($petPromoSection, 'image_url', asset('storage/media-library/pet-promo-dog.jpg'));
+    $petPromoBackgroundImage = data_get($petPromoSection, 'bg_image_url', '');
+    $petPromoBackgroundImageUrl = $petPromoBackgroundImage && \Illuminate\Support\Str::startsWith($petPromoBackgroundImage, ['http://', 'https://', '/'])
+        ? $petPromoBackgroundImage
+        : ($petPromoBackgroundImage ? asset($petPromoBackgroundImage) : '');
+    $petPromoBackgroundStyle = 'background: ' . data_get($petPromoSection, 'bg_color', '#f7a9b7');
+    if ($petPromoBackgroundImageUrl) {
+        $petPromoBackgroundStyle .= " url('{$petPromoBackgroundImageUrl}') center / cover no-repeat";
+    }
+
+    $topCategoriesSection = $sectionMap->get('home_top_categories', []);
+    $topCategories = collect(data_get($topCategoriesSection, 'items', []))->map(fn ($item) => [
+        'name' => data_get($item, 'title', ''),
+        'image' => data_get($item, 'image_url', ''),
+        'url' => data_get($item, 'link_url', route('products.index')),
+    ])->filter(fn ($item) => ! empty($item['name']))->values();
+
+    if ($topCategories->isEmpty()) {
+        $topCategories = collect($categories ?? [])->take(5)->map(fn ($category) => [
+            'name' => $category->name,
+            'image' => $category->image ?: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80',
+            'url' => route('products.index', ['category' => $category->slug]),
+        ]);
+    }
+
+    $productTilesSection = $sectionMap->get('home_product_tiles', []);
+    $productTiles = collect(data_get($productTilesSection, 'items', []))->map(fn ($item) => [
+        'name' => data_get($item, 'title', ''),
+        'description' => data_get($item, 'content') ?: data_get($item, 'subtitle', ''),
+        'image' => data_get($item, 'image_url', ''),
+        'url' => data_get($item, 'link_url', route('products.index')),
+    ])->filter(fn ($item) => ! empty($item['name']))->values();
+
+    if ($productTiles->isEmpty()) {
+        $productTiles = collect($featuredProducts ?? [])->take(4)->map(fn ($product) => [
+            'name' => $product->name,
+            'description' => $product->short_description ?: $product->description,
+            'image' => $product->thumbnail ?: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80',
+            'url' => route('products.show', $product),
+        ]);
+    }
+
+    $topPicks = collect($topPickProducts ?? [])->map(function ($product) {
+        $prices = $product->relationLoaded('quantityPrices') ? $product->quantityPrices : collect();
+        $minPrice = $prices->min('price');
+        $maxPrice = $prices->max('price');
+        $price = $product->base_price;
+
+        if ($minPrice && $maxPrice && (float) $minPrice !== (float) $maxPrice) {
+            $price = config('shop.currency_symbol') . number_format($minPrice, 0) . ' - ' . config('shop.currency_symbol') . number_format($maxPrice, 0);
+        } elseif ($minPrice) {
+            $price = config('shop.currency_symbol') . number_format($minPrice, 0);
+        } else {
+            $price = config('shop.currency_symbol') . number_format($price, 0);
+        }
+
+        return [
+        'name' => $product->name,
+        'image' => $product->thumbnail ?: asset('favicon.ico'),
+        'price' => $price,
+        'url' => route('products.show', $product),
+        'category' => $product->category?->name ?: $product->categories->first()?->name ?: 'Products',
+        ];
+    })->values();
+
+    $topPicksSection = $sectionMap->get('home_top_picks', []);
+    $topPicksTabs = collect(data_get($topPicksSection, 'items', []))
+        ->filter(fn ($item) => is_array($item) && data_get($item, 'title'))
+        ->values();
+
+    $servicesSection = $sectionMap->get('home_services', []);
+    $services = collect(data_get($servicesSection, 'items', []))->map(fn ($item) => [
+        'small' => data_get($item, 'subtitle', ''),
+        'title' => data_get($item, 'title', ''),
+        'image' => data_get($item, 'image_url', ''),
+        'url' => data_get($item, 'link_url', route('products.index')),
+    ])->filter(fn ($item) => ! empty($item['title']))->values();
+
+    $favouritesSection = $sectionMap->get('home_favourites', []);
+    $favouriteProducts = collect(data_get($favouritesSection, 'items', []))->map(fn ($item) => [
+        'name' => data_get($item, 'title', ''),
+        'icon' => data_get($item, 'image_url', ''),
+        'url' => data_get($item, 'link_url', route('products.index')),
+    ])->filter(fn ($item) => $item['name'] !== '')->values();
+
+    if ($favouriteProducts->isEmpty()) {
+        $favouriteProducts = collect($categories ?? [])->take(5)->map(fn ($category) => [
+            'name' => $category->name,
+            'icon' => $category->icon ?: $category->image,
+            'url' => route('products.index', ['category' => $category->slug]),
+        ]);
+    }
+@endphp
+
+<section class="pet-promo-slide" aria-label="{{ data_get($petPromoSection, 'subtitle', 'High-protein dog recipes promotion') }}">
+    <div
+        class="pet-promo-background"
+        style="{{ $petPromoBackgroundStyle }};"
+        aria-hidden="true"
+    ></div>
+    <img
+        src="{{ \Illuminate\Support\Str::startsWith($petPromoDogImage, ['http://', 'https://', '/']) ? $petPromoDogImage : asset($petPromoDogImage) }}"
+        class="pet-promo-dog"
+        alt="{{ data_get($petPromoSection, 'title', 'Happy dog') }}"
+    >
+    <div class="pet-promo-content" style="color: {{ data_get($petPromoSection, 'text_color', '#00304a') }};">
+        <div class="pet-promo-icons">▼ · ♣ · ▼</div>
+        <h2 class="pet-promo-title"><span class="pet-promo-title-accent">Online</span> printing</h2>
+        <div class="pet-promo-subtitle">With Nai Print</div>
+        <p class="pet-promo-copy">Ideal for business cards, flyers, banners, and branded apparel with nationwide delivery</p>
+        <a href="{{ data_get($petPromoSection, 'button_url', route('products.index')) }}" class="pet-promo-button">{{ data_get($petPromoSection, 'button_label', 'Print Now') }}</a>
+    </div>
+    <div class="pet-promo-products" aria-hidden="true">
+        @foreach($petPromoItems->slice(1, 1) as $item)
+            @php
+                $itemImage = data_get($item, 'image_url', '');
+                $itemImageUrl = $itemImage && \Illuminate\Support\Str::startsWith($itemImage, ['http://', 'https://', '/'])
+                    ? $itemImage
+                    : ($itemImage ? asset($itemImage) : '');
+            @endphp
+            <div class="pet-promo-bag {{ $itemImageUrl ? 'has-image' : '' }}" style="background-color: {{ data_get($item, 'bg_color', '#f0c51e') }}; color: {{ data_get($item, 'text_color', '#173447') }};">
+                @if($itemImageUrl)
+                    <img src="{{ $itemImageUrl }}" alt="" class="pet-promo-bag-image">
+                @else
+                    <span class="pet-promo-badge"></span>
+                    <span class="pet-promo-logo">{{ data_get($item, 'subtitle', 'BIXBI') }}</span>
+                    <span class="pet-promo-bag-title">{{ data_get($item, 'title', 'HIP & JOINT') }}</span>
+                    <span class="pet-promo-flavor">{{ data_get($item, 'content', '') }}</span>
+                    <span class="pet-promo-window"></span>
+                @endif
+            </div>
+        @endforeach
+    </div>
+</section>
+
+<section class="home-wrap py-6">
+    @if(! empty($cmsHome?->body))
+        <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 text-slate-700">
+            {!! nl2br(e($cmsHome->body)) !!}
+        </section>
+    @endif
+
+    @foreach($genericHomeSections as $section)
+        @php
+            $component = data_get($section, 'component', 'text');
+            $title = data_get($section, 'title');
+            $subtitle = data_get($section, 'subtitle');
+            $content = data_get($section, 'content');
+            $image = data_get($section, 'image_url');
+            $imageUrl = $image && \Illuminate\Support\Str::startsWith($image, ['http://', 'https://', '/'])
+                ? $image
+                : ($image ? asset($image) : '');
+            $bgColor = data_get($section, 'bg_color', '#ffffff');
+            $textColor = data_get($section, 'text_color', '#111111');
+            $items = collect(data_get($section, 'items', []))->filter(fn ($item) => is_array($item))->values();
+        @endphp
+
+        <section class="mb-6 rounded-2xl border border-slate-200 p-5" style="background: {{ $bgColor }}; color: {{ $textColor }};">
+            @if($imageUrl && $component === 'hero')
+                <img src="{{ $imageUrl }}" alt="{{ $title }}" class="mb-5 h-[260px] w-full rounded-xl object-cover">
+            @endif
+            <div class="grid gap-5 md:grid-cols-[1fr_280px] md:items-start">
+                <div>
+                    @if($title)
+                        <h2 class="section-title">{{ $title }}</h2>
+                    @endif
+                    @if($subtitle)
+                        <p class="mt-1 text-sm font-semibold opacity-80">{{ $subtitle }}</p>
+                    @endif
+                    @if($content)
+                        <p class="mt-3 whitespace-pre-line text-[15px] leading-7 opacity-90">{{ $content }}</p>
+                    @endif
+                    @if(data_get($section, 'button_label') && data_get($section, 'button_url'))
+                        <a href="{{ data_get($section, 'button_url') }}" class="mt-4 inline-flex rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">{{ data_get($section, 'button_label') }}</a>
+                    @endif
+                </div>
+                @if($imageUrl && $component !== 'hero')
+                    <img src="{{ $imageUrl }}" alt="{{ $title }}" class="h-44 w-full rounded-xl object-cover">
+                @endif
+            </div>
+
+            @if($items->isNotEmpty())
+                <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach($items as $item)
+                        @php
+                            $itemImage = data_get($item, 'image_url');
+                            $itemImageUrl = $itemImage && \Illuminate\Support\Str::startsWith($itemImage, ['http://', 'https://', '/'])
+                                ? $itemImage
+                                : ($itemImage ? asset($itemImage) : '');
+                        @endphp
+                        <a href="{{ data_get($item, 'link_url', '#') }}" class="overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900">
+                            @if($itemImageUrl)
+                                <img src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
+                            @endif
+                            <div class="p-4">
+                                @if(data_get($item, 'title'))
+                                    <h3 class="text-lg font-bold">{{ data_get($item, 'title') }}</h3>
+                                @endif
+                                @if(data_get($item, 'subtitle'))
+                                    <p class="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{{ data_get($item, 'subtitle') }}</p>
+                                @endif
+                                @if(data_get($item, 'content'))
+                                    <p class="mt-2 text-sm text-slate-600">{{ data_get($item, 'content') }}</p>
+                                @endif
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+    @endforeach
+
+    <section class="mt-12">
+        <div class="mb-4 flex items-end justify-between gap-3">
+            <h2 class="section-title">{{ data_get($topCategoriesSection, 'title', 'Top categories') }}</h2>
+            <a href="{{ data_get($topCategoriesSection, 'button_url', route('products.index')) }}" class="text-sm font-medium text-[#3f5f8e]">{{ data_get($topCategoriesSection, 'button_label', 'SHOW ALL') }}</a>
+        </div>
+        <div class="thumb-grid-5">
+            @foreach($topCategories as $item)
+                <a href="{{ data_get($item, 'url', route('products.index')) }}" class="top-category-card">
+                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}">
+                    <span class="top-category-label">{{ $item['name'] }}</span>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
+    <section class="mt-10 bg-white px-4 py-5">
+        <h2 class="section-title mb-4">{{ data_get($productTilesSection, 'title', 'Discover our huge variety of products') }}</h2>
+        <div class="thumb-grid-4">
+            @foreach($productTiles as $tile)
+                <a href="{{ data_get($tile, 'url', route('products.index')) }}" class="product-showcase-card">
+                    <div class="product-showcase-media">
+                        <img src="{{ $tile['image'] }}" alt="{{ $tile['name'] }}">
+                    </div>
+                    <h3 class="product-showcase-title">{{ $tile['name'] }}</h3>
+                    @if(! empty($tile['description']))
+                        <p class="product-showcase-description">{{ strip_tags($tile['description']) }}</p>
+                    @endif
+                </a>
+            @endforeach
+        </div>
+    </section>
+
+    </section>
+
+<section class="top-picks-section" style="background: {{ data_get($topPicksSection, 'bg_color', '#ffffff') }}; color: {{ data_get($topPicksSection, 'text_color', '#001f3f') }};">
+    <div class="top-picks-inner">
+        <div class="top-picks-header">
+            <h2 class="top-picks-title">{{ data_get($topPicksSection, 'title', 'Best Selling') }}</h2>
+            <div class="top-picks-tabs" aria-label="Best selling product groups">
+                @forelse($topPicksTabs as $tabIndex => $tab)
+                    @php
+                        $isActiveTab = $tabIndex === 0;
+                        $tabBg = data_get($tab, 'bg_color', $isActiveTab ? '#b10f1e' : '#ffffff');
+                        $tabText = data_get($tab, 'text_color', $isActiveTab ? '#ffffff' : data_get($topPicksSection, 'text_color', '#1f2937'));
+                        $tabBorder = strtolower((string) $tabBg) === '#ffffff' ? '#e1e1e1' : $tabBg;
+                        $tabUrl = data_get($tab, 'link_url') ?: route('products.index', ['q' => data_get($tab, 'title')]);
+                    @endphp
+                    <a
+                        href="{{ $tabUrl }}"
+                        class="top-picks-pill {{ $isActiveTab ? 'active' : '' }}"
+                        style="background: {{ $tabBg }}; border-color: {{ $tabBorder }}; color: {{ $tabText }};"
+                    >
+                        @if(data_get($tab, 'content'))
+                            <span aria-hidden="true">{{ data_get($tab, 'content') }}</span>
+                        @endif
+                        {{ data_get($tab, 'title') }}
+                    </a>
+                @empty
+                    <a href="{{ route('products.index', ['q' => 'starlink kit']) }}" class="top-picks-pill active">
+                        <span aria-hidden="true">📡</span>
+                        Starlink Kit
+                    </a>
+                    <a href="{{ route('products.index', ['q' => 'starlink accessories']) }}" class="top-picks-pill">
+                        <span aria-hidden="true">🔌</span>
+                        Starlink Accessories
+                    </a>
+                @endforelse
+            </div>
+            <a href="{{ data_get($topPicksSection, 'button_url', route('products.index')) }}" class="top-picks-view-all">
+                {{ data_get($topPicksSection, 'button_label', 'All Products') }}
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+            </a>
+        </div>
+
+        <div class="relative" data-top-picks-slider>
+            <button type="button" class="top-picks-arrow left" data-top-picks-prev aria-label="Previous top picks">
+                <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+
+            <div class="top-picks-row" data-top-picks-track>
+                @foreach($topPicks as $pick)
+                    <a href="{{ $pick['url'] }}" class="top-pick-card">
+                        <div class="top-pick-media">
+                            <span class="top-pick-badge">{{ $pick['category'] }}</span>
+                            <img src="{{ $pick['image'] }}" alt="{{ $pick['name'] }}">
+                        </div>
+                        <div class="top-pick-body">
+                            <h3 class="top-pick-name">{{ $pick['name'] }}</h3>
+                            <div class="top-pick-footer">
+                                <span class="top-pick-price-wrap">
+                                    <span class="top-pick-currency">KES</span>
+                                    <span class="top-pick-price">{{ str_replace(['KSh', 'KES'], '', $pick['price']) }}</span>
+                                </span>
+                                <span class="top-pick-order">Order Now</span>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+
+            <button type="button" class="top-picks-arrow right" data-top-picks-next aria-label="Next top picks">
+                <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="home-wrap py-6">
+    @if($services->isNotEmpty())
+        <section class="mt-10 bg-white px-4 py-5">
+            <h2 class="section-title mb-4">{{ data_get($servicesSection, 'title', 'Discover our services') }}</h2>
+            <div class="thumb-grid-3">
+                @foreach($services as $service)
+                    <a href="{{ data_get($service, 'url', route('products.index')) }}" class="home-card service-card">
+                        <img src="{{ $service['image'] }}" alt="{{ $service['title'] }}" class="service-card-image">
+                        <div class="service-card-body">
+                            <p class="service-card-small">{{ $service['small'] }}</p>
+                            <h3 class="service-card-title">{{ $service['title'] }}</h3>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    <section class="mt-10 bg-white px-4 py-5">
+        <a href="{{ route('products.index', ['q' => 'offset printing']) }}" class="starlink-friday-banner" aria-label="Shop offset printing offers">
+            <div class="starlink-friday-sale">
+                <svg class="starlink-friday-tag" viewBox="0 0 64 64" aria-hidden="true" fill="currentColor">
+                    <path d="M6 7h25.2c1.6 0 3.1.6 4.2 1.8l22.4 22.4a6 6 0 0 1 0 8.5L39.7 57.8a6 6 0 0 1-8.5 0L8.8 35.4A6 6 0 0 1 7 31.2V6z"/>
+                    <circle cx="23" cy="23" r="5.2" fill="#002d45"/>
+                </svg>
+                <span class="starlink-friday-label">
+                    <span class="starlink-friday-black">BLACK <span class="starlink-friday-day">FRI</span></span>
+                    <span class="starlink-friday-percent">20</span>
+                    <span class="starlink-friday-off">%<span class="starlink-friday-day">OFF</span></span>
+                </span>
+            </div>
+            <p class="starlink-friday-copy">Premium offset printing for flyers, brochures, books, magazines, posters and packaging. Sharp colour, bulk-ready quality.</p>
+            <span class="starlink-friday-button">Order Prints Now</span>
+        </a>
+
+        <h2 class="section-title mb-4">{{ data_get($favouritesSection, 'title', 'Find your favourite product') }}</h2>
+        <div class="icon-grid-5">
+            @foreach($favouriteProducts as $product)
+                @php
+                    $productIcon = data_get($product, 'icon', '');
+                    $productIconUrl = $productIcon && \Illuminate\Support\Str::startsWith($productIcon, ['http://', 'https://', '/'])
+                        ? $productIcon
+                        : ($productIcon ? asset($productIcon) : '');
+                @endphp
+                <a href="{{ data_get($product, 'url', route('products.index')) }}" class="home-card px-3 py-5 text-center">
+                    <div class="favourite-product-icon">
+                        @if($productIconUrl)
+                            <img src="{{ $productIconUrl }}" alt="{{ data_get($product, 'name') }} icon">
+                        @elseif($productIcon)
+                            <span>{{ $productIcon }}</span>
+                        @endif
+                    </div>
+                    <div class="mt-3 text-[20px] font-medium">{{ data_get($product, 'name') }}</div>
+                </a>
+            @endforeach
+        </div>
+        <div class="mt-4 text-right">
+            <a href="{{ data_get($favouritesSection, 'button_url', route('products.index')) }}" class="text-sm text-[var(--red)]">{{ data_get($favouritesSection, 'button_label', 'Show all categories') }}</a>
+        </div>
+    </section>
+</section>
+
+@include('partials.footer-help-request')
+@endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const dogImage = document.querySelector('.pet-promo-dog');
+
+        if (dogImage) {
+            dogImage.addEventListener('pointermove', (event) => {
+                const rect = dogImage.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) - 0.5;
+                const y = ((event.clientY - rect.top) / rect.height) - 0.5;
+
+                dogImage.style.setProperty('--dog-shift-x', `${x * 10}px`);
+                dogImage.style.setProperty('--dog-shift-y', `${y * 8}px`);
+                dogImage.style.setProperty('--dog-scale', '1.015');
+            });
+
+            dogImage.addEventListener('pointerleave', () => {
+                dogImage.style.setProperty('--dog-shift-x', '0px');
+                dogImage.style.setProperty('--dog-shift-y', '0px');
+                dogImage.style.setProperty('--dog-scale', '1');
+            });
+        }
+
+        document.querySelectorAll('[data-top-picks-slider]').forEach((slider) => {
+            const track = slider.querySelector('[data-top-picks-track]');
+            const previous = slider.querySelector('[data-top-picks-prev]');
+            const next = slider.querySelector('[data-top-picks-next]');
+
+            if (!track || !previous || !next) {
+                return;
+            }
+
+            const scrollByCard = (direction) => {
+                const card = track.querySelector('.top-pick-card');
+                const gap = 20;
+                const distance = card ? card.getBoundingClientRect().width + gap : track.clientWidth;
+
+                track.scrollBy({
+                    left: direction * distance,
+                    behavior: 'smooth',
+                });
+            };
+
+            previous.addEventListener('click', () => scrollByCard(-1));
+            next.addEventListener('click', () => scrollByCard(1));
+        });
+    });
+</script>
+@endpush
