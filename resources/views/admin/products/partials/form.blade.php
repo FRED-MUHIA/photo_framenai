@@ -63,18 +63,8 @@
     </div>
 </div>
 
-<div class="grid gap-4 lg:grid-cols-2">
-    <div>
-        <label class="mb-2 block text-sm font-bold">Option Groups JSON (Configurator Specs)</label>
-        <textarea name="option_groups_json" rows="14" class="w-full rounded-xl border-slate-300 font-mono text-xs">{{ $optionGroupsJson }}</textarea>
-        <p class="mt-1 text-xs text-slate-500">Add different dropdown options here. Example: [{"name":"Size","code":"size","values":[{"label":"A4","value":"a4","is_default":true}]},{"name":"Paper","code":"paper","values":[{"label":"Gloss","value":"gloss"}]}]</p>
-    </div>
-    <div>
-        <label class="mb-2 block text-sm font-bold">Quantity Pricing JSON (Pricing Matrix)</label>
-        <textarea name="quantity_prices_json" rows="14" class="w-full rounded-xl border-slate-300 font-mono text-xs">{{ $quantityPricesJson }}</textarea>
-        <p class="mt-1 text-xs text-slate-500">Example: [{"quantity":100,"price":1800,"discount_percentage":0,"delivery_days":3}]</p>
-    </div>
-</div>
+<input type="hidden" name="option_groups_json" value="{{ $optionGroupsJson }}">
+<input type="hidden" name="quantity_prices_json" value="{{ $quantityPricesJson }}">
 
 <div class="flex gap-4">
     <label class="inline-flex items-center gap-2 text-sm"><input type="hidden" name="is_featured" value="0"><input type="checkbox" name="is_featured" value="1" @checked(old('is_featured', $product->is_featured))> Featured</label>

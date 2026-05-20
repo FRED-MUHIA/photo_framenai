@@ -143,10 +143,6 @@
 
     <input type="hidden" name="sections_json" :value="json">
 
-    <details class="mt-3">
-        <summary class="cursor-pointer text-xs font-semibold text-slate-600">Preview JSON</summary>
-        <pre class="mt-2 overflow-auto rounded-lg bg-slate-900 p-3 text-xs text-slate-100" x-text="json"></pre>
-    </details>
 </div>
 
 @push('scripts')
