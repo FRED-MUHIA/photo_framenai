@@ -20,7 +20,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicStorageController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/storage/{path}', [PublicStorageController::class, 'show'])->where('path', '.*')->name('storage.public');
 
 Route::get('/locale/{locale}', function (string $locale) {
     abort_unless(in_array($locale, ['en', 'sw'], true), 404);

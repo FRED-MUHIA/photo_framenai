@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PublicAssetUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,5 +42,10 @@ class BlogPost extends Model
                 $inner->whereNull('published_at')
                     ->orWhere('published_at', '<=', Carbon::now());
             });
+    }
+
+    public function getCoverImageAttribute(?string $value): ?string
+    {
+        return PublicAssetUrl::resolve($value);
     }
 }

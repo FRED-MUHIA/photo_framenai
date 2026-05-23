@@ -4,7 +4,7 @@
     $footerCopyright = $siteSettings->get('footer_copyright_text', 'All rights reserved.');
     $whatsappLabel = $siteSettings->get('whatsapp_label', 'WhatsApp');
     $whatsappLink = $siteSettings->get('whatsapp_link', config('shop.whatsapp_link'));
-    $chatLogoUrl = $siteSettings->get('header_logo_url');
+    $chatLogoUrl = \App\Support\PublicAssetUrl::resolve($siteSettings->get('whatsapp_logo_url', $siteSettings->get('header_logo_url')));
 @endphp
 
 <style>

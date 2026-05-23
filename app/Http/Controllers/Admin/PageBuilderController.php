@@ -9,7 +9,6 @@ use App\Support\HomepageContentDefaults;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -188,7 +187,7 @@ class PageBuilderController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        return $mediaItem->url ?: Storage::disk('public')->url($path);
+        return '/storage/' . $path;
     }
 
     private function decodeSections(?string $raw): array

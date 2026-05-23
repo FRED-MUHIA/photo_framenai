@@ -1121,6 +1121,7 @@
     $sectionMap = collect($homeSections ?? [])
         ->filter(fn ($section) => is_array($section) && ! empty($section['component']))
         ->keyBy('component');
+    $publicAsset = fn ($url) => \App\Support\PublicAssetUrl::resolve($url) ?? '';
 
     $heroMain = $sectionMap->get('home_hero_main', []);
     $heroNewsletter = $sectionMap->get('home_hero_newsletter', []);
@@ -1160,9 +1161,7 @@
     $petPromoItems = collect(data_get($petPromoSection, 'items', []))->values();
     $petPromoDogImage = data_get($petPromoSection, 'image_url', asset('storage/media-library/pet-promo-dog.jpg'));
     $petPromoBackgroundImage = data_get($petPromoSection, 'bg_image_url', '');
-    $petPromoBackgroundImageUrl = $petPromoBackgroundImage && \Illuminate\Support\Str::startsWith($petPromoBackgroundImage, ['http://', 'https://', '/'])
-        ? $petPromoBackgroundImage
-        : ($petPromoBackgroundImage ? asset($petPromoBackgroundImage) : '');
+    $petPromoBackgroundImageUrl = $publicAsset($petPromoBackgroundImage);
     $petPromoBgColor = data_get($petPromoSection, 'bg_color', '#f7a9b7');
     $petPromoTextColor = data_get($petPromoSection, 'text_color', '#00304a');
     $petPromoAccentColor = '#b10f1e';
@@ -1278,7 +1277,7 @@
 
         return [
         'name' => $product->name,
-        'image' => $product->thumbnail ?: asset('favicon.ico'),
+        'image' => $publicAsset($product->thumbnail) ?: asset('favicon.ico'),
         'price' => $price,
         'url' => route('products.show', $product),
         'category' => $product->category?->name ?: $product->categories->first()?->name ?: 'Products',
@@ -1321,7 +1320,7 @@
         aria-hidden="true"
     ></div>
     <img
-        src="{{ \Illuminate\Support\Str::startsWith($petPromoDogImage, ['http://', 'https://', '/']) ? $petPromoDogImage : asset($petPromoDogImage) }}"
+        src="{{ $publicAsset($petPromoDogImage) }}"
         class="pet-promo-dog"
         alt="{{ data_get($petPromoSection, 'title', 'Happy dog') }}"
     >
@@ -1336,9 +1335,7 @@
         @foreach($petPromoItems->slice(1, 1) as $item)
             @php
                 $itemImage = data_get($item, 'image_url', '');
-                $itemImageUrl = $itemImage && \Illuminate\Support\Str::startsWith($itemImage, ['http://', 'https://', '/'])
-                    ? $itemImage
-                    : ($itemImage ? asset($itemImage) : '');
+                $itemImageUrl = $publicAsset($itemImage);
             @endphp
             <div class="pet-promo-bag {{ $itemImageUrl ? 'has-image' : '' }}" style="background-color: {{ data_get($item, 'bg_color', '#f0c51e') }}; color: {{ data_get($item, 'text_color', '#173447') }};">
                 @if($itemImageUrl)
@@ -1369,9 +1366,7 @@
             $subtitle = data_get($section, 'subtitle');
             $content = data_get($section, 'content');
             $image = data_get($section, 'image_url');
-            $imageUrl = $image && \Illuminate\Support\Str::startsWith($image, ['http://', 'https://', '/'])
-                ? $image
-                : ($image ? asset($image) : '');
+            $imageUrl = $publicAsset($image);
             $bgColor = data_get($section, 'bg_color', '#ffffff');
             $textColor = data_get($section, 'text_color', '#111111');
             $items = collect(data_get($section, 'items', []))->filter(fn ($item) => is_array($item))->values();
@@ -1406,9 +1401,7 @@
                     @foreach($items as $item)
                         @php
                             $itemImage = data_get($item, 'image_url');
-                            $itemImageUrl = $itemImage && \Illuminate\Support\Str::startsWith($itemImage, ['http://', 'https://', '/'])
-                                ? $itemImage
-                                : ($itemImage ? asset($itemImage) : '');
+                            $itemImageUrl = $publicAsset($itemImage);
                         @endphp
                         <a href="{{ data_get($item, 'link_url', '#') }}" class="overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900">
                             @if($itemImageUrl)
@@ -1440,7 +1433,7 @@
         <div class="thumb-grid-5">
             @foreach($topCategories as $item)
                 <a href="{{ data_get($item, 'url', route('products.index')) }}" class="top-category-card">
-                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}">
+                    <img src="{{ $publicAsset($item['image']) }}" alt="{{ $item['name'] }}">
                     <span class="top-category-label">{{ $item['name'] }}</span>
                 </a>
             @endforeach
@@ -1453,7 +1446,7 @@
             @foreach($productTiles as $tile)
                 <a href="{{ data_get($tile, 'url', route('products.index')) }}" class="product-showcase-card">
                     <div class="product-showcase-media">
-                        <img src="{{ $tile['image'] }}" alt="{{ $tile['name'] }}">
+                        <img src="{{ $publicAsset($tile['image']) }}" alt="{{ $tile['name'] }}">
                     </div>
                     <h3 class="product-showcase-title">{{ $tile['name'] }}</h3>
                     @if(! empty($tile['description']))
@@ -1546,7 +1539,7 @@
             <div class="thumb-grid-3">
                 @foreach($services as $service)
                     <a href="{{ data_get($service, 'url', route('products.index')) }}" class="home-card service-card">
-                        <img src="{{ $service['image'] }}" alt="{{ $service['title'] }}" class="service-card-image">
+                        <img src="{{ $publicAsset($service['image']) }}" alt="{{ $service['title'] }}" class="service-card-image">
                         <div class="service-card-body">
                             <p class="service-card-small">{{ $service['small'] }}</p>
                             <h3 class="service-card-title">{{ $service['title'] }}</h3>
@@ -1579,9 +1572,9 @@
             @foreach($favouriteProducts as $product)
                 @php
                     $productIcon = data_get($product, 'icon', '');
-                    $productIconUrl = $productIcon && \Illuminate\Support\Str::startsWith($productIcon, ['http://', 'https://', '/'])
-                        ? $productIcon
-                        : ($productIcon ? asset($productIcon) : '');
+                    $productIconUrl = $productIcon && \Illuminate\Support\Str::startsWith($productIcon, ['http://', 'https://', '/', 'storage/'])
+                        ? $publicAsset($productIcon)
+                        : '';
                 @endphp
                 <a href="{{ data_get($product, 'url', route('products.index')) }}" class="home-card px-3 py-5 text-center">
                     <div class="favourite-product-icon">

@@ -50,15 +50,23 @@ class SiteSettingController extends Controller
             'footer_copyright_text' => ['nullable', 'string', 'max:190'],
             'whatsapp_label' => ['nullable', 'string', 'max:50'],
             'whatsapp_link' => ['nullable', 'url', 'max:255'],
+            'whatsapp_logo_url' => ['nullable', 'string', 'max:255'],
+            'whatsapp_logo_file' => ['nullable', 'image', 'max:4096'],
             'all_products_mega_menu_json' => ['nullable', 'json'],
         ]);
 
         if ($request->hasFile('header_logo_file')) {
             $path = $request->file('header_logo_file')->store('site', 'public');
-            $validated['header_logo_url'] = asset('storage/' . $path);
+            $validated['header_logo_url'] = '/storage/' . $path;
+        }
+
+        if ($request->hasFile('whatsapp_logo_file')) {
+            $path = $request->file('whatsapp_logo_file')->store('site', 'public');
+            $validated['whatsapp_logo_url'] = '/storage/' . $path;
         }
 
         unset($validated['header_logo_file']);
+        unset($validated['whatsapp_logo_file']);
 
         $menuJson = $validated['all_products_mega_menu_json'] ?? null;
         unset($validated['all_products_mega_menu_json']);

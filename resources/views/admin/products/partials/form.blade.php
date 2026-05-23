@@ -19,14 +19,18 @@
     <input type="number" name="base_delivery_days" value="{{ old('base_delivery_days', $product->base_delivery_days ?: 3) }}" placeholder="Base Delivery Days" class="rounded-xl border-slate-300" required>
     <div class="sm:col-span-2">
         <label class="mb-2 block text-sm font-bold">Product Thumbnail</label>
-        @if(old('thumbnail', $product->thumbnail))
+        @php
+            $thumbnailValue = old('thumbnail', $product->thumbnail);
+            $thumbnailPreview = \App\Support\PublicAssetUrl::resolve($thumbnailValue);
+        @endphp
+        @if($thumbnailPreview)
             <div class="mb-3 h-32 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
-                <img src="{{ old('thumbnail', $product->thumbnail) }}" alt="{{ $product->name ?: 'Product thumbnail' }}" class="h-full w-full object-cover">
+                <img src="{{ $thumbnailPreview }}" alt="{{ $product->name ?: 'Product thumbnail' }}" class="h-full w-full object-cover">
             </div>
         @endif
         <div class="grid gap-3 sm:grid-cols-2">
             <input type="file" name="thumbnail_file" accept="image/*" class="rounded-xl border border-slate-300 px-3 py-2 text-sm">
-            <input type="text" name="thumbnail" value="{{ old('thumbnail', $product->thumbnail) }}" placeholder="Or paste Thumbnail URL" class="rounded-xl border-slate-300">
+            <input type="text" name="thumbnail" value="{{ $thumbnailValue }}" placeholder="Or paste Thumbnail URL" class="rounded-xl border-slate-300">
         </div>
         <p class="mt-1 text-xs text-slate-500">Upload an image, or paste a URL. Uploaded image will be used as the product thumbnail.</p>
     </div>

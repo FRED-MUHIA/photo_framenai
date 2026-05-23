@@ -9,9 +9,13 @@
     <h1 class="np-type-page-title mt-2">{{ $post->title }}</h1>
     <p class="mt-2 text-sm text-slate-500">{{ optional($post->published_at ?: $post->created_at)->format('d M Y') }}</p>
 
-    @if($post->cover_image)
+    @php
+        $coverImageUrl = \App\Support\PublicAssetUrl::resolve($post->cover_image);
+    @endphp
+
+    @if($coverImageUrl)
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-            <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="h-[340px] w-full object-cover">
+            <img src="{{ $coverImageUrl }}" alt="{{ $post->title }}" class="h-[340px] w-full object-cover">
         </div>
     @endif
 

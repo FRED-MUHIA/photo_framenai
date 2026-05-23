@@ -8,6 +8,10 @@
     if (! is_array($initialMegaMenu)) {
         $initialMegaMenu = [];
     }
+    $headerLogoValue = old('header_logo_url', $settings->get('header_logo_url'));
+    $headerLogoPreview = \App\Support\PublicAssetUrl::resolve($headerLogoValue);
+    $whatsappLogoValue = old('whatsapp_logo_url', $settings->get('whatsapp_logo_url'));
+    $whatsappLogoPreview = \App\Support\PublicAssetUrl::resolve($whatsappLogoValue);
 @endphp
 
 <form method="POST" action="{{ route('admin.site-settings.update') }}" enctype="multipart/form-data" class="space-y-6 rounded-xl bg-white p-5 shadow-sm">
@@ -21,14 +25,14 @@
             <input type="text" name="header_live_chat_label" value="{{ old('header_live_chat_label', $settings->get('header_live_chat_label', 'Live Chat')) }}" class="rounded-xl border-slate-300" placeholder="Live chat label">
             <div class="sm:col-span-2">
                 <label class="mb-2 block text-sm font-bold">Header Logo</label>
-                @if(old('header_logo_url', $settings->get('header_logo_url')))
+                @if($headerLogoPreview)
                     <div class="mb-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <img src="{{ old('header_logo_url', $settings->get('header_logo_url')) }}" alt="Header logo" class="h-12 w-auto max-w-[220px] object-contain">
+                        <img src="{{ $headerLogoPreview }}" alt="Header logo" class="h-12 w-auto max-w-[220px] object-contain">
                     </div>
                 @endif
                 <div class="grid gap-3 sm:grid-cols-2">
                     <input type="file" name="header_logo_file" accept="image/*" class="rounded-xl border border-slate-300 px-3 py-2 text-sm">
-                    <input type="text" name="header_logo_url" value="{{ old('header_logo_url', $settings->get('header_logo_url')) }}" class="rounded-xl border-slate-300" placeholder="Or paste logo URL">
+                    <input type="text" name="header_logo_url" value="{{ $headerLogoValue }}" class="rounded-xl border-slate-300" placeholder="Or paste logo URL">
                 </div>
             </div>
             <input type="text" name="header_shipping_text" value="{{ old('header_shipping_text', $settings->get('header_shipping_text', 'Free standard shipping')) }}" class="rounded-xl border-slate-300" placeholder="Shipping text">
@@ -126,6 +130,18 @@
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
             <input type="text" name="whatsapp_label" value="{{ old('whatsapp_label', $settings->get('whatsapp_label', 'WhatsApp')) }}" class="rounded-xl border-slate-300" placeholder="Button label">
             <input type="url" name="whatsapp_link" value="{{ old('whatsapp_link', $settings->get('whatsapp_link', config('shop.whatsapp_link'))) }}" class="rounded-xl border-slate-300" placeholder="https://wa.me/...">
+            <div class="sm:col-span-2">
+                <label class="mb-2 block text-sm font-bold">Popup Logo</label>
+                @if($whatsappLogoPreview)
+                    <div class="mb-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                        <img src="{{ $whatsappLogoPreview }}" alt="WhatsApp popup logo" class="h-12 w-12 rounded-full object-cover">
+                    </div>
+                @endif
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <input type="file" name="whatsapp_logo_file" accept="image/*" class="rounded-xl border border-slate-300 px-3 py-2 text-sm">
+                    <input type="text" name="whatsapp_logo_url" value="{{ $whatsappLogoValue }}" class="rounded-xl border-slate-300" placeholder="Or paste popup logo URL">
+                </div>
+            </div>
         </div>
     </section>
 

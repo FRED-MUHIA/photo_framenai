@@ -12,11 +12,15 @@
         <p class="mt-2 text-slate-600">{{ $product->description ?: $product->short_description }}</p>
     </div>
 
-    @if($product->thumbnail || $product->mediaItems->isNotEmpty())
+    @php
+        $mainProductImage = \App\Support\PublicAssetUrl::resolve($product->thumbnail) ?: $product->mediaItems->first()?->url;
+    @endphp
+
+    @if($mainProductImage || $product->mediaItems->isNotEmpty())
         <div class="mb-6 grid gap-4 lg:grid-cols-[minmax(0,520px)_1fr] lg:items-start">
             <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
                 <img
-                    src="{{ $product->thumbnail ?: $product->mediaItems->first()?->url }}"
+                    src="{{ $mainProductImage }}"
                     alt="{{ $product->name }}"
                     class="h-[360px] w-full object-cover"
                 >

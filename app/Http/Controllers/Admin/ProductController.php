@@ -197,7 +197,7 @@ class ProductController extends Controller
         }
 
         $path = $request->file('thumbnail_file')->store('product-thumbnails', 'public');
-        $validated['thumbnail'] = asset('storage/' . $path);
+        $validated['thumbnail'] = '/storage/' . $path;
 
         return $validated;
     }

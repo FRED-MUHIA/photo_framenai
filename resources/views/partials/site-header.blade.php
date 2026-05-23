@@ -228,7 +228,7 @@
     $headerProductionText = $siteSettings->get('header_production_text', 'Our own production');
     $headerLiveChatLabel = $siteSettings->get('header_live_chat_label', 'Live Chat');
     $headerBrandLabel = $siteSettings->get('header_brand_label', 'onlineprinters');
-    $headerLogoUrl = $siteSettings->get('header_logo_url');
+    $headerLogoUrl = \App\Support\PublicAssetUrl::resolve($siteSettings->get('header_logo_url'));
     $whatsappLink = $siteSettings->get('whatsapp_link', config('shop.whatsapp_link'));
 @endphp
 

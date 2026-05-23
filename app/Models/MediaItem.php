@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Support\PublicAssetUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\Storage;
 
 class MediaItem extends Model
 {
@@ -38,7 +38,7 @@ class MediaItem extends Model
     public function getUrlAttribute(): ?string
     {
         if ($this->type === 'link') {
-            return $this->external_url;
+            return PublicAssetUrl::resolve($this->external_url);
         }
 
         if (! $this->file_path) {
@@ -46,15 +46,7 @@ class MediaItem extends Model
         }
 
         $path = ltrim(str_replace('\\', '/', $this->file_path), '/');
-        $relative = 'storage/' . $path;
 
-        if (app()->bound('request')) {
-            $request = request();
-            if ($request) {
-                return rtrim($request->getSchemeAndHttpHost(), '/') . '/' . $relative;
-            }
-        }
-
-        return Storage::disk('public')->url($path);
+        return PublicAssetUrl::resolve('/storage/' . $path);
     }
 }

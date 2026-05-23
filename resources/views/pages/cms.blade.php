@@ -17,6 +17,7 @@
 
     @php
         $sections = is_array($cmsPage->sections) ? $cmsPage->sections : [];
+        $publicAsset = fn ($url) => \App\Support\PublicAssetUrl::resolve($url) ?? '';
     @endphp
 
     @if(! empty($sections))
@@ -28,6 +29,7 @@
                     $subtitle = data_get($section, 'subtitle');
                     $content = data_get($section, 'content');
                     $image = data_get($section, 'image_url');
+                    $imageUrl = $publicAsset($image);
                     $bgColor = data_get($section, 'bg_color', '#ffffff');
                     $textColor = data_get($section, 'text_color', '#111111');
                     $items = collect(data_get($section, 'items', []))->filter(fn ($item) => is_array($item))->values();
@@ -35,8 +37,8 @@
 
                 @if($component === 'hero')
                     <article class="overflow-hidden rounded-2xl border border-slate-200" style="background: {{ $bgColor }}; color: {{ $textColor }};">
-                        @if($image)
-                            <img src="{{ $image }}" alt="{{ $title }}" class="h-[260px] w-full object-cover">
+                        @if($imageUrl)
+                            <img src="{{ $imageUrl }}" alt="{{ $title }}" class="h-[260px] w-full object-cover">
                         @endif
                         <div class="p-6">
                             @if($title)
@@ -82,9 +84,12 @@
                         @if($items->isNotEmpty())
                             <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach($items as $item)
+                                    @php
+                                        $itemImageUrl = $publicAsset(data_get($item, 'image_url'));
+                                    @endphp
                                     <a href="{{ data_get($item, 'link_url', '#') }}" class="overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900">
-                                        @if(data_get($item, 'image_url'))
-                                            <img src="{{ data_get($item, 'image_url') }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
+                                        @if($itemImageUrl)
+                                            <img src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
                                         @endif
                                         <div class="p-4">
                                             <h3 class="text-lg font-bold">{{ data_get($item, 'title') }}</h3>
@@ -130,9 +135,12 @@
                         @if($items->isNotEmpty())
                             <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                 @foreach($items as $item)
-                                    @if(data_get($item, 'image_url'))
+                                    @php
+                                        $itemImageUrl = $publicAsset(data_get($item, 'image_url'));
+                                    @endphp
+                                    @if($itemImageUrl)
                                         <a href="{{ data_get($item, 'link_url', '#') }}" class="overflow-hidden rounded-lg border border-slate-200 bg-white">
-                                            <img src="{{ data_get($item, 'image_url') }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
+                                            <img src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
                                         </a>
                                     @endif
                                 @endforeach
@@ -156,9 +164,9 @@
                                     <a href="{{ data_get($section, 'button_url') }}" class="mt-4 inline-flex rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">{{ data_get($section, 'button_label') }}</a>
                                 @endif
                             </div>
-                            @if($image)
+                            @if($imageUrl)
                                 <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                                    <img src="{{ $image }}" alt="{{ $title }}" class="h-44 w-full object-cover">
+                                    <img src="{{ $imageUrl }}" alt="{{ $title }}" class="h-44 w-full object-cover">
                                 </div>
                             @endif
                         </div>

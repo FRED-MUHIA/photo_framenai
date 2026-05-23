@@ -24,10 +24,13 @@
 
     <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         @forelse($products as $product)
+            @php
+                $thumbnailUrl = \App\Support\PublicAssetUrl::resolve($product->thumbnail);
+            @endphp
             <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div class="h-44 overflow-hidden rounded-xl bg-slate-100">
-                    @if($product->thumbnail)
-                        <img src="{{ $product->thumbnail }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
+                    @if($thumbnailUrl)
+                        <img src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                     @endif
                 </div>
                 <div class="mt-4 flex items-start justify-between gap-3">
