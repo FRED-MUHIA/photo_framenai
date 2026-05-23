@@ -98,7 +98,7 @@
     }
 
     .pet-promo-title-accent {
-        color: var(--red);
+        color: var(--pet-promo-accent, var(--red));
     }
 
     .pet-promo-button {
@@ -1163,7 +1163,69 @@
     $petPromoBackgroundImageUrl = $petPromoBackgroundImage && \Illuminate\Support\Str::startsWith($petPromoBackgroundImage, ['http://', 'https://', '/'])
         ? $petPromoBackgroundImage
         : ($petPromoBackgroundImage ? asset($petPromoBackgroundImage) : '');
-    $petPromoBackgroundStyle = 'background: ' . data_get($petPromoSection, 'bg_color', '#f7a9b7');
+    $petPromoBgColor = data_get($petPromoSection, 'bg_color', '#f7a9b7');
+    $petPromoTextColor = data_get($petPromoSection, 'text_color', '#00304a');
+    $petPromoAccentColor = '#b10f1e';
+    $hexToRgb = function (?string $hex): ?array {
+        $hex = trim((string) $hex);
+
+        if (! preg_match('/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i', $hex, $matches)) {
+            return null;
+        }
+
+        $value = $matches[1];
+
+        if (strlen($value) === 3) {
+            $value = $value[0] . $value[0] . $value[1] . $value[1] . $value[2] . $value[2];
+        }
+
+        return [
+            hexdec(substr($value, 0, 2)),
+            hexdec(substr($value, 2, 2)),
+            hexdec(substr($value, 4, 2)),
+        ];
+    };
+    $relativeLuminance = function (array $rgb): float {
+        $channels = array_map(function (int $value): float {
+            $channel = $value / 255;
+
+            return $channel <= 0.03928
+                ? $channel / 12.92
+                : (($channel + 0.055) / 1.055) ** 2.4;
+        }, $rgb);
+
+        return 0.2126 * $channels[0] + 0.7152 * $channels[1] + 0.0722 * $channels[2];
+    };
+    $contrastRatio = function (?string $foreground, ?string $background) use ($hexToRgb, $relativeLuminance): ?float {
+        $foregroundRgb = $hexToRgb($foreground);
+        $backgroundRgb = $hexToRgb($background);
+
+        if (! $foregroundRgb || ! $backgroundRgb) {
+            return null;
+        }
+
+        $foregroundLuminance = $relativeLuminance($foregroundRgb);
+        $backgroundLuminance = $relativeLuminance($backgroundRgb);
+        $light = max($foregroundLuminance, $backgroundLuminance);
+        $dark = min($foregroundLuminance, $backgroundLuminance);
+
+        return ($light + 0.05) / ($dark + 0.05);
+    };
+    $bestReadableColor = function (string $background, array $options) use ($contrastRatio): string {
+        return collect($options)
+            ->sortByDesc(fn (string $color) => $contrastRatio($color, $background) ?? 0)
+            ->first();
+    };
+
+    if (($contrastRatio($petPromoTextColor, $petPromoBgColor) ?? 4.5) < 4.5) {
+        $petPromoTextColor = $bestReadableColor($petPromoBgColor, ['#ffffff', '#002033']);
+    }
+
+    if (($contrastRatio($petPromoAccentColor, $petPromoBgColor) ?? 3) < 3) {
+        $petPromoAccentColor = $bestReadableColor($petPromoBgColor, ['#ff3347', '#b10f1e']);
+    }
+
+    $petPromoBackgroundStyle = 'background: ' . $petPromoBgColor;
     if ($petPromoBackgroundImageUrl) {
         $petPromoBackgroundStyle .= " url('{$petPromoBackgroundImageUrl}') center / cover no-repeat";
     }
@@ -1263,7 +1325,7 @@
         class="pet-promo-dog"
         alt="{{ data_get($petPromoSection, 'title', 'Happy dog') }}"
     >
-    <div class="pet-promo-content" style="color: {{ data_get($petPromoSection, 'text_color', '#00304a') }};">
+    <div class="pet-promo-content" style="color: {{ $petPromoTextColor }}; --pet-promo-accent: {{ $petPromoAccentColor }};">
         <div class="pet-promo-icons">▼ · ♣ · ▼</div>
         <h2 class="pet-promo-title"><span class="pet-promo-title-accent">Online</span> printing</h2>
         <div class="pet-promo-subtitle">With Nai Print</div>
