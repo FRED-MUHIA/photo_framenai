@@ -14,16 +14,21 @@
         ->values();
     $usdRate = (float) config('shop.usd_exchange_rate', 126);
     $shippingOptions = config('shop.shipping_options', []);
+    $turnaroundMeta = [
+        'standard' => ['title' => 'Standard', 'duration' => '4 days', 'region' => 'All Regions'],
+        'express' => ['title' => 'Express', 'duration' => '3 days', 'region' => 'All Regions'],
+        'pickup' => ['title' => 'Rush', 'duration' => '24hrs', 'region' => 'Nairobi Only'],
+    ];
     $whatsappLink = config('shop.whatsapp_link');
     $description = trim(strip_tags($product->description ?: $product->short_description ?: ''));
 @endphp
 
 <section class="bg-white" x-data="productConfigurator()" x-init="init()">
-    <div class="mx-auto grid max-w-7xl items-start gap-8 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,48%)_minmax(0,52%)] lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)] lg:px-8">
+    <div class="mx-auto grid max-w-[1424px] items-start gap-8 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,48%)_minmax(0,52%)] lg:grid-cols-[672px_minmax(0,1fr)] lg:gap-[50px] lg:px-0">
         <div class="order-1 min-w-0">
-            <div class="overflow-hidden rounded-lg bg-[#eeeeee]">
+            <div class="overflow-hidden rounded-[10px] bg-[#eeeeee]">
                 @if($mainProductImage)
-                    <img src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-8">
+                    <img src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-10 lg:p-12">
                 @else
                     <div class="flex aspect-square items-center justify-center p-8 text-sm font-semibold text-slate-500">{{ $product->name }}</div>
                 @endif
@@ -78,26 +83,26 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ route('cart.store') }}" class="order-2 min-w-0 md:sticky md:top-4 md:self-start" @submit="isAdding = true">
+        <form method="POST" action="{{ route('cart.store') }}" class="order-2 min-w-0 md:sticky md:top-8 md:self-start" @submit="isAdding = true">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="shipping_option" :value="selectedShipping">
 
-            <div class="space-y-5">
+            <div class="space-y-6">
                 <div>
-                    <h1 class="text-[22px] font-extrabold leading-tight text-slate-950">{{ $product->name }}</h1>
-                    <div class="mt-2 flex flex-wrap items-baseline gap-2">
-                        <span class="text-lg font-extrabold text-[#ff0037]">KES <span x-text="formatWhole(quote.line_total)"></span></span>
-                        <span class="text-xs text-slate-500">($<span x-text="formatUsd(quote.line_total)"></span>)</span>
-                        <span class="text-xs text-slate-500">starting price</span>
+                    <h1 class="text-[28px] font-extrabold leading-tight text-slate-950">{{ $product->name }}</h1>
+                    <div class="mt-4 flex flex-wrap items-baseline gap-3">
+                        <span class="text-[22px] font-extrabold leading-none text-[#ff0037]">KES <span x-text="formatWhole(quote.line_total)"></span></span>
+                        <span class="text-[13px] text-slate-500">($<span x-text="formatUsd(quote.line_total)"></span>)</span>
+                        <span class="text-[13px] text-slate-500">starting price</span>
                     </div>
                 </div>
 
                 @foreach($product->optionGroups as $group)
                     @continue($group->values->isEmpty())
                     <fieldset>
-                        <legend class="mb-2 text-xs font-bold text-slate-900">{{ $loop->first ? 'Select Print Option' : $group->name }}</legend>
-                        <div class="grid gap-2 sm:grid-cols-2">
+                        <legend class="mb-4 text-[13px] font-bold text-slate-900">{{ $loop->first ? 'Select Print Option' : $group->name }}</legend>
+                        <div class="grid gap-3 sm:grid-cols-2">
                             @foreach($group->values as $value)
                                 @php
                                     $defaultValueId = data_get($defaultSelections, $group->code);
@@ -108,7 +113,7 @@
                                         + ((float) $value->price_modifier * $defaultQuantity);
                                 @endphp
                                 <label
-                                    class="cursor-pointer rounded-lg border p-3 text-center transition"
+                                    class="flex min-h-[104px] cursor-pointer flex-col items-center justify-center rounded-[10px] border p-4 text-center transition"
                                     :class="String(selectedOptions[@js($group->code)] || '') === @js((string) $value->id) ? 'border-[#ff0037] bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'"
                                 >
                                     <input
@@ -119,9 +124,9 @@
                                         @change="refreshQuote"
                                         class="sr-only"
                                     >
-                                    <span class="block text-xs font-extrabold text-slate-900">{{ $value->label }}</span>
-                                    <span class="mt-1 block text-sm font-bold text-[#ff0037]">KES {{ number_format(max(0, $optionPreviewPrice), 0) }}</span>
-                                    <span class="mt-1 block text-[10px] text-slate-500">${{ number_format(max(0, $optionPreviewPrice) / max($usdRate, 1), 2) }}</span>
+                                    <span class="block text-[13px] font-extrabold text-slate-900">{{ $value->label }}</span>
+                                    <span class="mt-3 block text-[17px] font-extrabold text-[#ff0037]">KES {{ number_format(max(0, $optionPreviewPrice), 0) }}.00</span>
+                                    <span class="mt-2 block text-[11px] text-slate-500">${{ number_format(max(0, $optionPreviewPrice) / max($usdRate, 1), 2) }}</span>
                                 </label>
                             @endforeach
                         </div>
@@ -129,9 +134,9 @@
                 @endforeach
 
                 <div>
-                    <label class="mb-2 block text-xs font-bold text-slate-900">Order Quantity</label>
+                    <label class="mb-3 block text-[13px] font-bold text-slate-900">Order Quantity</label>
                     <div class="flex items-center gap-2">
-                        <button type="button" @click="decrementQuantity" class="h-10 w-10 rounded-lg border border-slate-200 text-lg font-bold text-slate-500">-</button>
+                        <button type="button" @click="decrementQuantity" class="h-[46px] w-[46px] rounded-lg border border-slate-200 text-xl font-normal text-slate-500">-</button>
                         <input
                             type="number"
                             name="quantity"
@@ -142,10 +147,10 @@
                             x-model.number="quantity"
                             @input.debounce.350ms="refreshQuote"
                             @blur="normalizeQuantity"
-                            class="h-10 w-20 rounded-lg border-slate-300 text-center text-sm font-bold"
+                            class="h-[46px] w-[84px] rounded-lg border-slate-300 text-center text-base font-bold"
                             required
                         >
-                        <button type="button" @click="incrementQuantity" class="h-10 w-10 rounded-lg border border-slate-200 text-lg font-bold text-slate-500">+</button>
+                        <button type="button" @click="incrementQuantity" class="h-[46px] w-[46px] rounded-lg border border-slate-200 text-xl font-normal text-slate-950">+</button>
                     </div>
                     @if($quantitySuggestions->isNotEmpty())
                         <datalist id="product-quantity-options">
@@ -157,46 +162,54 @@
                     <p x-show="quoteError" x-text="quoteError" class="mt-2 text-xs font-semibold text-rose-600"></p>
                 </div>
 
-                <div class="rounded-lg border border-slate-200">
-                    <button type="button" class="flex w-full items-center justify-between px-4 py-3 text-left text-xs font-bold text-slate-900">
-                        <span class="inline-flex items-center gap-2">
+                <div class="rounded-[10px] border border-slate-200">
+                    <button type="button" class="flex min-h-[43px] w-full items-center justify-between px-5 text-left text-[13px] font-bold text-slate-900">
+                        <span class="inline-flex items-center gap-3">
                             <span class="text-[#ff0037]">&gt;</span>
-                            Delivery Zone & Price
+                            Delivery Zones & Prices
                         </span>
                         <span class="text-slate-400">v</span>
                     </button>
                 </div>
 
                 <fieldset>
-                    <legend class="mb-2 text-xs font-bold text-slate-900">Turnaround Time</legend>
-                    <div class="grid gap-2 sm:grid-cols-3">
+                    <legend class="mb-3 text-[13px] font-bold text-slate-900">Turnaround Time</legend>
+                    <div class="grid gap-3 sm:grid-cols-3">
                         @foreach($shippingOptions as $key => $option)
+                            @php
+                                $turnaround = $turnaroundMeta[$key] ?? [
+                                    'title' => $option['label'],
+                                    'duration' => ($option['days'] ?? 3) . ' days',
+                                    'region' => 'All Regions',
+                                ];
+                            @endphp
                             <label
-                                class="cursor-pointer rounded-lg border p-3 transition"
+                                class="flex min-h-[87px] cursor-pointer flex-col rounded-[8px] border p-4 transition"
                                 :class="selectedShipping === @js($key) ? 'border-[#ff0037] bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'"
                             >
                                 <input type="radio" name="shipping_choice" value="{{ $key }}" x-model="selectedShipping" @change="refreshQuote" class="sr-only">
-                                <span class="block text-xs font-extrabold text-slate-900">{{ $option['label'] }}</span>
-                                <span class="mt-1 block text-xs text-slate-600">{{ $option['days'] }} days</span>
-                                <span class="mt-1 block text-xs font-bold text-[#ff0037]">
+                                <span class="block text-[13px] font-extrabold text-slate-900">{{ $turnaround['title'] }}</span>
+                                <span class="mt-1 block text-[13px] text-slate-600">{{ $turnaround['duration'] }}</span>
+                                <span class="mt-1 block text-[13px] font-bold text-[#ff0037]">
                                     {{ (float) $option['price'] > 0 ? '+KES ' . number_format($option['price'], 0) : 'Free' }}
                                 </span>
+                                <span class="mt-2 block text-[11px] text-slate-500">{{ $turnaround['region'] }}</span>
                             </label>
                         @endforeach
                     </div>
                 </fieldset>
 
-                <div class="inline-flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
+                <div class="inline-flex min-h-[33px] items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-xs font-bold text-emerald-700">
                     <span>OK</span>
                     Get this item by: <span x-text="deliveryDateLabel()"></span>
                 </div>
 
                 <div>
-                    <label class="mb-2 block text-xs font-bold text-slate-900">Upload Design (Optional)</label>
+                    <label class="mb-3 block text-[13px] font-bold text-slate-900">Upload Design (Optional)</label>
                     <a href="{{ route('artwork.create') }}" class="flex min-h-[92px] items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white p-4 text-center text-xs font-semibold text-slate-500 hover:border-[#ff0037] hover:text-[#ff0037]">
                         <span>
-                            <span class="block text-xl">Upload</span>
-                            Click to upload<br>
+                            <span class="block text-lg text-slate-600">Upload</span>
+                            <span class="block text-[11px]">Click to upload</span>
                             <span class="font-normal">PDF, AI, PSD, JPG, PNG (max 50MB)</span>
                         </span>
                     </a>

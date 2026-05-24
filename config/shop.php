@@ -15,9 +15,9 @@ return [
             'days' => 1,
         ],
         'pickup' => [
-            'label' => 'Pickup',
-            'price' => 0,
-            'days' => 2,
+            'label' => 'Rush',
+            'price' => 1500,
+            'days' => 1,
         ],
     ],
     'allowed_artwork_mimes' => [
