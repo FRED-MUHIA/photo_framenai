@@ -716,6 +716,32 @@
             display: none;
         }
 
+        .np-header-main {
+            justify-items: center;
+            text-align: center;
+        }
+
+        .np-brand {
+            width: 100%;
+            min-width: 0;
+            justify-content: center;
+        }
+
+        .np-brand-logo {
+            margin: 0 auto;
+        }
+
+        .np-what-wrap,
+        .np-header-main > form {
+            width: 100%;
+        }
+
+        .np-header-actions {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
+
         .np-overlay-grid {
             grid-template-columns: 1fr;
         }

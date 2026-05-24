@@ -11,18 +11,21 @@
         </select>
         <p class="mt-1 text-xs text-slate-500">Hold Ctrl/Cmd to select multiple categories.</p>
     </div>
-    @if(($formTemplates ?? collect())->isNotEmpty())
+    @if(isset($formTemplates))
     <div class="sm:col-span-2">
         <label class="mb-2 block text-sm font-bold">Calculator Form</label>
+        @php
+            $selectedFormTemplateId = old('product_form_template_id', $product->product_form_template_id);
+        @endphp
         <select name="product_form_template_id" class="w-full rounded-xl border-slate-300">
-            <option value="">Use product-specific options below</option>
+            <option value="" @selected(blank($selectedFormTemplateId))>No calculator form / not necessary</option>
             @foreach(($formTemplates ?? collect()) as $template)
-                <option value="{{ $template->id }}" @selected((int) old('product_form_template_id', $product->product_form_template_id) === $template->id)>
+                <option value="{{ $template->id }}" @selected((string) $selectedFormTemplateId === (string) $template->id)>
                     {{ $template->name }}
                 </option>
             @endforeach
         </select>
-        <p class="mt-1 text-xs text-slate-500">When selected, this saved form will be copied into the product calculator and displayed on the product page for customers.</p>
+        <p class="mt-1 text-xs text-slate-500">Choose a saved form only when this product needs calculator options. Select "No calculator form" to remove copied options and use no form.</p>
     </div>
     @endif
     <input type="text" name="name" value="{{ old('name', $product->name) }}" placeholder="Product Name" class="rounded-xl border-slate-300" required>

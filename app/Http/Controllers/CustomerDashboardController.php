@@ -51,6 +51,7 @@ class CustomerDashboardController extends Controller
                 'unit_price' => (float) $item->unit_price,
                 'line_total' => (float) $item->line_total,
                 'delivery_days' => $item->delivery_days,
+                'delivery_date' => data_get($item->configuration, 'delivery_date'),
                 'artwork_id' => $item->artwork_id,
                 'artwork_name' => $item->artwork?->original_name,
             ]);

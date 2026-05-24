@@ -342,6 +342,10 @@ class ProductController extends Controller
     private function applyFormTemplatePayload(array $validated): array
     {
         if (empty($validated['product_form_template_id'])) {
+            $validated['product_form_template_id'] = null;
+            $validated['option_groups_json'] = '[]';
+            $validated['quantity_prices_json'] = '[]';
+
             return $validated;
         }
 

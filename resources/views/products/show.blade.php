@@ -120,13 +120,17 @@
                                 @endforeach
                             </select>
                         @else
-                        <div class="grid gap-3 sm:grid-cols-2">
+                        <div
+                            class="{{ $group->input_type === 'image_tabs' ? 'grid gap-3 sm:grid-cols-2' : 'flex flex-wrap gap-2' }}"
+                            style="{{ $group->input_type === 'image_tabs' ? '' : 'display: flex; flex-wrap: wrap; gap: 8px;' }}"
+                        >
                             @foreach($group->values as $value)
                                 @php
                                     $optionImageUrl = \App\Support\PublicAssetUrl::resolve(data_get($value->metadata, 'image_url'));
                                 @endphp
                                 <label
-                                    class="flex min-h-[54px] cursor-pointer flex-col items-center justify-center rounded-lg border px-4 py-3 text-center transition"
+                                    class="flex cursor-pointer flex-col items-center justify-center rounded-lg border px-3 text-center transition {{ $group->input_type === 'image_tabs' ? 'min-h-[86px] py-3' : 'h-[34px] w-[180px] py-1' }}"
+                                    style="{{ $group->input_type === 'image_tabs' ? 'min-height: 86px;' : 'width: 180px; height: 34px; min-height: 34px;' }}"
                                     :class="String(selectedOptions[@js($group->code)] || '') === @js((string) $value->id) ? 'border-[#ff0037] bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'"
                                 >
                                     <input
@@ -140,7 +144,7 @@
                                     @if($group->input_type === 'image_tabs' && $optionImageUrl)
                                         <img src="{{ $optionImageUrl }}" alt="{{ $value->label }}" class="mb-3 h-16 w-full rounded bg-white object-contain">
                                     @endif
-                                    <span class="block text-[13px] font-extrabold text-slate-900">{{ $value->label }}</span>
+                                    <span class="block text-[12px] font-extrabold leading-none text-slate-900">{{ $value->label }}</span>
                                 </label>
                             @endforeach
                         </div>
@@ -177,9 +181,21 @@
                     <p x-show="quoteError" x-text="quoteError" class="mt-2 text-xs font-semibold text-rose-600"></p>
                 </div>
 
-                <div class="inline-flex min-h-[33px] items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-xs font-bold text-emerald-700">
-                    <span>OK</span>
-                    Get this item by: <span x-text="deliveryDateLabel()"></span>
+                <div>
+                    <label for="delivery-date" class="mb-2 block text-[13px] font-bold text-slate-900">Select Delivery Date</label>
+                    <input
+                        id="delivery-date"
+                        type="date"
+                        name="delivery_date"
+                        x-model="selectedDeliveryDate"
+                        :min="minimumDeliveryDate()"
+                        @change="ensureDeliveryDate"
+                        class="h-[44px] w-full rounded-lg border-emerald-200 bg-emerald-50 px-3 text-sm font-bold text-emerald-700"
+                        required
+                    >
+                    <p class="mt-2 text-xs font-semibold text-emerald-700">
+                        Earliest available: <span x-text="deliveryDateLabel()"></span>
+                    </p>
                 </div>
 
                 @if($uploadEnabled)
@@ -324,9 +340,11 @@
             quoteError: '',
             isAdding: false,
             selectedArtworkName: '',
+            selectedDeliveryDate: @js(old('delivery_date', '')),
             init() {
                 this.normalizeQuantity();
                 this.refreshQuote();
+                this.ensureDeliveryDate();
             },
             incrementQuantity() {
                 this.quantity = Number(this.quantity || this.minQuantity) + 1;
@@ -367,16 +385,33 @@
                     }
 
                     this.quote = payload.quote;
+                    this.ensureDeliveryDate();
                 } catch (error) {
                     console.error(error);
                     this.quoteError = 'Unable to update the quote. Please try again.';
                 }
             },
-            deliveryDateLabel() {
+            minimumDeliveryDate() {
                 const days = Number(this.quote.delivery_days || 4);
                 const date = new Date();
                 date.setDate(date.getDate() + days);
+                return this.formatDateForInput(date);
+            },
+            ensureDeliveryDate() {
+                const minimumDate = this.minimumDeliveryDate();
+                if (! this.selectedDeliveryDate || this.selectedDeliveryDate < minimumDate) {
+                    this.selectedDeliveryDate = minimumDate;
+                }
+            },
+            deliveryDateLabel() {
+                const date = new Date(`${this.minimumDeliveryDate()}T00:00:00`);
                 return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+            },
+            formatDateForInput(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
             },
             formatWhole(value) {
                 return Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });

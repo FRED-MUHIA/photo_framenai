@@ -26,9 +26,11 @@ class PricingService
 
         $quantityPrice = $this->resolveQuantityPrice($product->quantityPrices, $quantity);
 
+        $usesCalculatorForm = ! empty($product->product_form_template_id);
+
         $baseTotal = $quantityPrice
             ? $this->calculateTieredBaseTotal($quantityPrice, $quantity)
-            : 0.0;
+            : ($usesCalculatorForm ? 0.0 : (float) $product->base_price * $quantity);
 
         $optionModifierPerUnit = (float) $selectedValues->sum(fn (ProductOptionValue $value) => (float) $value->price_modifier);
         $optionTotal = $optionModifierPerUnit * $quantity;

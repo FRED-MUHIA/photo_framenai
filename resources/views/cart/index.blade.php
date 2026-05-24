@@ -32,12 +32,19 @@
                             <div class="text-right">
                                 <p class="text-lg font-extrabold">{{ config('shop.currency_symbol') }} {{ number_format($item['line_total'], 2) }}</p>
                                 <p class="text-xs text-slate-500">Delivery ~ {{ $item['delivery_days'] }} days</p>
+                                @if(!empty($item['delivery_date']))
+                                    <p class="mt-1 text-xs font-semibold text-emerald-700">Requested: {{ \Illuminate\Support\Carbon::parse($item['delivery_date'])->toFormattedDateString() }}</p>
+                                @endif
                             </div>
                         </div>
                         <div class="mt-4 flex flex-wrap items-center gap-2">
                             <form method="POST" action="{{ route('cart.update', $index) }}" class="flex items-center gap-2">
                                 @csrf
                                 @method('PATCH')
+                                @php
+                                    $minimumDeliveryDate = now()->addDays(max(1, (int) ($item['delivery_days'] ?? 1)))->toDateString();
+                                    $selectedDeliveryDate = $item['delivery_date'] ?? $minimumDeliveryDate;
+                                @endphp
                                 <input
                                     type="number"
                                     name="quantity"
@@ -45,6 +52,14 @@
                                     step="1"
                                     value="{{ $item['quantity'] }}"
                                     class="w-28 rounded-lg border-slate-300 text-sm"
+                                    required
+                                >
+                                <input
+                                    type="date"
+                                    name="delivery_date"
+                                    min="{{ $minimumDeliveryDate }}"
+                                    value="{{ $selectedDeliveryDate }}"
+                                    class="w-40 rounded-lg border-slate-300 text-sm"
                                     required
                                 >
                                 <button class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold">Update</button>

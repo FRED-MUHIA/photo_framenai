@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\CartService;
 use App\Services\PaymentService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -47,8 +48,12 @@ class CheckoutController extends Controller
         }
 
         $totals = $this->cartService->totals($validated['shipping_option']);
+        $deliveryEstimate = collect($items)
+            ->pluck('delivery_date')
+            ->filter()
+            ->max();
 
-        $order = DB::transaction(function () use ($items, $validated, $totals) {
+        $order = DB::transaction(function () use ($items, $validated, $totals, $deliveryEstimate) {
             $order = Order::query()->create([
                 'order_number' => 'NP-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)),
                 'user_id' => auth()->id(),
@@ -70,7 +75,7 @@ class CheckoutController extends Controller
                 'discount_amount' => $totals['discount_amount'],
                 'total_amount' => $totals['total'],
                 'currency' => $totals['currency'],
-                'delivery_estimate' => now()->addDays(4),
+                'delivery_estimate' => $deliveryEstimate ? Carbon::parse($deliveryEstimate) : now()->addDays(4),
                 'notes' => $validated['notes'] ?? null,
                 'metadata' => [
                     'guest_session_id' => auth()->check() ? null : session()->getId(),
@@ -88,6 +93,7 @@ class CheckoutController extends Controller
                     'configuration' => [
                         'selected_options' => $item['selected_options'] ?? [],
                         'selected_values' => $item['selected_values'] ?? [],
+                        'delivery_date' => $item['delivery_date'] ?? null,
                     ],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],

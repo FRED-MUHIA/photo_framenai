@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Services\CartService;
 use App\Services\PricingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
@@ -36,6 +37,7 @@ class CartController extends Controller
             'selected_options.*' => ['nullable', 'integer'],
             'shipping_option' => ['nullable', 'in:standard,express,pickup'],
             'artwork_id' => ['nullable', 'exists:artworks,id'],
+            'delivery_date' => ['nullable', 'date_format:Y-m-d'],
             'artwork' => [
                 'nullable',
                 'file',
@@ -58,6 +60,7 @@ class CartController extends Controller
 
         $shippingOption = $validated['shipping_option'] ?? 'standard';
         $quote = $this->pricingService->quote($product, $selections, $quantity, $shippingOption);
+        $deliveryDate = $this->resolveDeliveryDate($validated['delivery_date'] ?? null, (int) $quote['delivery_days']);
 
         $artwork = null;
         if ($request->hasFile('artwork')) {
@@ -102,6 +105,7 @@ class CartController extends Controller
             'unit_price' => $quote['unit_price'],
             'line_total' => $quote['line_total'],
             'delivery_days' => $quote['delivery_days'],
+            'delivery_date' => $deliveryDate,
             'shipping_option' => $shippingOption,
             'artwork_id' => $artwork?->id,
             'artwork_name' => $artwork?->original_name,
@@ -114,6 +118,7 @@ class CartController extends Controller
     {
         $validated = $request->validate([
             'quantity' => ['required', 'integer', 'min:1'],
+            'delivery_date' => ['nullable', 'date_format:Y-m-d'],
         ]);
 
         $items = $this->cartService->all();
@@ -134,6 +139,10 @@ class CartController extends Controller
         }
 
         $quote = $this->pricingService->quote($product, $item['selected_options'] ?? [], $quantity);
+        $deliveryDate = $this->resolveDeliveryDate(
+            $validated['delivery_date'] ?? ($item['delivery_date'] ?? null),
+            (int) $quote['delivery_days']
+        );
 
         $this->cartService->update($index, [
             'quantity' => $quantity,
@@ -141,6 +150,7 @@ class CartController extends Controller
             'unit_price' => $quote['unit_price'],
             'line_total' => $quote['line_total'],
             'delivery_days' => $quote['delivery_days'],
+            'delivery_date' => $deliveryDate,
         ]);
 
         return back()->with('status', 'Cart updated.');
@@ -173,5 +183,22 @@ class CartController extends Controller
         $this->cartService->clear();
 
         return redirect()->route('products.index')->with('status', 'Cart cleared.');
+    }
+
+    private function resolveDeliveryDate(?string $requestedDate, int $deliveryDays): string
+    {
+        $minimumDate = today()->addDays(max(1, $deliveryDays))->toDateString();
+
+        if (! $requestedDate) {
+            return $minimumDate;
+        }
+
+        if (Carbon::parse($requestedDate)->lt(Carbon::parse($minimumDate))) {
+            throw ValidationException::withMessages([
+                'delivery_date' => 'Please choose a delivery date on or after ' . Carbon::parse($minimumDate)->toFormattedDateString() . '.',
+            ]);
+        }
+
+        return $requestedDate;
     }
 }

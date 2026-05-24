@@ -9,7 +9,7 @@
         <p class="text-sm text-slate-500">{{ $order->customer_name }} | {{ $order->customer_email }}</p>
         <div class="mt-5 overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead><tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500"><th class="py-2">Product</th><th>Qty</th><th>Unit</th><th>Total</th><th>Artwork</th></tr></thead>
+                <thead><tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500"><th class="py-2">Product</th><th>Qty</th><th>Unit</th><th>Total</th><th>Delivery Date</th><th>Artwork</th></tr></thead>
                 <tbody>
                     @foreach($order->items as $item)
                         <tr class="border-b border-slate-100">
@@ -17,6 +17,13 @@
                             <td>{{ $item->quantity }}</td>
                             <td>{{ $order->currency }} {{ number_format($item->unit_price, 2) }}</td>
                             <td>{{ $order->currency }} {{ number_format($item->line_total, 2) }}</td>
+                            <td>
+                                @if(data_get($item->configuration, 'delivery_date'))
+                                    {{ \Illuminate\Support\Carbon::parse(data_get($item->configuration, 'delivery_date'))->toFormattedDateString() }}
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>{{ $item->artwork?->original_name ?? '-' }}</td>
                         </tr>
                     @endforeach

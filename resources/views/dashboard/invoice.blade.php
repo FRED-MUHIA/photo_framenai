@@ -34,6 +34,7 @@
                     <th class="py-2">Item</th>
                     <th class="py-2">Qty</th>
                     <th class="py-2">Unit Price</th>
+                    <th class="py-2">Delivery Date</th>
                     <th class="py-2 text-right">Total</th>
                 </tr>
             </thead>
@@ -43,6 +44,13 @@
                         <td class="py-2">{{ $item->product_name }}</td>
                         <td class="py-2">{{ $item->quantity }}</td>
                         <td class="py-2">{{ $order->currency }} {{ number_format($item->unit_price, 2) }}</td>
+                        <td class="py-2">
+                            @if(data_get($item->configuration, 'delivery_date'))
+                                {{ \Illuminate\Support\Carbon::parse(data_get($item->configuration, 'delivery_date'))->toFormattedDateString() }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td class="py-2 text-right">{{ $order->currency }} {{ number_format($item->line_total, 2) }}</td>
                     </tr>
                 @endforeach
