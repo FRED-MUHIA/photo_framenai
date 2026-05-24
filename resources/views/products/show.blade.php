@@ -3,6 +3,67 @@
 @section('meta_title', data_get($product->metadata, 'meta_title') ?: $product->name . ' - Configure Print Specs')
 @section('meta_description', data_get($product->metadata, 'meta_description') ?: ($product->short_description ?: 'Configure and order this print product online.'))
 
+@push('head')
+<style>
+    .product-detail-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 672px) minmax(0, 1fr);
+        gap: 32px 50px;
+        align-items: start;
+        max-width: 1424px;
+        margin: 0 auto;
+        padding: 32px 0;
+    }
+
+    .product-detail-image-column {
+        grid-column: 1;
+        min-width: 0;
+    }
+
+    .product-detail-form-column {
+        grid-column: 2;
+        min-width: 0;
+        align-self: start;
+    }
+
+    .product-detail-description {
+        grid-column: 1 / -1;
+        min-width: 0;
+    }
+
+    @media (min-width: 768px) {
+        .product-detail-form-column {
+            position: sticky;
+            top: 32px;
+        }
+    }
+
+    @media (max-width: 1472px) {
+        .product-detail-shell {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .product-detail-shell {
+            grid-template-columns: minmax(0, 1fr);
+            padding: 24px 16px;
+        }
+
+        .product-detail-image-column,
+        .product-detail-form-column,
+        .product-detail-description {
+            grid-column: 1;
+        }
+
+        .product-detail-form-column {
+            position: static;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     $mainProductImage = \App\Support\PublicAssetUrl::resolve($product->thumbnail) ?: $product->mediaItems->first()?->url;
@@ -24,8 +85,8 @@
 @endphp
 
 <section class="bg-white" x-data="productConfigurator()" x-init="init()">
-    <div class="mx-auto grid max-w-[1424px] items-start gap-8 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,48%)_minmax(0,52%)] lg:grid-cols-[672px_minmax(0,1fr)] lg:gap-x-[50px] lg:px-0">
-        <div class="order-1 min-w-0">
+    <div class="product-detail-shell">
+        <div class="product-detail-image-column">
             <div class="overflow-hidden rounded-[10px] bg-[#eeeeee]">
                 @if($mainProductImage)
                     <img src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-10 lg:p-12">
@@ -45,7 +106,7 @@
             @endif
         </div>
 
-        <form method="POST" action="{{ route('cart.store') }}" class="order-2 min-w-0 md:sticky md:top-8 md:self-start" @submit="isAdding = true">
+        <form method="POST" action="{{ route('cart.store') }}" class="product-detail-form-column" @submit="isAdding = true">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="shipping_option" :value="selectedShipping">
@@ -248,7 +309,7 @@
             </div>
         </form>
 
-        <div class="order-3 min-w-0 md:col-span-2">
+        <div class="product-detail-description">
             <p class="mb-5 text-sm font-bold text-slate-900">Product Details</p>
 
             <div class="border-b border-slate-200">
