@@ -24,7 +24,7 @@
 @endphp
 
 <section class="bg-white" x-data="productConfigurator()" x-init="init()">
-    <div class="mx-auto grid max-w-[1424px] items-start gap-8 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,48%)_minmax(0,52%)] lg:grid-cols-[672px_minmax(0,1fr)] lg:gap-[50px] lg:px-0">
+    <div class="mx-auto grid max-w-[1424px] items-start gap-8 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,48%)_minmax(0,52%)] lg:grid-cols-[672px_minmax(0,1fr)] lg:gap-x-[50px] lg:px-0">
         <div class="order-1 min-w-0">
             <div class="overflow-hidden rounded-[10px] bg-[#eeeeee]">
                 @if($mainProductImage)
@@ -43,44 +43,6 @@
                     @endforeach
                 </div>
             @endif
-
-            <div class="mt-8">
-                <p class="mb-5 text-sm font-bold text-slate-900">Product Details</p>
-
-                <div class="border-b border-slate-200">
-                    <details class="group border-t border-slate-200 py-4" open>
-                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-slate-900">
-                            Overview
-                            <span class="text-rose-500 group-open:rotate-180">^</span>
-                        </summary>
-                        <div class="mt-4">
-                            <h2 class="text-xl font-extrabold leading-tight text-slate-950">{{ $product->name }}</h2>
-                            <p class="mt-4 text-sm leading-7 text-slate-700">
-                                {{ $description ?: 'Configure this product with your preferred print options, quantity, delivery timeline, and artwork.' }}
-                            </p>
-                        </div>
-                    </details>
-
-                    @foreach([
-                        'What is included with this product?',
-                        'Available sizes and print options',
-                        'Print quality and material',
-                        'Ordering and delivery',
-                        'Need a larger display or custom finish?',
-                        'How artwork should be supplied',
-                    ] as $detailTitle)
-                        <details class="group border-t border-slate-200 py-4">
-                            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-slate-900">
-                                {{ $detailTitle }}
-                                <span class="text-slate-500 group-open:rotate-180">v</span>
-                            </summary>
-                            <p class="mt-3 text-sm leading-6 text-slate-600">
-                                Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.
-                            </p>
-                        </details>
-                    @endforeach
-                </div>
-            </div>
         </div>
 
         <form method="POST" action="{{ route('cart.store') }}" class="order-2 min-w-0 md:sticky md:top-8 md:self-start" @submit="isAdding = true">
@@ -285,6 +247,44 @@
                 </div>
             </div>
         </form>
+
+        <div class="order-3 min-w-0 md:col-span-2">
+            <p class="mb-5 text-sm font-bold text-slate-900">Product Details</p>
+
+            <div class="border-b border-slate-200">
+                <details class="group border-t border-slate-200 py-4" open>
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-slate-900">
+                        Overview
+                        <span class="text-rose-500 group-open:rotate-180">^</span>
+                    </summary>
+                    <div class="mt-4 max-w-[760px]">
+                        <h2 class="text-xl font-extrabold leading-tight text-slate-950">{{ $product->name }}</h2>
+                        <p class="mt-4 text-sm leading-7 text-slate-700">
+                            {{ $description ?: 'Configure this product with your preferred print options, quantity, delivery timeline, and artwork.' }}
+                        </p>
+                    </div>
+                </details>
+
+                @foreach([
+                    'What is included with this product?',
+                    'Available sizes and print options',
+                    'Print quality and material',
+                    'Ordering and delivery',
+                    'Need a larger display or custom finish?',
+                    'How artwork should be supplied',
+                ] as $detailTitle)
+                    <details class="group border-t border-slate-200 py-4">
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-slate-900">
+                            {{ $detailTitle }}
+                            <span class="text-slate-500 group-open:rotate-180">v</span>
+                        </summary>
+                        <p class="mt-3 max-w-[760px] text-sm leading-6 text-slate-600">
+                            Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.
+                        </p>
+                    </details>
+                @endforeach
+            </div>
+        </div>
     </div>
 </section>
 @endsection
