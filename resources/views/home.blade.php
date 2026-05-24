@@ -691,15 +691,11 @@
 
     .favourite-product-icon {
         display: flex;
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        min-height: 44px;
         align-items: center;
         justify-content: center;
         margin: 0 auto;
-        overflow: hidden;
-        border: 1px solid #2f2f2f;
-        border-radius: 999px;
-        background: #fff;
         color: #111;
         font-size: 20px;
         font-weight: 800;
@@ -1585,13 +1581,15 @@
                         : '';
                 @endphp
                 <a href="{{ data_get($product, 'url', route('products.index')) }}" class="home-card px-3 py-5 text-center">
-                    <div class="favourite-product-icon">
-                        @if($productIconUrl)
+                    @if($productIconUrl || $productIcon)
+                        <div class="favourite-product-icon">
+                            @if($productIconUrl)
                             <img src="{{ $productIconUrl }}" alt="{{ data_get($product, 'name') }} icon">
-                        @elseif($productIcon)
-                            <span>{{ $productIcon }}</span>
-                        @endif
-                    </div>
+                            @else
+                                <span>{{ $productIcon }}</span>
+                            @endif
+                        </div>
+                    @endif
                     <div class="mt-3 text-[20px] font-medium">{{ data_get($product, 'name') }}</div>
                 </a>
             @endforeach
