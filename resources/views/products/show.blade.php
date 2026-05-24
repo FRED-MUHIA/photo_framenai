@@ -65,12 +65,6 @@
         ->unique()
         ->values();
     $usdRate = (float) config('shop.usd_exchange_rate', 126);
-    $shippingOptions = config('shop.shipping_options', []);
-    $turnaroundMeta = [
-        'standard' => ['title' => 'Standard', 'duration' => '4 days', 'region' => 'All Regions'],
-        'express' => ['title' => 'Express', 'duration' => '3 days', 'region' => 'All Regions'],
-        'pickup' => ['title' => 'Rush', 'duration' => '24hrs', 'region' => 'Nairobi Only'],
-    ];
     $whatsappLink = config('shop.whatsapp_link');
     $description = trim(strip_tags($product->description ?: $product->short_description ?: ''));
     $uploadEnabled = (bool) data_get($product->metadata, 'upload_enabled', true);
@@ -195,43 +189,6 @@
                     @endif
                     <p x-show="quoteError" x-text="quoteError" class="mt-2 text-xs font-semibold text-rose-600"></p>
                 </div>
-
-                <div class="rounded-[10px] border border-slate-200">
-                    <button type="button" class="flex min-h-[43px] w-full items-center justify-between px-5 text-left text-[13px] font-bold text-slate-900">
-                        <span class="inline-flex items-center gap-3">
-                            <span class="text-[#ff0037]">&gt;</span>
-                            Delivery Zones & Prices
-                        </span>
-                        <span class="text-slate-400">v</span>
-                    </button>
-                </div>
-
-                <fieldset>
-                    <legend class="mb-3 text-[13px] font-bold text-slate-900">Turnaround Time</legend>
-                    <div class="grid gap-3 sm:grid-cols-3">
-                        @foreach($shippingOptions as $key => $option)
-                            @php
-                                $turnaround = $turnaroundMeta[$key] ?? [
-                                    'title' => $option['label'],
-                                    'duration' => ($option['days'] ?? 3) . ' days',
-                                    'region' => 'All Regions',
-                                ];
-                            @endphp
-                            <label
-                                class="flex min-h-[87px] cursor-pointer flex-col rounded-[8px] border p-4 transition"
-                                :class="selectedShipping === @js($key) ? 'border-[#ff0037] bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'"
-                            >
-                                <input type="radio" name="shipping_choice" value="{{ $key }}" x-model="selectedShipping" @change="refreshQuote" class="sr-only">
-                                <span class="block text-[13px] font-extrabold text-slate-900">{{ $turnaround['title'] }}</span>
-                                <span class="mt-1 block text-[13px] text-slate-600">{{ $turnaround['duration'] }}</span>
-                                <span class="mt-1 block text-[13px] font-bold text-[#ff0037]">
-                                    {{ (float) $option['price'] > 0 ? '+KES ' . number_format($option['price'], 0) : 'Free' }}
-                                </span>
-                                <span class="mt-2 block text-[11px] text-slate-500">{{ $turnaround['region'] }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </fieldset>
 
                 <div class="inline-flex min-h-[33px] items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-xs font-bold text-emerald-700">
                     <span>OK</span>

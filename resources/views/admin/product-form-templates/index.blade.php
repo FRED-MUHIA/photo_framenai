@@ -5,8 +5,16 @@
 @section('content')
 <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
     <p class="text-sm text-slate-600">Create reusable calculator forms for print services, then attach them to products.</p>
-    <a href="{{ route('admin.product-form-templates.create') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">Create Form</a>
+    @if(empty($missingMigration))
+        <a href="{{ route('admin.product-form-templates.create') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">Create Form</a>
+    @endif
 </div>
+
+@if(! empty($missingMigration))
+    <div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        Product Forms need a database migration before they can be used. Run <code class="font-bold">php artisan migrate --force</code> on this server.
+    </div>
+@endif
 
 <div class="overflow-hidden rounded-xl bg-white shadow-sm">
     <table class="w-full text-left text-sm">

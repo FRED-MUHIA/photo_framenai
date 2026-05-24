@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProductFormTemplate;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -12,16 +14,30 @@ class ProductFormTemplateController extends Controller
 {
     public function index()
     {
+        if (! $this->tablesReady()) {
+            $templates = new LengthAwarePaginator([], 0, 15);
+
+            return view('admin.product-form-templates.index', [
+                'templates' => $templates,
+                'missingMigration' => true,
+            ]);
+        }
+
         $templates = ProductFormTemplate::query()
             ->withCount('products')
             ->latest()
             ->paginate(15);
 
-        return view('admin.product-form-templates.index', compact('templates'));
+        return view('admin.product-form-templates.index', [
+            'templates' => $templates,
+            'missingMigration' => false,
+        ]);
     }
 
     public function create()
     {
+        abort_unless($this->tablesReady(), 503, 'Run database migrations before creating product forms.');
+
         return view('admin.product-form-templates.create', [
             'template' => new ProductFormTemplate(),
             'optionGroupsJson' => $this->defaultOptionGroups(),
@@ -31,6 +47,8 @@ class ProductFormTemplateController extends Controller
 
     public function store(Request $request)
     {
+        abort_unless($this->tablesReady(), 503, 'Run database migrations before creating product forms.');
+
         $validated = $this->validateTemplate($request);
 
         ProductFormTemplate::query()->create($this->payload($validated));
@@ -40,6 +58,8 @@ class ProductFormTemplateController extends Controller
 
     public function edit(ProductFormTemplate $productFormTemplate)
     {
+        abort_unless($this->tablesReady(), 503, 'Run database migrations before editing product forms.');
+
         return view('admin.product-form-templates.edit', [
             'template' => $productFormTemplate,
             'optionGroupsJson' => old('option_groups_json', json_encode($productFormTemplate->option_groups ?: [], JSON_PRETTY_PRINT)),
@@ -49,6 +69,8 @@ class ProductFormTemplateController extends Controller
 
     public function update(Request $request, ProductFormTemplate $productFormTemplate)
     {
+        abort_unless($this->tablesReady(), 503, 'Run database migrations before editing product forms.');
+
         $validated = $this->validateTemplate($request, $productFormTemplate->id);
 
         $productFormTemplate->update($this->payload($validated, $productFormTemplate->id));
@@ -58,6 +80,8 @@ class ProductFormTemplateController extends Controller
 
     public function destroy(ProductFormTemplate $productFormTemplate)
     {
+        abort_unless($this->tablesReady(), 503, 'Run database migrations before deleting product forms.');
+
         $productFormTemplate->delete();
 
         return back()->with('status', 'Product form deleted.');
@@ -77,6 +101,11 @@ class ProductFormTemplateController extends Controller
             'settings.upload_help' => ['nullable', 'string', 'max:255'],
             'is_active' => ['nullable', 'boolean'],
         ]);
+    }
+
+    private function tablesReady(): bool
+    {
+        return Schema::hasTable('product_form_templates') && Schema::hasColumn('products', 'product_form_template_id');
     }
 
     private function payload(array $validated, ?int $ignoreId = null): array

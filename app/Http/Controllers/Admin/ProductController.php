@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\ProductFormTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -25,7 +26,7 @@ class ProductController extends Controller
     {
         $categories = Category::query()->orderBy('name')->get();
         $mediaItems = MediaItem::query()->latest()->take(120)->get();
-        $formTemplates = ProductFormTemplate::query()->where('is_active', true)->orderBy('name')->get();
+        $formTemplates = $this->formTemplates();
 
         return view('admin.products.create', [
             'categories' => $categories,
@@ -73,7 +74,7 @@ class ProductController extends Controller
 
         $categories = Category::query()->orderBy('name')->get();
         $mediaItems = MediaItem::query()->latest()->take(120)->get();
-        $formTemplates = ProductFormTemplate::query()->where('is_active', true)->orderBy('name')->get();
+        $formTemplates = $this->formTemplates();
         $optionGroupsJson = $product->optionGroups->map(fn ($group) => [
             'name' => $group->name,
             'code' => $group->code,
@@ -152,7 +153,7 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'category_ids' => ['required_without:category_id', 'array', 'min:1'],
             'category_ids.*' => ['exists:categories,id'],
-            'product_form_template_id' => ['nullable', 'exists:product_form_templates,id'],
+            'product_form_template_id' => [$this->formTemplateTableReady() ? 'nullable' : 'prohibited', 'exists:product_form_templates,id'],
             'name' => ['required', 'string', 'max:190'],
             'slug' => ['nullable', 'string', 'max:190', 'unique:products,slug,' . $productId],
             'sku' => ['nullable', 'string', 'max:90', 'unique:products,sku,' . $productId],
@@ -182,7 +183,7 @@ class ProductController extends Controller
 
     private function mapProductPayload(array $validated): array
     {
-        return [
+        $payload = [
             'name' => $validated['name'],
             'sku' => $validated['sku'] ?? null,
             'short_description' => $validated['short_description'] ?? null,
@@ -200,10 +201,15 @@ class ProductController extends Controller
                 'upload_label' => data_get($validated, 'metadata.upload_label'),
                 'upload_help' => data_get($validated, 'metadata.upload_help'),
             ],
-            'product_form_template_id' => $validated['product_form_template_id'] ?? null,
             'is_featured' => ! empty($validated['is_featured']),
             'is_active' => ! empty($validated['is_active']),
         ];
+
+        if ($this->formTemplateTableReady()) {
+            $payload['product_form_template_id'] = $validated['product_form_template_id'] ?? null;
+        }
+
+        return $payload;
     }
 
     private function attachUploadedThumbnail(Request $request, array $validated): array
@@ -322,6 +328,10 @@ class ProductController extends Controller
             return $validated;
         }
 
+        if (! $this->formTemplateTableReady()) {
+            return $validated;
+        }
+
         $template = ProductFormTemplate::query()->find($validated['product_form_template_id']);
 
         if (! $template) {
@@ -335,5 +345,19 @@ class ProductController extends Controller
         $validated['metadata']['upload_help'] = data_get($template->settings, 'upload_help', 'PDF, AI, PSD, JPG, PNG (max 50MB)');
 
         return $validated;
+    }
+
+    private function formTemplates()
+    {
+        if (! $this->formTemplateTableReady()) {
+            return collect();
+        }
+
+        return ProductFormTemplate::query()->where('is_active', true)->orderBy('name')->get();
+    }
+
+    private function formTemplateTableReady(): bool
+    {
+        return Schema::hasTable('product_form_templates') && Schema::hasColumn('products', 'product_form_template_id');
     }
 }
