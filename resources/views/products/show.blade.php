@@ -22,14 +22,15 @@
 
     .product-detail-form-column {
         grid-column: 2;
+        grid-row: 1 / span 2;
         min-width: 0;
         align-self: start;
     }
 
     .product-detail-description {
-        grid-column: 1 / -1;
+        grid-column: 1;
+        grid-row: 2;
         min-width: 0;
-        margin-top: -12px;
     }
 
     @media (max-width: 1472px) {
@@ -49,6 +50,7 @@
         .product-detail-form-column,
         .product-detail-description {
             grid-column: 1;
+            grid-row: auto;
         }
 
     }
@@ -231,9 +233,15 @@
                 @endif
 
                 <div class="flex items-center gap-2 text-xs">
-                    <span class="font-bold text-amber-400">5 stars</span>
-                    <span class="font-bold text-slate-700">5.0</span>
-                    <span class="text-slate-500">verified ratings</span>
+                    <span class="tracking-[1px] text-[15px] leading-none text-amber-400">★★★★★</span>
+                    <span class="font-semibold text-slate-800">5.0 (7)</span>
+                    <span class="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.5 11 14.5 15.5 9.5"/>
+                            <circle cx="12" cy="12" r="8.5"/>
+                        </svg>
+                        Verified Ratings
+                    </span>
                 </div>
 
                 <div class="rounded-xl bg-slate-50 p-4">
@@ -293,9 +301,9 @@
                         Overview
                         <span class="text-rose-500 group-open:rotate-180">^</span>
                     </summary>
-                    <div class="mt-4 max-w-[760px]">
+                    <div class="mt-4 max-w-[1080px]">
                         <h2 class="text-xl font-extrabold leading-tight text-slate-950">{{ $product->name }}</h2>
-                        <p class="mt-4 text-sm leading-7 text-slate-700">
+                        <p class="mt-4 text-justify text-sm leading-7 text-slate-700">
                             {{ $description ?: 'Configure this product with your preferred print options, quantity, delivery timeline, and artwork.' }}
                         </p>
                     </div>
@@ -314,7 +322,7 @@
                             {{ $detailTitle }}
                             <span class="text-slate-500 group-open:rotate-180">v</span>
                         </summary>
-                        <p class="mt-3 max-w-[760px] text-sm leading-6 text-slate-600">
+                        <p class="mt-3 max-w-[1080px] text-justify text-sm leading-6 text-slate-600">
                             Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.
                         </p>
                     </details>
