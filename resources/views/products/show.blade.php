@@ -103,7 +103,7 @@
                 <div>
                     <h1 class="text-[28px] font-extrabold leading-tight text-slate-950">{{ $product->name }}</h1>
                     <div class="mt-4 flex flex-wrap items-baseline gap-3">
-                        <span class="text-[22px] font-extrabold leading-none text-[#ff0037]">KES <span x-text="formatWhole(quote.line_total)"></span></span>
+                        <span class="text-[22px] font-extrabold leading-none text-[#ff0037]">KES {{ number_format((float) $product->base_price, 0) }}</span>
                     </div>
                 </div>
 
@@ -126,7 +126,7 @@
                                     $optionImageUrl = \App\Support\PublicAssetUrl::resolve(data_get($value->metadata, 'image_url'));
                                 @endphp
                                 <label
-                                    class="flex min-h-[86px] cursor-pointer flex-col items-center justify-center rounded-[10px] border p-4 text-center transition"
+                                    class="flex min-h-[54px] cursor-pointer flex-col items-center justify-center rounded-lg border px-4 py-3 text-center transition"
                                     :class="String(selectedOptions[@js($group->code)] || '') === @js((string) $value->id) ? 'border-[#ff0037] bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'"
                                 >
                                     <input
