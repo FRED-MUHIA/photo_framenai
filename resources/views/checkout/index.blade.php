@@ -11,7 +11,7 @@
         method="POST"
         action="{{ route('checkout.store') }}"
         class="mt-8 grid gap-8 lg:grid-cols-[1fr_340px]"
-        x-data="checkoutSummary(@js($shippingOptions), @js((float) $totals['subtotal']), @js((float) $totals['discount_amount']), @js(old('shipping_option', 'standard')))"
+        x-data="checkoutSummary(@js($shippingOptions), @js((float) $totals['subtotal']), @js((float) $totals['discount_amount']), @js(old('shipping_option', 'not_necessary')))"
     >
         @csrf
         <div class="space-y-6">
@@ -34,7 +34,7 @@
                     <label class="mb-2 block text-sm font-semibold">Shipping Option</label>
                     <select name="shipping_option" x-model="selectedShipping" class="w-full rounded-xl border-slate-300">
                         @foreach($shippingOptions as $key => $option)
-                            <option value="{{ $key }}" @selected(old('shipping_option', 'standard') === $key)>{{ $option['label'] }} - {{ config('shop.currency_symbol') }} {{ number_format($option['price'], 2) }}</option>
+                            <option value="{{ $key }}" @selected(old('shipping_option', 'not_necessary') === $key)>{{ $option['label'] }} - {{ config('shop.currency_symbol') }} {{ number_format($option['price'], 2) }}</option>
                         @endforeach
                     </select>
                 </div>

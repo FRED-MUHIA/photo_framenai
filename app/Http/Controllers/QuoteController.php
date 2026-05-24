@@ -20,7 +20,7 @@ class QuoteController extends Controller
             'quantity' => ['required', 'integer', 'min:1'],
             'selected_options' => ['nullable', 'array'],
             'selected_options.*' => ['nullable', 'integer'],
-            'shipping_option' => ['nullable', 'in:standard,express,pickup'],
+            'shipping_option' => ['nullable', 'in:not_necessary,standard,express,pickup'],
         ]);
 
         $product = Product::query()->active()->with(['optionGroups.values', 'quantityPrices'])->findOrFail($validated['product_id']);

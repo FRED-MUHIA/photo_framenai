@@ -4,6 +4,11 @@ return [
     'currency' => 'KES',
     'currency_symbol' => 'KSh',
     'shipping_options' => [
+        'not_necessary' => [
+            'label' => 'Not necessary',
+            'price' => 0,
+            'days' => 0,
+        ],
         'standard' => [
             'label' => 'Standard (3-5 days)',
             'price' => 400,

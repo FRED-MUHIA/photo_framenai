@@ -31,7 +31,7 @@ class CheckoutRequest extends FormRequest
             'shipping_state' => ['nullable', 'string', 'max:120'],
             'shipping_postal_code' => ['nullable', 'string', 'max:40'],
             'shipping_country' => ['required', 'string', 'max:120'],
-            'shipping_option' => ['required', 'in:standard,express,pickup'],
+            'shipping_option' => ['required', 'in:not_necessary,standard,express,pickup'],
             'payment_method' => ['required', 'in:stripe,paypal,mpesa,cod'],
             'coupon_code' => ['nullable', 'string', 'max:40'],
             'notes' => ['nullable', 'string', 'max:1000'],

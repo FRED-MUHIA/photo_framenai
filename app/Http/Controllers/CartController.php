@@ -35,7 +35,7 @@ class CartController extends Controller
             'quantity' => ['required', 'integer', 'min:1'],
             'selected_options' => ['nullable', 'array'],
             'selected_options.*' => ['nullable', 'integer'],
-            'shipping_option' => ['nullable', 'in:standard,express,pickup'],
+            'shipping_option' => ['nullable', 'in:not_necessary,standard,express,pickup'],
             'artwork_id' => ['nullable', 'exists:artworks,id'],
             'delivery_date' => ['nullable', 'date_format:Y-m-d'],
             'artwork' => [
