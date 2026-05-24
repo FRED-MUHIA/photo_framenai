@@ -19,8 +19,8 @@
 @endphp
 
 <section class="bg-white" x-data="productConfigurator()" x-init="init()">
-    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_560px] lg:px-8">
-        <div class="min-w-0">
+    <div class="mx-auto grid max-w-7xl items-start gap-8 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,48%)_minmax(0,52%)] lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)] lg:px-8">
+        <div class="order-1 min-w-0">
             <div class="overflow-hidden rounded-lg bg-[#eeeeee]">
                 @if($mainProductImage)
                     <img src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-8">
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ route('cart.store') }}" class="min-w-0 lg:sticky lg:top-4 lg:self-start" @submit="isAdding = true">
+        <form method="POST" action="{{ route('cart.store') }}" class="order-2 min-w-0 md:sticky md:top-4 md:self-start" @submit="isAdding = true">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="shipping_option" :value="selectedShipping">

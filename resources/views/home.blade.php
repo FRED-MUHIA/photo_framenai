@@ -558,8 +558,7 @@
     .top-pick-media img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
-        padding: 54px 34px 18px;
+        object-fit: cover;
     }
 
     .top-pick-badge {
