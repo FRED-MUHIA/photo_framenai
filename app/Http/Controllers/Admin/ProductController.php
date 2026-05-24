@@ -262,20 +262,37 @@ class ProductController extends Controller
         $groups = $this->decodeJson($rawOptions, 'option_groups_json');
 
         $product->optionGroups()->delete();
+        $usedCodes = [];
 
         foreach ($groups as $index => $groupPayload) {
+            $groupName = data_get($groupPayload, 'name', 'Option Group ' . ($index + 1));
+            $codeSeed = data_get($groupPayload, 'code') ?: $groupName ?: 'group-' . ($index + 1);
+            $baseCode = Str::of($codeSeed)->slug('_')->toString() ?: 'group_' . ($index + 1);
+            $code = $baseCode;
+            $counter = 2;
+
+            while (in_array($code, $usedCodes, true)) {
+                $code = $baseCode . '_' . $counter;
+                $counter++;
+            }
+
+            $usedCodes[] = $code;
+
             $group = $product->optionGroups()->create([
-                'name' => data_get($groupPayload, 'name', 'Option Group ' . ($index + 1)),
-                'code' => Str::of(data_get($groupPayload, 'code', 'group-' . ($index + 1)))->slug('_')->toString(),
+                'name' => $groupName,
+                'code' => $code,
                 'input_type' => data_get($groupPayload, 'input_type', 'select'),
                 'is_required' => (bool) data_get($groupPayload, 'is_required', true),
                 'sort_order' => $index,
             ]);
 
             foreach ((array) data_get($groupPayload, 'values', []) as $valueIndex => $valuePayload) {
+                $valueLabel = data_get($valuePayload, 'label', 'Option ' . ($valueIndex + 1));
+                $value = data_get($valuePayload, 'value') ?: Str::slug($valueLabel) ?: 'option-' . ($valueIndex + 1);
+
                 $group->values()->create([
-                    'label' => data_get($valuePayload, 'label', 'Option ' . ($valueIndex + 1)),
-                    'value' => data_get($valuePayload, 'value', Str::slug(data_get($valuePayload, 'label', 'option-' . ($valueIndex + 1)))),
+                    'label' => $valueLabel,
+                    'value' => $value,
                     'price_modifier' => (float) data_get($valuePayload, 'price_modifier', 0),
                     'delivery_modifier' => (int) data_get($valuePayload, 'delivery_modifier', 0),
                     'metadata' => [
