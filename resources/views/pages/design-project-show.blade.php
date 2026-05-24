@@ -4,6 +4,9 @@
 @section('meta_description', $project['summary'])
 
 @section('content')
+@php
+    $projectImages = collect($project['images'] ?? [])->filter()->values();
+@endphp
 <section class="bg-[#f6f6f6] py-8 sm:py-10">
     <div class="mx-auto max-w-[1180px] px-4 sm:px-6 lg:px-8">
         <a href="{{ route('pages.design-services') }}#work" class="inline-flex h-10 items-center rounded-full border border-[#d8d8d8] bg-white px-4 text-[13px] font-bold text-[#111] hover:border-[#b10f1e] hover:text-[#b10f1e]">Back to projects</a>
@@ -29,7 +32,9 @@
                 </div>
 
                 <div class="min-h-[420px] bg-[#ededed]">
-                    <img src="{{ $project['images'][0] }}" alt="{{ $project['title'] }} hero image" class="h-full min-h-[420px] w-full object-cover">
+                    @if($projectImages->isNotEmpty())
+                        <img src="{{ $projectImages->first() }}" alt="{{ $project['title'] }} hero image" class="h-full min-h-[420px] w-full object-cover">
+                    @endif
                 </div>
             </div>
         </article>
@@ -53,7 +58,7 @@
             <p class="mt-5 max-w-3xl text-[16px] leading-8 text-[#444]">{{ $project['details'] }}</p>
 
             <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                @foreach(array_slice($project['images'], 1) as $image)
+                @foreach($projectImages->slice(1) as $image)
                     <figure class="overflow-hidden rounded-2xl border border-[#dedede] bg-[#f4f4f4]">
                         <img src="{{ $image }}" alt="{{ $project['title'] }} project image" class="h-[300px] w-full object-cover">
                     </figure>

@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Design Services - NaiPrinters</title>
-    <meta name="description" content="Creative professional design and branding portfolio page.">
+    <title>{{ $cmsPage?->meta_title ?: 'Design Services - NaiPrinters' }}</title>
+    <meta name="description" content="{{ $cmsPage?->meta_description ?: 'Creative professional design and branding portfolio page.' }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -731,40 +731,62 @@
 </head>
 <body>
     @include('partials.site-header')
+    @php
+        $sectionMap = collect($designSections ?? \App\Support\DesignServicesContentDefaults::sections())->keyBy('component');
+        $heroSection = $sectionMap->get('design_hero', []);
+        $heroItems = collect(data_get($heroSection, 'items', []))->values();
+        $gallerySection = $sectionMap->get('design_gallery', []);
+        $galleryItems = collect(data_get($gallerySection, 'items', []))->filter(fn ($item) => is_array($item) && data_get($item, 'image_url'))->values();
+        $servicesSection = $sectionMap->get('design_services', []);
+        $serviceItems = collect(data_get($servicesSection, 'items', []))->filter(fn ($item) => is_array($item) && data_get($item, 'title'))->values();
+        $serviceCategories = $serviceItems->map(fn ($item) => [
+            'id' => data_get($item, 'subtitle') ?: data_get($item, 'slug') ?: str(data_get($item, 'title'))->slug()->toString(),
+            'title' => data_get($item, 'title'),
+        ])->values();
+        $processSection = $sectionMap->get('design_process', []);
+        $processItems = collect(data_get($processSection, 'items', []))->filter(fn ($item) => is_array($item) && data_get($item, 'title'))->values();
+        $projectsSection = $sectionMap->get('design_projects', []);
+        $projectItems = collect($projects ?? \App\Support\DesignServicesContentDefaults::projects($designSections ?? null))->values();
+        $experienceSection = $sectionMap->get('design_experience', []);
+        $experienceItems = collect(data_get($experienceSection, 'items', []))->filter(fn ($item) => is_array($item) && data_get($item, 'title'))->values();
+        $contactSection = $sectionMap->get('design_contact', []);
+        $defaultServiceTitle = data_get($serviceItems->first(), 'title', 'Design Service');
+    @endphp
 
     <main class="page">
         <section class="growth-hero">
             <div class="wrap growth-hero-inner">
                 <div>
-                    <h1 class="growth-title">Print Designs That <em>Look Ready</em></h1>
-                    <p class="growth-copy">We design polished mockups, book covers, magazines, catalogues, company profiles, and print-ready layouts for brands that need work customers can see and trust.</p>
-                    <a href="#design-request" class="growth-button">Get Started</a>
+                    <h1 class="growth-title">{{ data_get($heroSection, 'title', 'Print Designs That') }} <em>{{ data_get($heroSection, 'subtitle', 'Look Ready') }}</em></h1>
+                    <p class="growth-copy">{{ data_get($heroSection, 'content') }}</p>
+                    <a href="{{ data_get($heroSection, 'button_url', '#design-request') }}" class="growth-button">{{ data_get($heroSection, 'button_label', 'Get Started') }}</a>
                 </div>
 
                 <div class="growth-cards" aria-hidden="true">
-                    <div class="growth-card stat offset">
-                        <span>Book, brochure and catalogue layouts</span>
-                        <strong>Print</strong>
-                    </div>
-                    <div class="growth-card offset">
-                        <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=700&q=80" alt="">
-                    </div>
-                    <div class="growth-card">
-                        <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=700&q=80" alt="">
-                    </div>
-                    <div class="growth-card dark">
-                        <div>
-                            <div style="font-size:42px; line-height:1;">◎</div>
-                            <div style="margin-top:8px; font-size:11px; font-weight:900; text-transform:uppercase;">Mockup • Design • Print</div>
+                    @foreach($heroItems as $heroItemIndex => $heroItem)
+                        @php
+                            $cardType = data_get($heroItem, 'content', 'image');
+                            $cardClasses = trim(implode(' ', [
+                                'growth-card',
+                                in_array($cardType, ['stat', 'dark'], true) ? $cardType : '',
+                                in_array($heroItemIndex, [0, 1], true) ? 'offset' : '',
+                                $heroItemIndex >= 4 ? 'lower' : '',
+                            ]));
+                        @endphp
+                        <div class="{{ $cardClasses }}">
+                            @if($cardType === 'stat')
+                                <span>{{ data_get($heroItem, 'title') }}</span>
+                                <strong>{{ data_get($heroItem, 'subtitle') }}</strong>
+                            @elseif($cardType === 'dark')
+                                <div>
+                                    <div style="font-size:42px; line-height:1;">◎</div>
+                                    <div style="margin-top:8px; font-size:11px; font-weight:900; text-transform:uppercase;">{{ data_get($heroItem, 'title') }}</div>
+                                </div>
+                            @elseif(data_get($heroItem, 'image_url'))
+                                <img src="{{ data_get($heroItem, 'image_url') }}" alt="">
+                            @endif
                         </div>
-                    </div>
-                    <div class="growth-card lower">
-                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=700&q=80" alt="">
-                    </div>
-                    <div class="growth-card stat lower">
-                        <span>Mockups for approval before production</span>
-                        <strong>PDF</strong>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </section>
@@ -773,54 +795,26 @@
             <div class="wrap">
                 <div class="section-head" style="margin-bottom: 34px;">
                     <div>
-                        <p class="eyebrow">Service</p>
-                        <h2>Unleashing Your Brand’s Potential</h2>
+                        <p class="eyebrow">{{ data_get($gallerySection, 'subtitle', 'Service') }}</p>
+                        <h2>{{ data_get($gallerySection, 'title', 'Unleashing Your Brand’s Potential') }}</h2>
                     </div>
                 </div>
                 <div class="hero-gallery" data-slideshow="hero">
                     <div class="service-categories" aria-label="Service categories">
-                        <button type="button" class="service-category active" data-service-category="custom-logo-design">Custom Logo Design</button>
-                        <button type="button" class="service-category" data-service-category="website-design-services">Website Design Services</button>
-                        <button type="button" class="service-category" data-service-category="custom-graphic-design">Custom Graphic Design</button>
-                        <button type="button" class="service-category" data-service-category="brochure-magazine-design">Brochure & Magazine Design</button>
+                        @foreach($serviceCategories as $categoryIndex => $category)
+                            <button type="button" class="service-category {{ $categoryIndex === 0 ? 'active' : '' }}" data-service-category="{{ $category['id'] }}">{{ $category['title'] }}</button>
+                        @endforeach
                     </div>
                     <div class="gallery-track">
-                        <figure class="gallery-card active" data-slide data-gallery-category="custom-logo-design">
-                            <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?auto=format&fit=crop&w=900&q=80" alt="Brand card mockup">
-                        </figure>
-                        <figure class="gallery-card active center" data-slide data-gallery-category="custom-logo-design">
-                            <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=900&q=80" alt="Logo stationery mockup">
-                        </figure>
-                        <figure class="gallery-card active" data-slide data-gallery-category="custom-logo-design">
-                            <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=900&q=80" alt="Brand identity presentation">
-                        </figure>
-                        <figure class="gallery-card" data-slide data-gallery-category="website-design-services">
-                            <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=900&q=80" alt="Website layout mockup">
-                        </figure>
-                        <figure class="gallery-card center" data-slide data-gallery-category="website-design-services">
-                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80" alt="Mobile website interface">
-                        </figure>
-                        <figure class="gallery-card" data-slide data-gallery-category="website-design-services">
-                            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80" alt="Website code and design desk">
-                        </figure>
-                        <figure class="gallery-card" data-slide data-gallery-category="custom-graphic-design">
-                            <img src="https://images.unsplash.com/photo-1564061170517-d3907caa96ea?auto=format&fit=crop&w=900&q=80" alt="Signage mockup">
-                        </figure>
-                        <figure class="gallery-card center" data-slide data-gallery-category="custom-graphic-design">
-                            <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=900&q=80" alt="Graphic design print mockup">
-                        </figure>
-                        <figure class="gallery-card" data-slide data-gallery-category="custom-graphic-design">
-                            <img src="https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&w=900&q=80" alt="Campaign graphic workspace">
-                        </figure>
-                        <figure class="gallery-card" data-slide data-gallery-category="brochure-magazine-design">
-                            <img src="https://images.unsplash.com/photo-1476357471311-43c0db9fb2b4?auto=format&fit=crop&w=900&q=80" alt="Magazine design mockup">
-                        </figure>
-                        <figure class="gallery-card center" data-slide data-gallery-category="brochure-magazine-design">
-                            <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80" alt="Brochure page layout">
-                        </figure>
-                        <figure class="gallery-card" data-slide data-gallery-category="brochure-magazine-design">
-                            <img src="https://images.unsplash.com/photo-1523726491678-bf852e717f6a?auto=format&fit=crop&w=900&q=80" alt="Publication design layout">
-                        </figure>
+                        @foreach($galleryItems as $galleryItem)
+                            @php
+                                $galleryCategory = data_get($galleryItem, 'subtitle') ?: data_get($serviceCategories->first(), 'id', 'design');
+                                $isCenter = str_contains((string) data_get($galleryItem, 'content'), 'center');
+                            @endphp
+                            <figure class="gallery-card {{ $isCenter ? 'center' : '' }}" data-slide data-gallery-category="{{ $galleryCategory }}">
+                                <img src="{{ data_get($galleryItem, 'image_url') }}" alt="{{ data_get($galleryItem, 'title', 'Design service mockup') }}">
+                            </figure>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -830,112 +824,60 @@
             <div class="wrap">
                 <div class="section-head">
                     <div>
-                        <p class="eyebrow">Service</p>
-                        <h2>Unleashing Your Brand’s Potential</h2>
+                        <p class="eyebrow">{{ data_get($servicesSection, 'subtitle', 'Service') }}</p>
+                        <h2>{{ data_get($servicesSection, 'title', 'Unleashing Your Brand’s Potential') }}</h2>
                     </div>
-                    <p>Unleashing Your Brand’s Potential by crafting innovative strategies, impactful designs, and tailored solutions that resonate with your audience and elevate your brand to new heights.</p>
+                    <p>{{ data_get($servicesSection, 'content') }}</p>
                 </div>
 
                 <div class="service-list">
-                    <article id="custom-logo-design" class="service-card open" data-service-card>
-                        <div class="service-row">
-                            <div class="service-num star">01</div>
-                            <div class="service-title">Custom Logo Design</div>
-                            <button type="button" class="small-btn dark" data-service-toggle>See Detail</button>
-                        </div>
-                        <div class="service-detail">
-                            <div>
-                                <p class="service-copy">A distinctive logo system built for print, digital use, signage, uniforms, and everyday brand recognition.</p>
-                                <button type="button" class="request-btn" data-request-service="Custom Logo Design">Book / Request</button>
+                    @foreach($serviceItems as $serviceIndex => $service)
+                        @php
+                            $serviceId = data_get($service, 'subtitle') ?: data_get($service, 'slug') ?: str(data_get($service, 'title'))->slug()->toString();
+                        @endphp
+                        <article id="{{ $serviceId }}" class="service-card {{ $serviceIndex === 0 ? 'open' : '' }}" data-service-card>
+                            <div class="service-row">
+                                <div class="service-num {{ $serviceIndex === 0 ? 'star' : '' }}">{{ str_pad((string) ($serviceIndex + 1), 2, '0', STR_PAD_LEFT) }}</div>
+                                <div class="service-title">{{ data_get($service, 'title') }}</div>
+                                <button type="button" class="small-btn {{ $serviceIndex === 0 ? 'dark' : '' }}" data-service-toggle>See Detail</button>
                             </div>
-                            <div>
-                                <div class="service-image">
-                                    <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?auto=format&fit=crop&w=900&q=80" alt="Custom logo design mockup">
+                            <div class="service-detail">
+                                <div>
+                                    <p class="service-copy">{{ data_get($service, 'content') }}</p>
+                                    <button type="button" class="request-btn" data-request-service="{{ data_get($service, 'title') }}">Book / Request</button>
+                                </div>
+                                <div>
+                                    <div class="service-image">
+                                        <img src="{{ data_get($service, 'image_url') }}" alt="{{ data_get($service, 'title') }} mockup">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
-
-                    <article id="website-design-services" class="service-card" data-service-card>
-                        <div class="service-row">
-                            <div class="service-num">02</div>
-                            <div class="service-title">Website Design Services</div>
-                            <button type="button" class="small-btn" data-service-toggle>See Detail</button>
-                        </div>
-                        <div class="service-detail">
-                            <div>
-                                <p class="service-copy">Responsive website layouts that present your business clearly, guide visitors, and support enquiries or sales.</p>
-                                <button type="button" class="request-btn" data-request-service="Website Design Services">Book / Request</button>
-                            </div>
-                            <div>
-                                <div class="service-image">
-                                    <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=900&q=80" alt="Website design services mockup">
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                    <article id="custom-graphic-design" class="service-card" data-service-card>
-                        <div class="service-row">
-                            <div class="service-num">03</div>
-                            <div class="service-title">Custom Graphic Design</div>
-                            <button type="button" class="small-btn" data-service-toggle>See Detail</button>
-                        </div>
-                        <div class="service-detail">
-                            <div>
-                                <p class="service-copy">Purpose-built visual designs for campaigns, company profiles, product promotions, events, and everyday marketing.</p>
-                                <button type="button" class="request-btn" data-request-service="Custom Graphic Design">Book / Request</button>
-                            </div>
-                            <div>
-                                <div class="service-image">
-                                    <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=900&q=80" alt="Custom graphic design mockup">
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                    <article id="brochure-magazine-design" class="service-card" data-service-card>
-                        <div class="service-row">
-                            <div class="service-num">04</div>
-                            <div class="service-title">Brochure & Magazine Design</div>
-                            <button type="button" class="small-btn" data-service-toggle>See Detail</button>
-                        </div>
-                        <div class="service-detail">
-                            <div>
-                                <p class="service-copy">Structured multi-page layouts for brochures, magazines, catalogues, programmes, and company profiles.</p>
-                                <button type="button" class="request-btn" data-request-service="Brochure & Magazine Design">Book / Request</button>
-                            </div>
-                            <div>
-                                <div class="service-image">
-                                    <img src="https://images.unsplash.com/photo-1476357471311-43c0db9fb2b4?auto=format&fit=crop&w=900&q=80" alt="Brochure and magazine design mockup">
-                                </div>
-                            </div>
-                        </div>
-                    </article>
+                        </article>
+                    @endforeach
                 </div>
             </div>
         </section>
 
         <section class="section soft process">
             <div class="wrap">
-                <p class="eyebrow">How We Work</p>
-                <h2>A Methodical Process For Maximum Results.</h2>
+                <p class="eyebrow">{{ data_get($processSection, 'subtitle', 'How We Work') }}</p>
+                <h2>{{ data_get($processSection, 'title', 'A Methodical Process For Maximum Results.') }}</h2>
                 <div class="circles">
-                    <button type="button" class="circle" data-process-title="Discovery" data-process-copy="We clarify your goals, audience, content, references, and expected outputs so the project starts with a focused creative direction.">Discovery</button>
-                    <button type="button" class="circle" data-process-title="Research" data-process-copy="We study your market, competitors, visual references, and production needs to define a practical design path before artwork begins.">Research</button>
-                    <button type="button" class="circle active" data-process-title="Design" data-process-copy="We create the visual direction, layouts, and polished artwork, balancing creative impact with files that are ready for print and digital use.">Design</button>
-                    <button type="button" class="circle" data-process-title="Iteration" data-process-copy="We refine the selected direction through feedback, improving composition, typography, color, imagery, and final usability.">Iteration</button>
-                    <button type="button" class="circle" data-process-title="Result" data-process-copy="We prepare final deliverables for launch, handoff, printing, publishing, or campaign rollout with clear production-ready outputs.">Result</button>
+                    @foreach($processItems as $processIndex => $processItem)
+                        <button type="button" class="circle {{ $processIndex === 2 ? 'active' : '' }}" data-process-title="{{ data_get($processItem, 'title') }}" data-process-copy="{{ data_get($processItem, 'content') }}">{{ data_get($processItem, 'title') }}</button>
+                    @endforeach
                 </div>
-                <p class="process-note">A structured method for efficiency, ensuring precise results and consistent success.</p>
+                <p class="process-note">{{ data_get($processSection, 'content') }}</p>
             </div>
         </section>
 
         <div class="process-modal" data-process-modal aria-hidden="true">
             <div class="process-dialog" role="dialog" aria-modal="true" aria-labelledby="process-modal-title">
                 <div class="process-dialog-head">
-                    <h3 id="process-modal-title" class="process-dialog-title" data-process-modal-title>Design</h3>
+                    <h3 id="process-modal-title" class="process-dialog-title" data-process-modal-title>{{ data_get($processItems->get(2), 'title', data_get($processItems->first(), 'title', 'Design')) }}</h3>
                     <button type="button" class="process-close" data-process-close aria-label="Close process details">×</button>
                 </div>
-                <p class="process-dialog-copy" data-process-modal-copy>We create the visual direction, layouts, and polished artwork, balancing creative impact with files that are ready for print and digital use.</p>
+                <p class="process-dialog-copy" data-process-modal-copy>{{ data_get($processItems->get(2), 'content', data_get($processItems->first(), 'content', '')) }}</p>
             </div>
         </div>
 
@@ -956,10 +898,9 @@
                         <input type="text" name="phone" placeholder="Phone number">
                         <input class="full" type="email" name="email" placeholder="Email address">
                         <select class="full" name="design_service" data-request-service-input>
-                            <option value="Custom Logo Design">Custom Logo Design</option>
-                            <option value="Website Design Services">Website Design Services</option>
-                            <option value="Custom Graphic Design">Custom Graphic Design</option>
-                            <option value="Brochure & Magazine Design">Brochure & Magazine Design</option>
+                            @foreach($serviceItems as $service)
+                                <option value="{{ data_get($service, 'title') }}">{{ data_get($service, 'title') }}</option>
+                            @endforeach
                         </select>
                         <textarea class="full" name="design_brief" placeholder="Tell us what you want designed, preferred style, quantity, timeline, or any reference you have."></textarea>
                     </div>
@@ -973,8 +914,8 @@
             <div class="wrap">
                 <div class="work-head">
                     <div>
-                        <p class="eyebrow">Work</p>
-                        <h2>Showcasing My Most<br>Recent Projects</h2>
+                        <p class="eyebrow">{{ data_get($projectsSection, 'subtitle', 'Work') }}</p>
+                        <h2>{!! nl2br(e(data_get($projectsSection, 'title', 'Showcasing My Most Recent Projects'))) !!}</h2>
                     </div>
                     <div class="arrows" data-project-controls>
                         <button class="arrow" type="button" data-prev>↶</button>
@@ -983,72 +924,42 @@
                 </div>
 
                 <div class="projects" data-slideshow="projects">
-                    <a href="{{ route('pages.design-projects.show', 'coinjac') }}" class="project project-slide active" data-slide>
-                        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=900&q=80" alt="COINJAC business card mockup">
-                        <div class="project-meta">
-                            <div>
-                                <h3>COINJAC</h3>
-                                <p>Coinjac is a leading cryptocurrency trading app that offers a secure, user-friendly platform for buying, selling, and trading cryptocurrencies.</p>
+                    @foreach($projectItems as $projectIndex => $project)
+                        <a href="{{ route('pages.design-projects.show', $project['slug']) }}" class="project project-slide {{ $projectIndex < 2 ? 'active' : '' }}" data-slide>
+                            <img src="{{ $project['images'][0] ?? asset('favicon.ico') }}" alt="{{ $project['title'] }} mockup">
+                            <div class="project-meta">
+                                <div>
+                                    <h3>{{ $project['title'] }}</h3>
+                                    <p>{{ $project['summary'] }}</p>
+                                </div>
+                                <span class="project-year">{{ $project['year'] }}</span>
                             </div>
-                            <span class="project-year">2020</span>
-                        </div>
-                    </a>
-                    <a href="{{ route('pages.design-projects.show', 'coplo') }}" class="project project-slide active" data-slide>
-                        <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=900&q=80" alt="COPLO card mockup">
-                        <div class="project-meta">
-                            <div>
-                                <h3>COPLO</h3>
-                                <p>We are dedicated to bringing the world of music to your fingertips. Our brand is a harmonious blend of innovation, creativity, and passion for melodies.</p>
-                            </div>
-                            <span class="project-year">2021</span>
-                        </div>
-                    </a>
-                    <a href="{{ route('pages.design-projects.show', 'hectory') }}" class="project project-slide" data-slide>
-                        <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?auto=format&fit=crop&w=900&q=80" alt="HECTORY tag mockup">
-                        <div class="project-meta">
-                            <div>
-                                <h3>HECTORY</h3>
-                                <p>Our brand identity embodies a seamless fusion of sophistication, modernity, and authenticity, catering to the discerning tastes of the contemporary man.</p>
-                            </div>
-                            <span class="project-year">2022</span>
-                        </div>
-                    </a>
-                    <a href="{{ route('pages.design-projects.show', 'vityk') }}" class="project project-slide" data-slide>
-                        <img src="https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?auto=format&fit=crop&w=900&q=80" alt="VITYK card mockup">
-                        <div class="project-meta">
-                            <div>
-                                <h3>VITYK</h3>
-                                <p>Vityk is the best, most fun, and most educational way to learn guitar with guided, step-by-step videos for beginners and advanced guitar players.</p>
-                            </div>
-                            <span class="project-year">2024</span>
-                        </div>
-                    </a>
+                        </a>
+                    @endforeach
                 </div>
             </div>
         </section>
 
         <section class="experience-band" aria-label="Experience and brands">
             <div class="wrap">
-                <h2>8 years of experience and have worked with</h2>
+                <h2>{{ data_get($experienceSection, 'title', '8 years of experience and have worked with') }}</h2>
                 <div class="experience-logos">
-                    <div class="experience-logo">Google</div>
-                    <div class="experience-logo">goodreads</div>
-                    <div class="experience-logo">amazon</div>
-                    <div class="experience-logo">Forbes</div>
-                    <div class="experience-logo">PayPal</div>
+                    @foreach($experienceItems as $experienceItem)
+                        <div class="experience-logo">{{ data_get($experienceItem, 'title') }}</div>
+                    @endforeach
                 </div>
             </div>
-            <div class="experience-side">07</div>
+            <div class="experience-side">{{ data_get($experienceSection, 'subtitle', '07') }}</div>
         </section>
 
         <section id="design-request" class="contact-section">
             <div class="wrap">
                 <div class="contact-panel">
                     <div>
-                        <p class="eyebrow">Contact</p>
-                        <h2>Let’s Start Your Design Project</h2>
+                        <p class="eyebrow">{{ data_get($contactSection, 'subtitle', 'Contact') }}</p>
+                        <h2>{{ data_get($contactSection, 'title', 'Let’s Start Your Design Project') }}</h2>
                         <p class="process-note" style="margin:18px 0 0; text-align:left;">
-                            Tell us what you need designed and our team will review your request, confirm the best next step, and get back to you.
+                            {{ data_get($contactSection, 'content') }}
                         </p>
                     </div>
 
@@ -1063,10 +974,9 @@
                             <input type="text" name="phone" placeholder="Phone number">
                             <input class="full" type="email" name="email" placeholder="Email address">
                             <select class="full" name="design_service">
-                                <option value="Custom Logo Design">Custom Logo Design</option>
-                                <option value="Website Design Services">Website Design Services</option>
-                                <option value="Custom Graphic Design">Custom Graphic Design</option>
-                                <option value="Brochure & Magazine Design">Brochure & Magazine Design</option>
+                                @foreach($serviceItems as $service)
+                                    <option value="{{ data_get($service, 'title') }}">{{ data_get($service, 'title') }}</option>
+                                @endforeach
                             </select>
                             <textarea class="full" name="design_brief" placeholder="Tell us what you want designed, preferred style, quantity, timeline, or any reference you have."></textarea>
                         </div>
@@ -1087,7 +997,7 @@
 
         const heroSlides = Array.from(document.querySelectorAll('[data-slideshow="hero"] [data-slide]'));
         let heroIndex = 0;
-        let activeGalleryCategory = 'custom-logo-design';
+        let activeGalleryCategory = @js(data_get($serviceCategories->first(), 'id', 'design'));
         const renderCategoryImages = (category) => {
             activeGalleryCategory = category;
             const categorySlides = heroSlides.filter((slide) => slide.dataset.galleryCategory === category);

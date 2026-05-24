@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
 use App\Models\MediaItem;
+use App\Support\DesignServicesContentDefaults;
 use App\Support\HomepageContentDefaults;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -82,6 +83,9 @@ class PageBuilderController extends Controller
         }
         if ($pageBuilder->slug === 'home') {
             $sections = $this->ensureHomeEditorSections($sections);
+        }
+        if ($pageBuilder->slug === 'design-services') {
+            $sections = DesignServicesContentDefaults::mergedSections($sections);
         }
 
         $sectionsJson = json_encode($sections, JSON_PRETTY_PRINT);
@@ -203,7 +207,11 @@ class PageBuilderController extends Controller
 
     private function defaultSectionsForSlug(string $slug): array
     {
-        return $slug === 'home' ? HomepageContentDefaults::sections() : [];
+        return match ($slug) {
+            'home' => HomepageContentDefaults::sections(),
+            'design-services' => DesignServicesContentDefaults::sections(),
+            default => [],
+        };
     }
 
     private function ensureHomeEditorSections(array $sections): array

@@ -72,6 +72,13 @@
                         <option value="home_top_picks">Home: Best Selling</option>
                         <option value="home_services">Home: Services</option>
                         <option value="home_favourites">Home: Favourite Products</option>
+                        <option value="design_hero">Design Services: Hero</option>
+                        <option value="design_gallery">Design Services: Gallery</option>
+                        <option value="design_services">Design Services: Services</option>
+                        <option value="design_process">Design Services: Process</option>
+                        <option value="design_projects">Design Services: Projects</option>
+                        <option value="design_experience">Design Services: Experience</option>
+                        <option value="design_contact">Design Services: Contact</option>
                         <option value="hero">Hero</option>
                         <option value="text">Text Block</option>
                         <option value="cards">Cards Grid</option>
@@ -126,6 +133,12 @@
                                     </div>
                                     <textarea x-model="item.content" rows="2" placeholder="Item content" class="rounded border-slate-300 text-xs sm:col-span-2"></textarea>
                                     <input type="text" x-model="item.link_url" placeholder="Item link URL" class="rounded border-slate-300 text-xs sm:col-span-2">
+                                    <input type="text" x-model="item.slug" placeholder="Project slug / anchor ID" class="rounded border-slate-300 text-xs">
+                                    <input type="text" x-model="item.year" placeholder="Project year" class="rounded border-slate-300 text-xs">
+                                    <input type="text" x-model="item.service" placeholder="Project service/type" class="rounded border-slate-300 text-xs sm:col-span-2">
+                                    <textarea x-model="item.details" rows="2" placeholder="Project details" class="rounded border-slate-300 text-xs sm:col-span-2"></textarea>
+                                    <textarea x-model="item.deliverables" rows="2" placeholder="Project deliverables, one per line" class="rounded border-slate-300 text-xs"></textarea>
+                                    <textarea x-model="item.images" rows="2" placeholder="Project image URLs, one per line" class="rounded border-slate-300 text-xs"></textarea>
                                     <label class="text-[11px] font-semibold text-slate-600">Item background color
                                         <input type="text" x-model="item.bg_color" placeholder="#ffffff" class="mt-1 w-full rounded border-slate-300 text-xs">
                                     </label>
@@ -162,9 +175,15 @@
             items: Array.isArray(section.items) ? section.items.map((item) => ({
                 title: item.title || '',
                 subtitle: item.subtitle || '',
-                content: item.content || '',
-                image_url: item.image_url || '',
-                link_url: item.link_url || '',
+                content: item.content || item.summary || '',
+                image_url: item.image_url || (Array.isArray(item.images) ? (item.images[0] || '') : ''),
+                link_url: item.link_url || item.slug || '',
+                slug: item.slug || item.link_url || '',
+                year: item.year || item.subtitle || '',
+                service: item.service || '',
+                details: item.details || '',
+                deliverables: Array.isArray(item.deliverables) ? item.deliverables.join('\n') : (item.deliverables || ''),
+                images: Array.isArray(item.images) ? item.images.join('\n') : (item.images || ''),
                 bg_color: item.bg_color || '#ffffff',
                 text_color: item.text_color || '#111111'
             })) : []
@@ -185,6 +204,12 @@
                     content: '',
                     image_url: '',
                     link_url: '',
+                    slug: '',
+                    year: '',
+                    service: '',
+                    details: '',
+                    deliverables: '',
+                    images: '',
                     bg_color: '#ffffff',
                     text_color: '#111111'
                 });

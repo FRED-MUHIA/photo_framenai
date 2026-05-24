@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BlogPost;
 use App\Models\CmsPage;
 use App\Support\DesignServiceProjects;
+use App\Support\DesignServicesContentDefaults;
 
 class PageController extends Controller
 {
@@ -114,83 +115,18 @@ class PageController extends Controller
 
     public function designServices()
     {
-        $services = [
-            [
-                'id' => 'custom-logo-design',
-                'title' => 'Custom Logo Design',
-                'intro' => 'A distinctive logo system built for print, digital use, signage, uniforms, and everyday brand recognition.',
-                'details' => [
-                    'Discovery of your business name, audience, positioning, and preferred visual direction.',
-                    'Original logo concepts with clean typography, balanced icon marks, and practical color use.',
-                    'Final logo files prepared for print, web, social media, embroidery, and large-format output.',
-                    'Optional brand basics including color palette, font pairing, and simple usage guidance.',
-                ],
-                'deliverables' => ['Primary logo', 'Alternative layout', 'Black and white version', 'Print-ready PDF', 'PNG/JPG exports'],
-                'portfolio' => [
-                    ['title' => 'Brand mark exploration', 'image' => 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?auto=format&fit=crop&w=900&q=80'],
-                    ['title' => 'Stationery logo rollout', 'image' => 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=900&q=80'],
-                    ['title' => 'Identity presentation', 'image' => 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=900&q=80'],
-                ],
-            ],
-            [
-                'id' => 'website-design-services',
-                'title' => 'Website Design Services',
-                'intro' => 'Responsive website layouts that present your business clearly, guide visitors, and support enquiries or sales.',
-                'details' => [
-                    'Planning for page structure, content flow, navigation, and key calls to action.',
-                    'Modern interface design for home, service, product, contact, and landing pages.',
-                    'Mobile-friendly layouts that keep text, buttons, images, and forms easy to use.',
-                    'Design support for launch assets such as banners, icons, contact forms, and web-ready imagery.',
-                ],
-                'deliverables' => ['Responsive page design', 'Content layout plan', 'Homepage concept', 'Inner page templates', 'Launch graphics'],
-                'portfolio' => [
-                    ['title' => 'Responsive storefront concept', 'image' => 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=900&q=80'],
-                    ['title' => 'Landing page interface', 'image' => 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80'],
-                    ['title' => 'Content layout system', 'image' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80'],
-                ],
-            ],
-            [
-                'id' => 'custom-graphic-design',
-                'title' => 'Custom Graphic Design',
-                'intro' => 'Purpose-built visual designs for campaigns, company profiles, product promotions, events, and everyday marketing.',
-                'details' => [
-                    'Creative artwork for flyers, posters, social posts, roll-up banners, adverts, and presentations.',
-                    'Layout cleanup for supplied text, images, logos, and brand assets.',
-                    'Print-safe setup with suitable margins, bleed, image resolution, and color preparation.',
-                    'Design variations for different sizes and channels so your campaign stays consistent.',
-                ],
-                'deliverables' => ['Editable design source where applicable', 'Print-ready PDF', 'Web/social exports', 'Size adaptations', 'Artwork check'],
-                'portfolio' => [
-                    ['title' => 'Campaign poster artwork', 'image' => 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=900&q=80'],
-                    ['title' => 'Social and flyer set', 'image' => 'https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&w=900&q=80'],
-                    ['title' => 'Event display graphics', 'image' => 'https://images.unsplash.com/photo-1564061170517-d3907caa96ea?auto=format&fit=crop&w=900&q=80'],
-                ],
-            ],
-            [
-                'id' => 'brochure-magazine-design',
-                'title' => 'Brochure & Magazine Design',
-                'intro' => 'Structured multi-page layouts for brochures, magazines, catalogues, programmes, and company profiles.',
-                'details' => [
-                    'Page planning for covers, tables of contents, product pages, articles, adverts, and back pages.',
-                    'Professional typography, image placement, section hierarchy, and page rhythm.',
-                    'Print production setup for booklet pagination, bleed, margins, folds, and binding requirements.',
-                    'Final artwork prepared for digital proofing and production handoff.',
-                ],
-                'deliverables' => ['Cover design', 'Inside page layouts', 'Print-ready PDF', 'Digital preview PDF', 'Production-ready file setup'],
-                'portfolio' => [
-                    ['title' => 'Magazine spread layout', 'image' => 'https://images.unsplash.com/photo-1476357471311-43c0db9fb2b4?auto=format&fit=crop&w=900&q=80'],
-                    ['title' => 'Product brochure pages', 'image' => 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80'],
-                    ['title' => 'Catalogue production proof', 'image' => 'https://images.unsplash.com/photo-1523726491678-bf852e717f6a?auto=format&fit=crop&w=900&q=80'],
-                ],
-            ],
-        ];
+        $cmsPage = CmsPage::query()->active()->where('slug', 'design-services')->first();
+        $designSections = DesignServicesContentDefaults::mergedSections($cmsPage?->sections);
+        $projects = DesignServicesContentDefaults::projects($cmsPage?->sections);
 
-        return $this->renderManagedPage('design-services', 'pages.design-services', compact('services'));
+        return view('pages.design-services', compact('cmsPage', 'designSections', 'projects'));
     }
 
     public function designProject(string $project)
     {
-        $project = DesignServiceProjects::find($project);
+        $cmsPage = CmsPage::query()->active()->where('slug', 'design-services')->first();
+        $project = DesignServicesContentDefaults::findProject($project, $cmsPage?->sections)
+            ?: DesignServiceProjects::find($project);
 
         abort_unless($project, 404);
 
