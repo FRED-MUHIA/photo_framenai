@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessArtworkUpload;
 use App\Models\Artwork;
 use App\Models\Product;
 use App\Services\CartService;
@@ -35,6 +36,12 @@ class CartController extends Controller
             'selected_options.*' => ['nullable', 'integer'],
             'shipping_option' => ['nullable', 'in:standard,express,pickup'],
             'artwork_id' => ['nullable', 'exists:artworks,id'],
+            'artwork' => [
+                'nullable',
+                'file',
+                'mimetypes:' . implode(',', config('shop.allowed_artwork_mimes', [])),
+                'max:' . config('shop.max_artwork_size_kb', 20480),
+            ],
         ]);
 
         $product = Product::query()->active()->with(['optionGroups.values', 'quantityPrices'])->findOrFail($validated['product_id']);
@@ -53,8 +60,29 @@ class CartController extends Controller
         $quote = $this->pricingService->quote($product, $selections, $quantity, $shippingOption);
 
         $artwork = null;
-        if (! empty($validated['artwork_id'])) {
-            $artwork = Artwork::query()->find($validated['artwork_id']);
+        if ($request->hasFile('artwork')) {
+            $file = $request->file('artwork');
+            $storedPath = $file->store('artworks/' . now()->format('Y/m'), 'public');
+
+            $artwork = Artwork::query()->create([
+                'user_id' => auth()->id(),
+                'guest_token' => auth()->check() ? null : $request->session()->getId(),
+                'original_name' => $file->getClientOriginalName(),
+                'file_path' => $storedPath,
+                'mime_type' => $file->getMimeType() ?? 'application/octet-stream',
+                'extension' => Str::lower($file->getClientOriginalExtension()),
+                'size_bytes' => $file->getSize(),
+                'status' => 'pending',
+            ]);
+
+            ProcessArtworkUpload::dispatch($artwork->id);
+        } elseif (! empty($validated['artwork_id'])) {
+            $artwork = Artwork::query()
+                ->whereKey($validated['artwork_id'])
+                ->when(auth()->check(), fn ($query) => $query->where('user_id', auth()->id()))
+                ->when(! auth()->check(), fn ($query) => $query->where('guest_token', $request->session()->getId()))
+                ->first();
+
             if (! $artwork) {
                 throw ValidationException::withMessages(['artwork_id' => 'Artwork not found.']);
             }

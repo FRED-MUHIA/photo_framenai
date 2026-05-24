@@ -94,7 +94,7 @@
             @endif
         </div>
 
-        <form method="POST" action="{{ route('cart.store') }}" class="product-detail-form-column" @submit="isAdding = $el.checkValidity()">
+        <form method="POST" action="{{ route('cart.store') }}" enctype="multipart/form-data" class="product-detail-form-column" @submit="isAdding = $el.checkValidity()">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="shipping_option" :value="selectedShipping">
@@ -104,8 +104,6 @@
                     <h1 class="text-[28px] font-extrabold leading-tight text-slate-950">{{ $product->name }}</h1>
                     <div class="mt-4 flex flex-wrap items-baseline gap-3">
                         <span class="text-[22px] font-extrabold leading-none text-[#ff0037]">KES <span x-text="formatWhole(quote.line_total)"></span></span>
-                        <span class="text-[13px] text-slate-500">($<span x-text="formatUsd(quote.line_total)"></span>)</span>
-                        <span class="text-[13px] text-slate-500">starting price</span>
                     </div>
                 </div>
 
@@ -187,13 +185,24 @@
                 @if($uploadEnabled)
                 <div>
                     <label class="mb-3 block text-[13px] font-bold text-slate-900">{{ $uploadLabel }}</label>
-                    <a href="{{ route('artwork.create') }}" class="flex min-h-[92px] items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white p-4 text-center text-xs font-semibold text-slate-500 hover:border-[#ff0037] hover:text-[#ff0037]">
+                    <label for="product-artwork-upload" class="flex min-h-[92px] cursor-pointer items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white p-4 text-center text-xs font-semibold text-slate-500 hover:border-[#ff0037] hover:text-[#ff0037]">
+                        <input
+                            id="product-artwork-upload"
+                            type="file"
+                            name="artwork"
+                            accept=".pdf,.ai,.psd,.jpg,.jpeg,.png,.webp"
+                            class="sr-only"
+                            @change="selectedArtworkName = $event.target.files[0]?.name || ''"
+                        >
                         <span>
-                            <span class="block text-lg text-slate-600">Upload</span>
-                            <span class="block text-[11px]">Click to upload</span>
-                            <span class="font-normal">{{ $uploadHelp }}</span>
+                            <span class="block text-lg text-slate-600" x-text="selectedArtworkName || 'Upload'"></span>
+                            <span class="block text-[11px]" x-text="selectedArtworkName ? 'Selected file' : 'Click to upload'"></span>
+                            <span class="font-normal" x-show="! selectedArtworkName">{{ $uploadHelp }}</span>
                         </span>
-                    </a>
+                    </label>
+                    @error('artwork')
+                        <p class="mt-2 text-xs font-semibold text-rose-600">{{ $message }}</p>
+                    @enderror
                     @if($artworks->isNotEmpty())
                         <select name="artwork_id" class="mt-2 w-full rounded-lg border-slate-300 text-xs">
                             <option value="">No artwork selected</option>
@@ -237,15 +246,6 @@
                 <div class="flex items-center justify-center gap-8 border-b border-slate-200 pb-4 text-xs font-semibold text-slate-600">
                     <span>Free delivery 10k+</span>
                     <span>High Quality Prints</span>
-                </div>
-
-                <div>
-                    <p class="mb-2 text-xs font-bold text-slate-900">Download Templates</p>
-                    <div class="flex gap-2">
-                        @foreach(['PSD', 'AI', 'INDD'] as $template)
-                            <span class="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700">{{ $template }}</span>
-                        @endforeach
-                    </div>
                 </div>
 
                 <div class="rounded-xl border border-rose-200 bg-rose-50">
@@ -323,6 +323,7 @@
             quote: @json($defaultQuote),
             quoteError: '',
             isAdding: false,
+            selectedArtworkName: '',
             init() {
                 this.normalizeQuantity();
                 this.refreshQuote();
