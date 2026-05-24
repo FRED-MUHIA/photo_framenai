@@ -1261,7 +1261,7 @@
         ]);
     }
 
-    $topPicks = collect($topPickProducts ?? [])->map(function ($product) {
+    $topPicks = collect($topPickProducts ?? [])->map(function ($product) use ($publicAsset) {
         $prices = $product->relationLoaded('quantityPrices') ? $product->quantityPrices : collect();
         $minPrice = $prices->min('price');
         $maxPrice = $prices->max('price');
