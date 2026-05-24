@@ -80,11 +80,8 @@ class PageBuilderController extends Controller
         if (empty($sections)) {
             $sections = $this->defaultSectionsForSlug($pageBuilder->slug);
         }
-        if ($pageBuilder->slug === 'home' && ! collect($sections)->contains('component', 'home_pet_promo')) {
-            $petPromoSection = collect(HomepageContentDefaults::sections())->firstWhere('component', 'home_pet_promo');
-            if ($petPromoSection) {
-                array_unshift($sections, $petPromoSection);
-            }
+        if ($pageBuilder->slug === 'home') {
+            $sections = $this->ensureHomeEditorSections($sections);
         }
 
         $sectionsJson = json_encode($sections, JSON_PRETTY_PRINT);
@@ -207,6 +204,22 @@ class PageBuilderController extends Controller
     private function defaultSectionsForSlug(string $slug): array
     {
         return $slug === 'home' ? HomepageContentDefaults::sections() : [];
+    }
+
+    private function ensureHomeEditorSections(array $sections): array
+    {
+        $defaults = collect(HomepageContentDefaults::sections())->keyBy('component');
+        $components = collect($sections)->pluck('component');
+
+        if (! $components->contains('home_pet_promo') && $defaults->has('home_pet_promo')) {
+            array_unshift($sections, $defaults->get('home_pet_promo'));
+        }
+
+        if (! $components->contains('home_top_picks') && $defaults->has('home_top_picks')) {
+            $sections[] = $defaults->get('home_top_picks');
+        }
+
+        return $sections;
     }
 
     private function clearStorefrontCaches(): void

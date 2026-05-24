@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckoutRequest;
+use App\Mail\InvoiceReadyMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\CartService;
 use App\Services\PaymentService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Throwable;
 
 class CheckoutController extends Controller
 {
@@ -130,6 +134,16 @@ class CheckoutController extends Controller
 
             return $order;
         });
+
+        try {
+            Mail::to($order->customer_email)->send(new InvoiceReadyMail($order));
+        } catch (Throwable $exception) {
+            Log::error('Failed to send invoice ready email.', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'error' => $exception->getMessage(),
+            ]);
+        }
 
         $this->cartService->clear();
 

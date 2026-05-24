@@ -1480,7 +1480,7 @@
         <div class="top-picks-header">
             <h2 class="top-picks-title">{{ data_get($topPicksSection, 'title', 'Best Selling') }}</h2>
             <div class="top-picks-tabs" aria-label="Best selling product groups">
-                @forelse($topPicksTabs as $tabIndex => $tab)
+                @foreach($topPicksTabs as $tabIndex => $tab)
                     @php
                         $isActiveTab = $tabIndex === 0;
                         $tabBg = data_get($tab, 'bg_color', $isActiveTab ? '#b10f1e' : '#ffffff');
@@ -1498,16 +1498,7 @@
                         @endif
                         {{ data_get($tab, 'title') }}
                     </a>
-                @empty
-                    <a href="{{ route('products.index', ['q' => 'starlink kit']) }}" class="top-picks-pill active">
-                        <span aria-hidden="true">📡</span>
-                        Starlink Kit
-                    </a>
-                    <a href="{{ route('products.index', ['q' => 'starlink accessories']) }}" class="top-picks-pill">
-                        <span aria-hidden="true">🔌</span>
-                        Starlink Accessories
-                    </a>
-                @endforelse
+                @endforeach
             </div>
             <a href="{{ data_get($topPicksSection, 'button_url', route('products.index')) }}" class="top-picks-view-all">
                 {{ data_get($topPicksSection, 'button_label', 'All Products') }}
