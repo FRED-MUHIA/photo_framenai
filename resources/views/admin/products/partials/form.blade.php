@@ -11,6 +11,18 @@
         </select>
         <p class="mt-1 text-xs text-slate-500">Hold Ctrl/Cmd to select multiple categories.</p>
     </div>
+    <div class="sm:col-span-2">
+        <label class="mb-2 block text-sm font-bold">Calculator Form</label>
+        <select name="product_form_template_id" class="w-full rounded-xl border-slate-300">
+            <option value="">Use product-specific options below</option>
+            @foreach(($formTemplates ?? collect()) as $template)
+                <option value="{{ $template->id }}" @selected((int) old('product_form_template_id', $product->product_form_template_id) === $template->id)>
+                    {{ $template->name }}
+                </option>
+            @endforeach
+        </select>
+        <p class="mt-1 text-xs text-slate-500">When selected, this saved form will be copied into the product calculator and displayed on the product page for customers.</p>
+    </div>
     <input type="text" name="name" value="{{ old('name', $product->name) }}" placeholder="Product Name" class="rounded-xl border-slate-300" required>
     <input type="text" name="slug" value="{{ old('slug', $product->slug) }}" placeholder="Slug (optional)" class="rounded-xl border-slate-300">
     <input type="text" name="sku" value="{{ old('sku', $product->sku) }}" placeholder="SKU" class="rounded-xl border-slate-300">

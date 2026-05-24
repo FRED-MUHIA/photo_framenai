@@ -10,6 +10,7 @@
         'product' => $product,
         'categories' => $categories,
         'mediaItems' => $mediaItems,
+        'formTemplates' => $formTemplates,
         'selectedCategoryIds' => $selectedCategoryIds,
         'selectedMediaIds' => $selectedMediaIds,
         'optionGroupsJson' => old('option_groups_json', $optionGroupsJson),

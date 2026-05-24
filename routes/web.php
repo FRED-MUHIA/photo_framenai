@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MediaLibraryController as AdminMediaLibraryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PageBuilderController as AdminPageBuilderController;
+use App\Http\Controllers\Admin\ProductFormTemplateController as AdminProductFormTemplateController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\SiteSettingController as AdminSiteSettingController;
 use App\Http\Controllers\ArtworkController;
@@ -82,6 +83,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.reau
     Route::get('/', AdminDashboardController::class)->name('dashboard');
 
     Route::resource('categories', AdminCategoryController::class);
+    Route::resource('product-form-templates', AdminProductFormTemplateController::class)
+        ->except('show')
+        ->parameters(['product-form-templates' => 'productFormTemplate']);
     Route::resource('products', AdminProductController::class);
     Route::resource('coupons', AdminCouponController::class);
     Route::resource('blog-posts', AdminBlogPostController::class)->except('show');

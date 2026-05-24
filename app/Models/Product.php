@@ -16,6 +16,7 @@ class Product extends Model
 
     protected $fillable = [
         'category_id',
+        'product_form_template_id',
         'name',
         'slug',
         'sku',
@@ -40,6 +41,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function formTemplate(): BelongsTo
+    {
+        return $this->belongsTo(ProductFormTemplate::class, 'product_form_template_id');
     }
 
     public function categories(): BelongsToMany

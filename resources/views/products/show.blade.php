@@ -29,13 +29,7 @@
     .product-detail-description {
         grid-column: 1 / -1;
         min-width: 0;
-    }
-
-    @media (min-width: 768px) {
-        .product-detail-form-column {
-            position: sticky;
-            top: 32px;
-        }
+        margin-top: -12px;
     }
 
     @media (max-width: 1472px) {
@@ -57,9 +51,6 @@
             grid-column: 1;
         }
 
-        .product-detail-form-column {
-            position: static;
-        }
     }
 </style>
 @endpush
@@ -82,6 +73,9 @@
     ];
     $whatsappLink = config('shop.whatsapp_link');
     $description = trim(strip_tags($product->description ?: $product->short_description ?: ''));
+    $uploadEnabled = (bool) data_get($product->metadata, 'upload_enabled', true);
+    $uploadLabel = data_get($product->metadata, 'upload_label') ?: 'Upload Design (Optional)';
+    $uploadHelp = data_get($product->metadata, 'upload_help') ?: 'PDF, AI, PSD, JPG, PNG (max 50MB)';
 @endphp
 
 <section class="bg-white" x-data="productConfigurator()" x-init="init()">
@@ -106,7 +100,7 @@
             @endif
         </div>
 
-        <form method="POST" action="{{ route('cart.store') }}" class="product-detail-form-column" @submit="isAdding = true">
+        <form method="POST" action="{{ route('cart.store') }}" class="product-detail-form-column" @submit="isAdding = $el.checkValidity()">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="shipping_option" :value="selectedShipping">
@@ -125,6 +119,18 @@
                     @continue($group->values->isEmpty())
                     <fieldset>
                         <legend class="mb-4 text-[13px] font-bold text-slate-900">{{ $loop->first ? 'Select Print Option' : $group->name }}</legend>
+                        @if($group->input_type === 'select')
+                            <select name="selected_options[{{ $group->code }}]" x-model="selectedOptions[@js($group->code)]" @change="refreshQuote" class="w-full rounded-xl border-slate-300">
+                                @foreach($group->values as $value)
+                                    <option value="{{ $value->id }}">
+                                        {{ $value->label }}
+                                        @if((float) $value->price_modifier > 0)
+                                            (+{{ config('shop.currency_symbol') }} {{ number_format($value->price_modifier, 0) }})
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                        @else
                         <div class="grid gap-3 sm:grid-cols-2">
                             @foreach($group->values as $value)
                                 @php
@@ -134,6 +140,7 @@
                                     $optionPreviewPrice = (float) data_get($defaultQuote, 'line_total', 0)
                                         - ($defaultModifier * $defaultQuantity)
                                         + ((float) $value->price_modifier * $defaultQuantity);
+                                    $optionImageUrl = \App\Support\PublicAssetUrl::resolve(data_get($value->metadata, 'image_url'));
                                 @endphp
                                 <label
                                     class="flex min-h-[104px] cursor-pointer flex-col items-center justify-center rounded-[10px] border p-4 text-center transition"
@@ -147,12 +154,16 @@
                                         @change="refreshQuote"
                                         class="sr-only"
                                     >
+                                    @if($group->input_type === 'image_tabs' && $optionImageUrl)
+                                        <img src="{{ $optionImageUrl }}" alt="{{ $value->label }}" class="mb-3 h-16 w-full rounded bg-white object-contain">
+                                    @endif
                                     <span class="block text-[13px] font-extrabold text-slate-900">{{ $value->label }}</span>
                                     <span class="mt-3 block text-[17px] font-extrabold text-[#ff0037]">KES {{ number_format(max(0, $optionPreviewPrice), 0) }}.00</span>
                                     <span class="mt-2 block text-[11px] text-slate-500">${{ number_format(max(0, $optionPreviewPrice) / max($usdRate, 1), 2) }}</span>
                                 </label>
                             @endforeach
                         </div>
+                        @endif
                     </fieldset>
                 @endforeach
 
@@ -227,13 +238,14 @@
                     Get this item by: <span x-text="deliveryDateLabel()"></span>
                 </div>
 
+                @if($uploadEnabled)
                 <div>
-                    <label class="mb-3 block text-[13px] font-bold text-slate-900">Upload Design (Optional)</label>
+                    <label class="mb-3 block text-[13px] font-bold text-slate-900">{{ $uploadLabel }}</label>
                     <a href="{{ route('artwork.create') }}" class="flex min-h-[92px] items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white p-4 text-center text-xs font-semibold text-slate-500 hover:border-[#ff0037] hover:text-[#ff0037]">
                         <span>
                             <span class="block text-lg text-slate-600">Upload</span>
                             <span class="block text-[11px]">Click to upload</span>
-                            <span class="font-normal">PDF, AI, PSD, JPG, PNG (max 50MB)</span>
+                            <span class="font-normal">{{ $uploadHelp }}</span>
                         </span>
                     </a>
                     @if($artworks->isNotEmpty())
@@ -245,6 +257,7 @@
                         </select>
                     @endif
                 </div>
+                @endif
 
                 <div class="flex items-center gap-2 text-xs">
                     <span class="font-bold text-amber-400">5 stars</span>
@@ -265,7 +278,7 @@
                 </div>
 
                 <button
-                    class="inline-flex w-full items-center justify-center rounded-xl bg-[#ff0037] py-3 text-sm font-extrabold text-white hover:bg-[#e60032] disabled:cursor-not-allowed disabled:opacity-60"
+                    class="inline-flex w-full items-center justify-center rounded-xl bg-black py-3 text-sm font-extrabold text-white hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
                     :disabled="isAdding || Boolean(quoteError)"
                 >
                     <span x-text="isAdding ? 'Adding...' : 'Add to Cart'"></span>

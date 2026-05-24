@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\MediaItem;
 use App\Models\Product;
+use App\Models\ProductFormTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -24,10 +25,12 @@ class ProductController extends Controller
     {
         $categories = Category::query()->orderBy('name')->get();
         $mediaItems = MediaItem::query()->latest()->take(120)->get();
+        $formTemplates = ProductFormTemplate::query()->where('is_active', true)->orderBy('name')->get();
 
         return view('admin.products.create', [
             'categories' => $categories,
             'mediaItems' => $mediaItems,
+            'formTemplates' => $formTemplates,
             'product' => new Product(),
             'optionGroupsJson' => "",
             'quantityPricesJson' => "",
@@ -42,6 +45,7 @@ class ProductController extends Controller
         $validated = $this->attachUploadedThumbnail($request, $validated);
 
         DB::transaction(function () use ($validated) {
+            $validated = $this->applyFormTemplatePayload($validated);
             $categoryIds = $this->resolveCategoryIds($validated);
             $product = Product::query()->create([
                 ...$this->mapProductPayload($validated),
@@ -69,6 +73,7 @@ class ProductController extends Controller
 
         $categories = Category::query()->orderBy('name')->get();
         $mediaItems = MediaItem::query()->latest()->take(120)->get();
+        $formTemplates = ProductFormTemplate::query()->where('is_active', true)->orderBy('name')->get();
         $optionGroupsJson = $product->optionGroups->map(fn ($group) => [
             'name' => $group->name,
             'code' => $group->code,
@@ -80,6 +85,7 @@ class ProductController extends Controller
                 'price_modifier' => (float) $value->price_modifier,
                 'delivery_modifier' => (int) $value->delivery_modifier,
                 'is_default' => (bool) $value->is_default,
+                'image_url' => data_get($value->metadata, 'image_url', ''),
             ])->values()->all(),
         ])->values()->toJson(JSON_PRETTY_PRINT);
 
@@ -102,6 +108,7 @@ class ProductController extends Controller
             'product',
             'categories',
             'mediaItems',
+            'formTemplates',
             'optionGroupsJson',
             'quantityPricesJson',
             'selectedCategoryIds',
@@ -115,6 +122,7 @@ class ProductController extends Controller
         $validated = $this->attachUploadedThumbnail($request, $validated);
 
         DB::transaction(function () use ($product, $validated) {
+            $validated = $this->applyFormTemplatePayload($validated);
             $categoryIds = $this->resolveCategoryIds($validated);
             $product->update([
                 ...$this->mapProductPayload($validated),
@@ -144,6 +152,7 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'category_ids' => ['required_without:category_id', 'array', 'min:1'],
             'category_ids.*' => ['exists:categories,id'],
+            'product_form_template_id' => ['nullable', 'exists:product_form_templates,id'],
             'name' => ['required', 'string', 'max:190'],
             'slug' => ['nullable', 'string', 'max:190', 'unique:products,slug,' . $productId],
             'sku' => ['nullable', 'string', 'max:90', 'unique:products,sku,' . $productId],
@@ -159,6 +168,9 @@ class ProductController extends Controller
             'metadata.meta_description' => ['nullable', 'string', 'max:255'],
             'metadata.seo_keywords' => ['nullable', 'string', 'max:255'],
             'metadata.configurator_intro' => ['nullable', 'string', 'max:255'],
+            'metadata.upload_enabled' => ['nullable', 'boolean'],
+            'metadata.upload_label' => ['nullable', 'string', 'max:190'],
+            'metadata.upload_help' => ['nullable', 'string', 'max:255'],
             'media_ids' => ['nullable', 'array'],
             'media_ids.*' => ['exists:media_items,id'],
             'is_featured' => ['nullable', 'boolean'],
@@ -184,7 +196,11 @@ class ProductController extends Controller
                 'meta_description' => data_get($validated, 'metadata.meta_description'),
                 'seo_keywords' => data_get($validated, 'metadata.seo_keywords'),
                 'configurator_intro' => data_get($validated, 'metadata.configurator_intro'),
+                'upload_enabled' => (bool) data_get($validated, 'metadata.upload_enabled', true),
+                'upload_label' => data_get($validated, 'metadata.upload_label'),
+                'upload_help' => data_get($validated, 'metadata.upload_help'),
             ],
+            'product_form_template_id' => $validated['product_form_template_id'] ?? null,
             'is_featured' => ! empty($validated['is_featured']),
             'is_active' => ! empty($validated['is_active']),
         ];
@@ -256,6 +272,9 @@ class ProductController extends Controller
                     'value' => data_get($valuePayload, 'value', Str::slug(data_get($valuePayload, 'label', 'option-' . ($valueIndex + 1)))),
                     'price_modifier' => (float) data_get($valuePayload, 'price_modifier', 0),
                     'delivery_modifier' => (int) data_get($valuePayload, 'delivery_modifier', 0),
+                    'metadata' => [
+                        'image_url' => data_get($valuePayload, 'image_url', data_get($valuePayload, 'metadata.image_url', '')),
+                    ],
                     'is_default' => (bool) data_get($valuePayload, 'is_default', false),
                     'sort_order' => $valueIndex,
                 ]);
@@ -295,5 +314,26 @@ class ProductController extends Controller
         }
 
         $product->mediaItems()->sync($payload);
+    }
+
+    private function applyFormTemplatePayload(array $validated): array
+    {
+        if (empty($validated['product_form_template_id'])) {
+            return $validated;
+        }
+
+        $template = ProductFormTemplate::query()->find($validated['product_form_template_id']);
+
+        if (! $template) {
+            return $validated;
+        }
+
+        $validated['option_groups_json'] = json_encode($template->option_groups ?: []);
+        $validated['quantity_prices_json'] = json_encode($template->quantity_prices ?: []);
+        $validated['metadata']['upload_enabled'] = data_get($template->settings, 'upload_enabled', true);
+        $validated['metadata']['upload_label'] = data_get($template->settings, 'upload_label', 'Upload Design (Optional)');
+        $validated['metadata']['upload_help'] = data_get($template->settings, 'upload_help', 'PDF, AI, PSD, JPG, PNG (max 50MB)');
+
+        return $validated;
     }
 }
