@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckoutRequest;
 use App\Mail\InvoiceReadyMail;
+use App\Mail\NewOrderPlacedMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\CartService;
@@ -135,15 +136,7 @@ class CheckoutController extends Controller
             return $order;
         });
 
-        try {
-            Mail::to($order->customer_email)->send(new InvoiceReadyMail($order));
-        } catch (Throwable $exception) {
-            Log::error('Failed to send invoice ready email.', [
-                'order_id' => $order->id,
-                'order_number' => $order->order_number,
-                'error' => $exception->getMessage(),
-            ]);
-        }
+        $this->sendOrderPlacedEmails($order->fresh(['items']));
 
         $this->cartService->clear();
 
@@ -163,5 +156,40 @@ class CheckoutController extends Controller
         }
 
         return view('checkout.success', compact('order'));
+    }
+
+    private function sendOrderPlacedEmails(Order $order): void
+    {
+        try {
+            Mail::to($order->customer_email)->send(new InvoiceReadyMail($order));
+        } catch (Throwable $exception) {
+            Log::error('Failed to send invoice ready email.', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+
+        $storeEmail = $this->storeNotificationEmail();
+
+        if (! $storeEmail || strtolower($storeEmail) === strtolower((string) $order->customer_email)) {
+            return;
+        }
+
+        try {
+            Mail::to($storeEmail)->send(new NewOrderPlacedMail($order));
+        } catch (Throwable $exception) {
+            Log::error('Failed to send new order notification email.', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'recipient' => $storeEmail,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    private function storeNotificationEmail(): ?string
+    {
+        return config('mail.mailers.smtp.username') ?: config('mail.from.address');
     }
 }

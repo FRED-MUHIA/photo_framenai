@@ -49,9 +49,13 @@
             </select>
             <button class="w-full rounded-xl bg-slate-900 py-2 text-sm font-bold text-white">Save</button>
         </form>
+        @php
+            $shippingLabel = data_get(config('shop.shipping_options'), $order->shipping_option . '.label')
+                ?: str($order->shipping_option)->replace('_', ' ')->title();
+        @endphp
         <div class="mt-4 text-sm">
             <p><span class="font-semibold">Total:</span> {{ $order->currency }} {{ number_format($order->total_amount, 2) }}</p>
-            <p><span class="font-semibold">Shipping:</span> {{ ucfirst($order->shipping_option) }}</p>
+            <p><span class="font-semibold">Shipping:</span> {{ $shippingLabel }}</p>
             <p><span class="font-semibold">Address:</span> {{ $order->shipping_address_line1 }}, {{ $order->shipping_country }}</p>
         </div>
     </aside>
