@@ -736,34 +736,34 @@
         <section class="growth-hero">
             <div class="wrap growth-hero-inner">
                 <div>
-                    <h1 class="growth-title">We Help Companies <em>Grow Faster</em></h1>
-                    <p class="growth-copy">We are a full-service strategy, design and digital marketing agency that helps emerging and established brands grow faster.</p>
+                    <h1 class="growth-title">Print Designs That <em>Look Ready</em></h1>
+                    <p class="growth-copy">We design polished mockups, book covers, magazines, catalogues, company profiles, and print-ready layouts for brands that need work customers can see and trust.</p>
                     <a href="#design-request" class="growth-button">Get Started</a>
                 </div>
 
                 <div class="growth-cards" aria-hidden="true">
                     <div class="growth-card stat offset">
-                        <span>Average increase in ROAS this month</span>
-                        <strong>340%</strong>
+                        <span>Book, brochure and catalogue layouts</span>
+                        <strong>Print</strong>
                     </div>
                     <div class="growth-card offset">
-                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=80" alt="">
+                        <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=700&q=80" alt="">
                     </div>
                     <div class="growth-card">
-                        <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=80" alt="">
+                        <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=700&q=80" alt="">
                     </div>
                     <div class="growth-card dark">
                         <div>
                             <div style="font-size:42px; line-height:1;">◎</div>
-                            <div style="margin-top:8px; font-size:11px; font-weight:900; text-transform:uppercase;">Convert • Grow • Scale</div>
+                            <div style="margin-top:8px; font-size:11px; font-weight:900; text-transform:uppercase;">Mockup • Design • Print</div>
                         </div>
                     </div>
                     <div class="growth-card lower">
-                        <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=700&q=80" alt="">
+                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=700&q=80" alt="">
                     </div>
                     <div class="growth-card stat lower">
-                        <span>Average increase in campaign growth</span>
-                        <strong>96%</strong>
+                        <span>Mockups for approval before production</span>
+                        <strong>PDF</strong>
                     </div>
                 </div>
             </div>
