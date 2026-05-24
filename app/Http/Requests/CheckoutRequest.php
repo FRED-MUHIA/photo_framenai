@@ -27,7 +27,7 @@ class CheckoutRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:40'],
             'shipping_address_line1' => ['required', 'string', 'max:255'],
             'shipping_address_line2' => ['nullable', 'string', 'max:255'],
-            'shipping_city' => ['required', 'string', 'max:120'],
+            'shipping_city' => ['nullable', 'string', 'max:120'],
             'shipping_state' => ['nullable', 'string', 'max:120'],
             'shipping_postal_code' => ['nullable', 'string', 'max:40'],
             'shipping_country' => ['required', 'string', 'max:120'],

@@ -28,11 +28,7 @@
                 <h2 class="text-lg font-bold">Shipping Details</h2>
                 <div class="mt-4 grid gap-4 sm:grid-cols-2">
                     <input type="text" name="shipping_address_line1" value="{{ old('shipping_address_line1') }}" placeholder="Address line 1" class="rounded-xl border-slate-300 sm:col-span-2" required>
-                    <input type="text" name="shipping_address_line2" value="{{ old('shipping_address_line2') }}" placeholder="Address line 2" class="rounded-xl border-slate-300 sm:col-span-2">
-                    <input type="text" name="shipping_city" value="{{ old('shipping_city') }}" placeholder="City" class="rounded-xl border-slate-300" required>
-                    <input type="text" name="shipping_state" value="{{ old('shipping_state') }}" placeholder="State / County" class="rounded-xl border-slate-300">
-                    <input type="text" name="shipping_postal_code" value="{{ old('shipping_postal_code') }}" placeholder="Postal Code" class="rounded-xl border-slate-300">
-                    <input type="text" name="shipping_country" value="{{ old('shipping_country', 'Kenya') }}" placeholder="Country" class="rounded-xl border-slate-300" required>
+                    <input type="text" name="shipping_country" value="{{ old('shipping_country', 'Kenya') }}" placeholder="Country" class="rounded-xl border-slate-300 sm:col-span-2" required>
                 </div>
                 <div class="mt-4">
                     <label class="mb-2 block text-sm font-semibold">Shipping Option</label>

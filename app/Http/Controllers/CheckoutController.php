@@ -66,7 +66,7 @@ class CheckoutController extends Controller
                 'shipping_option' => $validated['shipping_option'],
                 'shipping_address_line1' => $validated['shipping_address_line1'],
                 'shipping_address_line2' => $validated['shipping_address_line2'] ?? null,
-                'shipping_city' => $validated['shipping_city'],
+                'shipping_city' => $validated['shipping_city'] ?? '-',
                 'shipping_state' => $validated['shipping_state'] ?? null,
                 'shipping_postal_code' => $validated['shipping_postal_code'] ?? null,
                 'shipping_country' => $validated['shipping_country'],

@@ -23,8 +23,7 @@
             <div>
                 <p class="text-xs uppercase tracking-wider text-slate-400">Shipping Address</p>
                 <p class="text-sm text-slate-700">{{ $order->shipping_address_line1 }}</p>
-                @if($order->shipping_address_line2)<p class="text-sm text-slate-700">{{ $order->shipping_address_line2 }}</p>@endif
-                <p class="text-sm text-slate-700">{{ $order->shipping_city }}, {{ $order->shipping_country }}</p>
+                <p class="text-sm text-slate-700">{{ $order->shipping_country }}</p>
             </div>
         </div>
 

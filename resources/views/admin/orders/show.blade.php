@@ -52,7 +52,7 @@
         <div class="mt-4 text-sm">
             <p><span class="font-semibold">Total:</span> {{ $order->currency }} {{ number_format($order->total_amount, 2) }}</p>
             <p><span class="font-semibold">Shipping:</span> {{ ucfirst($order->shipping_option) }}</p>
-            <p><span class="font-semibold">Address:</span> {{ $order->shipping_address_line1 }}, {{ $order->shipping_city }}</p>
+            <p><span class="font-semibold">Address:</span> {{ $order->shipping_address_line1 }}, {{ $order->shipping_country }}</p>
         </div>
     </aside>
 </div>
