@@ -57,7 +57,10 @@ class ProductController extends Controller
         ]);
 
         $defaultSelections = $product->defaultSelections();
-        $defaultQuantity = (int) ($product->availableQuantities()->first() ?? $product->min_quantity);
+        $minQuantity = max(1, (int) $product->min_quantity);
+        $quantitySuggestions = $product->availableQuantities()->map(fn ($quantity) => (int) $quantity)->values();
+        $defaultQuantity = (int) ($quantitySuggestions->first() ?? $product->min_quantity);
+        $defaultQuantity = max($minQuantity, $defaultQuantity);
         $defaultQuote = $this->pricingService->quote($product, $defaultSelections, $defaultQuantity);
         $artworks = Artwork::query()
             ->when(auth()->check(), fn ($query) => $query->where('user_id', auth()->id()))
@@ -71,6 +74,7 @@ class ProductController extends Controller
             'defaultSelections' => $defaultSelections,
             'defaultQuantity' => $defaultQuantity,
             'defaultQuote' => $defaultQuote,
+            'quantitySuggestions' => $quantitySuggestions,
             'artworks' => $artworks,
         ]);
     }

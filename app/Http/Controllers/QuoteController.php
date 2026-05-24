@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Services\PricingService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class QuoteController extends Controller
 {
@@ -23,11 +24,19 @@ class QuoteController extends Controller
         ]);
 
         $product = Product::query()->active()->with(['optionGroups.values', 'quantityPrices'])->findOrFail($validated['product_id']);
+        $quantity = (int) $validated['quantity'];
+        $minQuantity = max(1, (int) $product->min_quantity);
+
+        if ($quantity < $minQuantity) {
+            throw ValidationException::withMessages([
+                'quantity' => 'The minimum quantity for this product is ' . number_format($minQuantity) . '.',
+            ]);
+        }
 
         $quote = $this->pricingService->quote(
             $product,
             array_filter($validated['selected_options'] ?? []),
-            (int) $validated['quantity'],
+            $quantity,
             $validated['shipping_option'] ?? 'standard',
         );
 

@@ -516,7 +516,7 @@
 
     .top-picks-row {
         display: flex;
-        gap: 30px;
+        gap: 18px;
         overflow-x: auto;
         scroll-behavior: smooth;
         scroll-snap-type: x mandatory;
@@ -530,92 +530,108 @@
 
     .top-pick-card {
         display: flex;
-        flex: 0 0 calc((100% - 120px) / 5);
+        flex: 0 0 323px;
         flex-direction: column;
         min-width: 0;
-        min-height: 360px;
+        min-height: 439px;
         overflow: hidden;
-        border: 1px solid #ededed;
-        border-radius: 18px;
+        border: 1px solid #f0f0f0;
+        border-radius: 20px;
         background: #fff;
         color: #111;
         text-decoration: none;
         scroll-snap-align: start;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
     }
 
     .top-pick-media {
         position: relative;
         display: flex;
-        height: 220px;
+        height: 321px;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        background: #f5f5f5;
+        border-radius: 20px 20px 0 0;
+        background: #eeeeee;
     }
 
     .top-pick-media img {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        padding: 14px;
+        padding: 54px 34px 18px;
     }
 
     .top-pick-badge {
         position: absolute;
-        left: 16px;
-        top: 16px;
+        left: 15px;
+        top: 14px;
         z-index: 1;
         border-radius: 10px;
         background: #fff;
         padding: 9px 14px;
         color: #4a4a4a;
         font-size: 12px;
-        font-weight: 800;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        line-height: 1.15;
+        font-weight: 700;
     }
 
     .top-pick-body {
         display: flex;
         flex: 1;
         flex-direction: column;
-        padding: 14px 18px 18px;
+        padding: 23px 20px 20px;
     }
 
     .top-pick-name {
         margin: 0;
-        min-height: 38px;
-        font-size: 14px;
+        min-height: 22px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 16px;
         line-height: 1.25;
-        font-weight: 600;
+        font-weight: 700;
     }
 
     .top-pick-footer {
         display: flex;
-        align-items: flex-end;
+        align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-top: 12px;
+        margin-top: auto;
         padding-top: 0;
     }
 
     .top-pick-price-wrap {
+        display: flex;
         min-width: 0;
+        align-items: baseline;
+        gap: 10px;
+        white-space: nowrap;
     }
 
     .top-pick-currency {
-        display: block;
+        display: inline;
         color: #ff0037;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 800;
-        line-height: 1.15;
+        line-height: 1;
     }
 
     .top-pick-price {
-        display: block;
+        display: inline;
         color: #ff0037;
-        font-size: 20px;
-        line-height: 1.15;
+        font-size: 18px;
+        line-height: 1;
         font-weight: 900;
+    }
+
+    .top-pick-usd {
+        color: #7f8794;
+        font-size: 15px;
+        line-height: 1;
+        font-weight: 500;
     }
 
     .top-pick-order {
@@ -625,11 +641,16 @@
         justify-content: center;
         border: 1px solid #111;
         border-radius: 10px;
-        padding: 0 18px;
+        padding: 0 17px;
         color: #111;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 700;
         white-space: nowrap;
+    }
+
+    .top-pick-card:hover .top-pick-order {
+        background: #111;
+        color: #fff;
     }
 
     .top-picks-arrow {
@@ -889,8 +910,8 @@
         .icon-grid-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .thumb-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .thumb-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .top-pick-card { flex-basis: calc((100% - 48px) / 3); }
-        .top-pick-media { height: 190px; }
+        .top-pick-card { flex-basis: 300px; }
+        .top-pick-media { height: 290px; }
 
         .starlink-friday-banner {
             grid-template-columns: 1fr auto;
@@ -1030,37 +1051,37 @@
         }
 
         .top-pick-card {
-            flex-basis: calc((100% - 12px) / 2);
-            min-height: 255px;
+            flex-basis: min(323px, calc(100vw - 32px));
+            min-height: 439px;
         }
 
         .top-pick-media {
-            height: 118px;
+            height: 321px;
         }
 
         .top-pick-name {
-            min-height: 34px;
-            font-size: 12px;
+            min-height: 22px;
+            font-size: 16px;
         }
 
         .top-pick-price {
-            font-size: 13px;
+            font-size: 18px;
         }
 
         .top-pick-body {
-            padding: 10px;
+            padding: 23px 20px 20px;
         }
 
         .top-pick-footer {
             align-items: center;
             gap: 8px;
-            margin-top: 10px;
+            margin-top: auto;
         }
 
         .top-pick-order {
-            min-height: 32px;
-            padding: 0 10px;
-            font-size: 12px;
+            min-height: 40px;
+            padding: 0 17px;
+            font-size: 16px;
         }
 
         .top-picks-header {
@@ -1261,24 +1282,20 @@
         ]);
     }
 
-    $topPicks = collect($topPickProducts ?? [])->map(function ($product) use ($publicAsset) {
+    $topPickUsdRate = (float) config('shop.usd_exchange_rate', 126);
+    $topPicks = collect($topPickProducts ?? [])->map(function ($product) use ($publicAsset, $topPickUsdRate) {
         $prices = $product->relationLoaded('quantityPrices') ? $product->quantityPrices : collect();
         $minPrice = $prices->min('price');
-        $maxPrice = $prices->max('price');
-        $price = $product->base_price;
+        $displayPrice = (float) ($minPrice ?: $product->base_price);
 
-        if ($minPrice && $maxPrice && (float) $minPrice !== (float) $maxPrice) {
-            $price = config('shop.currency_symbol') . number_format($minPrice, 0) . ' - ' . config('shop.currency_symbol') . number_format($maxPrice, 0);
-        } elseif ($minPrice) {
-            $price = config('shop.currency_symbol') . number_format($minPrice, 0);
-        } else {
-            $price = config('shop.currency_symbol') . number_format($price, 0);
-        }
+        $price = number_format($displayPrice, 0);
+        $usdPrice = '$' . number_format($displayPrice / max($topPickUsdRate, 1), 2);
 
         return [
         'name' => $product->name,
         'image' => $publicAsset($product->thumbnail) ?: asset('favicon.ico'),
         'price' => $price,
+        'usd_price' => $usdPrice,
         'url' => route('products.show', $product),
         'category' => $product->category?->name ?: $product->categories->first()?->name ?: 'Products',
         ];
@@ -1516,7 +1533,8 @@
                             <div class="top-pick-footer">
                                 <span class="top-pick-price-wrap">
                                     <span class="top-pick-currency">KES</span>
-                                    <span class="top-pick-price">{{ str_replace(['KSh', 'KES'], '', $pick['price']) }}</span>
+                                    <span class="top-pick-price">{{ $pick['price'] }}</span>
+                                    <span class="top-pick-usd">{{ $pick['usd_price'] }}</span>
                                 </span>
                                 <span class="top-pick-order">Order Now</span>
                             </div>

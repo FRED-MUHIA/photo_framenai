@@ -27,7 +27,7 @@ class PricingService
         $quantityPrice = $this->resolveQuantityPrice($product->quantityPrices, $quantity);
 
         $baseTotal = $quantityPrice
-            ? (float) $quantityPrice->price
+            ? $this->calculateTieredBaseTotal($quantityPrice, $quantity)
             : (float) $product->base_price * $quantity;
 
         $optionModifierPerUnit = (float) $selectedValues->sum(fn (ProductOptionValue $value) => (float) $value->price_modifier);
@@ -68,13 +68,28 @@ class PricingService
             return null;
         }
 
-        $exact = $quantityPrices->firstWhere('quantity', $quantity);
+        $sortedPrices = $quantityPrices->sortBy('quantity')->values();
+
+        $exact = $sortedPrices->firstWhere('quantity', $quantity);
         if ($exact) {
             return $exact;
         }
 
-        $higher = $quantityPrices->first(fn (ProductQuantityPrice $row) => $row->quantity >= $quantity);
+        $lowerTier = $sortedPrices
+            ->filter(fn (ProductQuantityPrice $row) => $row->quantity <= $quantity)
+            ->last();
 
-        return $higher ?: $quantityPrices->sortByDesc('quantity')->first();
+        return $lowerTier ?: $sortedPrices->first();
+    }
+
+    private function calculateTieredBaseTotal(ProductQuantityPrice $quantityPrice, int $quantity): float
+    {
+        if ((int) $quantityPrice->quantity === $quantity) {
+            return (float) $quantityPrice->price;
+        }
+
+        $tierUnitPrice = (float) $quantityPrice->price / max(1, (int) $quantityPrice->quantity);
+
+        return round($tierUnitPrice * $quantity, 2);
     }
 }

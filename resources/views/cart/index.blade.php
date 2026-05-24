@@ -38,7 +38,15 @@
                             <form method="POST" action="{{ route('cart.update', $index) }}" class="flex items-center gap-2">
                                 @csrf
                                 @method('PATCH')
-                                <input type="number" name="quantity" min="1" value="{{ $item['quantity'] }}" class="w-24 rounded-lg border-slate-300 text-sm">
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    min="{{ data_get($item, 'min_quantity', 1) }}"
+                                    step="1"
+                                    value="{{ $item['quantity'] }}"
+                                    class="w-28 rounded-lg border-slate-300 text-sm"
+                                    required
+                                >
                                 <button class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold">Update</button>
                             </form>
                             <form method="POST" action="{{ route('cart.destroy', $index) }}">

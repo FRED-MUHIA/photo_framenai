@@ -33,13 +33,24 @@ class CartController extends Controller
             'quantity' => ['required', 'integer', 'min:1'],
             'selected_options' => ['nullable', 'array'],
             'selected_options.*' => ['nullable', 'integer'],
+            'shipping_option' => ['nullable', 'in:standard,express,pickup'],
             'artwork_id' => ['nullable', 'exists:artworks,id'],
         ]);
 
         $product = Product::query()->active()->with(['optionGroups.values', 'quantityPrices'])->findOrFail($validated['product_id']);
+        $quantity = (int) $validated['quantity'];
+        $minQuantity = max(1, (int) $product->min_quantity);
+
+        if ($quantity < $minQuantity) {
+            throw ValidationException::withMessages([
+                'quantity' => 'The minimum quantity for this product is ' . number_format($minQuantity) . '.',
+            ]);
+        }
+
         $selections = array_filter($validated['selected_options'] ?? []);
 
-        $quote = $this->pricingService->quote($product, $selections, (int) $validated['quantity']);
+        $shippingOption = $validated['shipping_option'] ?? 'standard';
+        $quote = $this->pricingService->quote($product, $selections, $quantity, $shippingOption);
 
         $artwork = null;
         if (! empty($validated['artwork_id'])) {
@@ -56,12 +67,14 @@ class CartController extends Controller
             'product_slug' => $product->slug,
             'sku' => $product->sku,
             'thumbnail' => $product->thumbnail,
-            'quantity' => (int) $validated['quantity'],
+            'quantity' => $quantity,
+            'min_quantity' => $minQuantity,
             'selected_options' => $selections,
             'selected_values' => $quote['selected_values'],
             'unit_price' => $quote['unit_price'],
             'line_total' => $quote['line_total'],
             'delivery_days' => $quote['delivery_days'],
+            'shipping_option' => $shippingOption,
             'artwork_id' => $artwork?->id,
             'artwork_name' => $artwork?->original_name,
         ]);
@@ -83,10 +96,20 @@ class CartController extends Controller
         }
 
         $product = Product::query()->active()->with(['optionGroups.values', 'quantityPrices'])->findOrFail($item['product_id']);
-        $quote = $this->pricingService->quote($product, $item['selected_options'] ?? [], (int) $validated['quantity']);
+        $quantity = (int) $validated['quantity'];
+        $minQuantity = max(1, (int) $product->min_quantity);
+
+        if ($quantity < $minQuantity) {
+            throw ValidationException::withMessages([
+                'quantity' => 'The minimum quantity for this product is ' . number_format($minQuantity) . '.',
+            ]);
+        }
+
+        $quote = $this->pricingService->quote($product, $item['selected_options'] ?? [], $quantity);
 
         $this->cartService->update($index, [
-            'quantity' => (int) $validated['quantity'],
+            'quantity' => $quantity,
+            'min_quantity' => $minQuantity,
             'unit_price' => $quote['unit_price'],
             'line_total' => $quote['line_total'],
             'delivery_days' => $quote['delivery_days'],
