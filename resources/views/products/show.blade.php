@@ -118,9 +118,6 @@
                                 @foreach($group->values as $value)
                                     <option value="{{ $value->id }}">
                                         {{ $value->label }}
-                                        @if((float) $value->price_modifier > 0)
-                                            (+{{ config('shop.currency_symbol') }} {{ number_format($value->price_modifier, 0) }})
-                                        @endif
                                     </option>
                                 @endforeach
                             </select>
@@ -128,16 +125,10 @@
                         <div class="grid gap-3 sm:grid-cols-2">
                             @foreach($group->values as $value)
                                 @php
-                                    $defaultValueId = data_get($defaultSelections, $group->code);
-                                    $defaultValue = $group->values->firstWhere('id', $defaultValueId);
-                                    $defaultModifier = (float) ($defaultValue?->price_modifier ?? 0);
-                                    $optionPreviewPrice = (float) data_get($defaultQuote, 'line_total', 0)
-                                        - ($defaultModifier * $defaultQuantity)
-                                        + ((float) $value->price_modifier * $defaultQuantity);
                                     $optionImageUrl = \App\Support\PublicAssetUrl::resolve(data_get($value->metadata, 'image_url'));
                                 @endphp
                                 <label
-                                    class="flex min-h-[104px] cursor-pointer flex-col items-center justify-center rounded-[10px] border p-4 text-center transition"
+                                    class="flex min-h-[86px] cursor-pointer flex-col items-center justify-center rounded-[10px] border p-4 text-center transition"
                                     :class="String(selectedOptions[@js($group->code)] || '') === @js((string) $value->id) ? 'border-[#ff0037] bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'"
                                 >
                                     <input
@@ -152,8 +143,6 @@
                                         <img src="{{ $optionImageUrl }}" alt="{{ $value->label }}" class="mb-3 h-16 w-full rounded bg-white object-contain">
                                     @endif
                                     <span class="block text-[13px] font-extrabold text-slate-900">{{ $value->label }}</span>
-                                    <span class="mt-3 block text-[17px] font-extrabold text-[#ff0037]">KES {{ number_format(max(0, $optionPreviewPrice), 0) }}.00</span>
-                                    <span class="mt-2 block text-[11px] text-slate-500">${{ number_format(max(0, $optionPreviewPrice) / max($usdRate, 1), 2) }}</span>
                                 </label>
                             @endforeach
                         </div>
