@@ -3,10 +3,17 @@
 @section('heading', 'Artwork Review')
 
 @section('content')
+@php
+    $isInUse = filled($artwork->order_item_id) || $artwork->orderItem || $artwork->order_items_count > 0;
+@endphp
+
 <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
     <div class="rounded-xl bg-white p-5 shadow-sm">
         <h2 class="text-lg font-bold">{{ $artwork->original_name }}</h2>
         <p class="text-sm text-slate-500">{{ strtoupper($artwork->mime_type) }} | {{ number_format($artwork->size_bytes / 1024, 1) }} KB</p>
+        <a href="{{ route('admin.artworks.download', $artwork) }}" class="mt-4 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800">
+            Download Artwork
+        </a>
         <div class="mt-4 rounded-xl border border-slate-200 p-4">
             <p class="text-sm"><span class="font-semibold">Status:</span> {{ ucfirst($artwork->status) }}</p>
             <p class="text-sm"><span class="font-semibold">DPI:</span> {{ $artwork->estimated_dpi ? number_format($artwork->estimated_dpi, 2) : '-' }}</p>
@@ -27,6 +34,20 @@
             <textarea name="validation_notes" rows="4" class="w-full rounded-xl border-slate-300" placeholder="Review notes">{{ old('validation_notes', $artwork->validation_notes) }}</textarea>
             <button class="w-full rounded-xl bg-slate-900 py-2 text-sm font-bold text-white">Save</button>
         </form>
+
+        <div class="mt-5 border-t border-slate-200 pt-5">
+            <h3 class="font-bold">Delete Artwork</h3>
+            @if($isInUse)
+                <p class="mt-2 text-sm text-slate-600">This artwork is attached to an order and cannot be deleted.</p>
+            @else
+                <p class="mt-2 text-sm text-slate-600">This artwork is not attached to any order.</p>
+                <form method="POST" action="{{ route('admin.artworks.destroy', $artwork) }}" class="mt-3" onsubmit="return confirm('Delete this unused artwork? This cannot be undone.');">
+                    @csrf
+                    @method('DELETE')
+                    <button class="w-full rounded-xl bg-rose-700 py-2 text-sm font-bold text-white hover:bg-rose-800">Delete Artwork</button>
+                </form>
+            @endif
+        </div>
     </aside>
 </div>
 @endsection

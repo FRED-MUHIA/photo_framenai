@@ -24,7 +24,20 @@
                                     -
                                 @endif
                             </td>
-                            <td>{{ $item->artwork?->original_name ?? '-' }}</td>
+                            <td>
+                                @if($item->artwork)
+                                    <div class="flex flex-col gap-1">
+                                        <a href="{{ route('admin.artworks.show', $item->artwork) }}" class="font-semibold text-slate-900 hover:text-rose-700">
+                                            {{ $item->artwork->original_name }}
+                                        </a>
+                                        <a href="{{ route('admin.artworks.download', $item->artwork) }}" class="text-xs font-bold text-rose-700 hover:text-rose-900">
+                                            Download artwork
+                                        </a>
+                                    </div>
+                                @else
+                                    -
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

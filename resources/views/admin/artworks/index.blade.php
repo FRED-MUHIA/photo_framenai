@@ -14,15 +14,36 @@
 </form>
 <div class="rounded-xl bg-white p-5 shadow-sm">
     <table class="w-full text-left text-sm">
-        <thead><tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500"><th class="py-2">File</th><th>User</th><th>Status</th><th>DPI</th><th></th></tr></thead>
+        <thead><tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500"><th class="py-2">File</th><th>User</th><th>Status</th><th>DPI</th><th>Usage</th><th></th></tr></thead>
         <tbody>
             @foreach($artworks as $artwork)
+                @php
+                    $isInUse = filled($artwork->order_item_id) || $artwork->orderItem || $artwork->order_items_count > 0;
+                @endphp
                 <tr class="border-b border-slate-100">
                     <td class="py-2 font-semibold">{{ $artwork->original_name }}</td>
                     <td>{{ $artwork->user?->email ?? 'Guest' }}</td>
                     <td>{{ ucfirst($artwork->status) }}</td>
                     <td>{{ $artwork->estimated_dpi ? number_format($artwork->estimated_dpi, 2) : '-' }}</td>
-                    <td><a href="{{ route('admin.artworks.show', $artwork) }}" class="text-xs font-bold">Review</a></td>
+                    <td>
+                        @if($isInUse)
+                            <span class="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">In use</span>
+                        @else
+                            <span class="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">Unused</span>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <a href="{{ route('admin.artworks.show', $artwork) }}" class="text-xs font-bold">Review</a>
+                            @unless($isInUse)
+                                <form method="POST" action="{{ route('admin.artworks.destroy', $artwork) }}" onsubmit="return confirm('Delete this unused artwork? This cannot be undone.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-xs font-bold text-rose-700">Delete</button>
+                                </form>
+                            @endunless
+                        </div>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
