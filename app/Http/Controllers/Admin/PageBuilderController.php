@@ -23,6 +23,7 @@ class PageBuilderController extends Controller
             ['name' => 'Contact', 'slug' => 'contact'],
             ['name' => 'Help Center', 'slug' => 'help'],
             ['name' => 'Blog', 'slug' => 'blog'],
+            ['name' => 'Design Services', 'slug' => 'design-services', 'sections' => DesignServicesContentDefaults::sections()],
             ['name' => 'Custom Branded Receipts, Invoices & Delivery Books', 'slug' => 'custom-branded-receipts-invoices-delivery-books'],
             ['name' => 'Branded Folders', 'slug' => 'branded-folders'],
             ['name' => 'Certificates', 'slug' => 'certificates'],
@@ -33,7 +34,12 @@ class PageBuilderController extends Controller
         foreach ($defaults as $page) {
             CmsPage::query()->firstOrCreate(
                 ['slug' => $page['slug']],
-                ['name' => $page['name'], 'is_active' => true, 'layout' => 'default']
+                [
+                    'name' => $page['name'],
+                    'is_active' => true,
+                    'layout' => 'default',
+                    'sections' => $page['sections'] ?? null,
+                ]
             );
         }
 

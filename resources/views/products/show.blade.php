@@ -340,6 +340,7 @@
             productId: {{ $product->id }},
             quoteUrl: '{{ route('api.quote') }}',
             minQuantity: {{ $minQuantity }},
+            quantityOptions: @json($quantitySuggestions->values()),
             quantity: {{ $defaultQuantity }},
             selectedOptions: @json($defaultSelections),
             selectedShipping: 'standard',
@@ -355,16 +356,50 @@
                 this.ensureDeliveryDate();
             },
             incrementQuantity() {
-                this.quantity = Number(this.quantity || this.minQuantity) + 1;
+                this.quantity = this.nextQuantity(1);
                 this.refreshQuote();
             },
             decrementQuantity() {
-                this.quantity = Math.max(this.minQuantity, Number(this.quantity || this.minQuantity) - 1);
+                this.quantity = this.nextQuantity(-1);
                 this.refreshQuote();
             },
             normalizeQuantity() {
                 const quantity = parseInt(this.quantity, 10);
                 this.quantity = Number.isFinite(quantity) ? Math.max(this.minQuantity, quantity) : this.minQuantity;
+            },
+            normalizedQuantityValue() {
+                const quantity = parseInt(this.quantity, 10);
+
+                return Number.isFinite(quantity) ? Math.max(this.minQuantity, quantity) : this.minQuantity;
+            },
+            sortedQuantityOptions() {
+                return [...new Set((this.quantityOptions || [])
+                    .map((quantity) => parseInt(quantity, 10))
+                    .filter((quantity) => Number.isFinite(quantity) && quantity >= this.minQuantity))]
+                    .sort((first, second) => first - second);
+            },
+            fallbackQuantityStep() {
+                const options = this.sortedQuantityOptions();
+
+                if (options.length >= 2) {
+                    return Math.max(1, options[1] - options[0]);
+                }
+
+                return Math.max(1, this.minQuantity);
+            },
+            nextQuantity(direction) {
+                const current = this.normalizedQuantityValue();
+                const options = this.sortedQuantityOptions();
+
+                if (options.length) {
+                    if (direction > 0) {
+                        return options.find((quantity) => quantity > current) || current + this.fallbackQuantityStep();
+                    }
+
+                    return [...options].reverse().find((quantity) => quantity < current) || this.minQuantity;
+                }
+
+                return Math.max(this.minQuantity, current + (direction * this.fallbackQuantityStep()));
             },
             async refreshQuote() {
                 this.normalizeQuantity();
