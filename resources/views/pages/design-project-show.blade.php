@@ -33,7 +33,7 @@
 
                 <div class="min-h-[420px] bg-[#ededed]">
                     @if($projectImages->isNotEmpty())
-                        <img src="{{ $projectImages->first() }}" alt="{{ $project['title'] }} hero image" class="h-full min-h-[420px] w-full object-cover">
+                        <img loading="eager" fetchpriority="high" decoding="async" src="{{ $projectImages->first() }}" alt="{{ $project['title'] }} hero image" class="h-full min-h-[420px] w-full object-cover">
                     @endif
                 </div>
             </div>
@@ -60,7 +60,7 @@
             <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach($projectImages->slice(1) as $image)
                     <figure class="overflow-hidden rounded-2xl border border-[#dedede] bg-[#f4f4f4]">
-                        <img src="{{ $image }}" alt="{{ $project['title'] }} project image" class="h-[300px] w-full object-cover">
+                        <img loading="lazy" decoding="async" src="{{ $image }}" alt="{{ $project['title'] }} project image" class="h-[300px] w-full object-cover">
                     </figure>
                 @endforeach
             </div>

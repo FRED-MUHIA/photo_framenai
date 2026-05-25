@@ -27,7 +27,7 @@
                 <label class="mb-2 block text-sm font-bold">Header Logo</label>
                 @if($headerLogoPreview)
                     <div class="mb-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <img src="{{ $headerLogoPreview }}" alt="Header logo" class="h-12 w-auto max-w-[220px] object-contain">
+                        <img loading="lazy" decoding="async" src="{{ $headerLogoPreview }}" alt="Header logo" class="h-12 w-auto max-w-[220px] object-contain">
                     </div>
                 @endif
                 <div class="grid gap-3 sm:grid-cols-2">
@@ -134,7 +134,7 @@
                 <label class="mb-2 block text-sm font-bold">Popup Logo</label>
                 @if($whatsappLogoPreview)
                     <div class="mb-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                        <img src="{{ $whatsappLogoPreview }}" alt="WhatsApp popup logo" class="h-12 w-12 rounded-full object-cover">
+                        <img loading="lazy" decoding="async" src="{{ $whatsappLogoPreview }}" alt="WhatsApp popup logo" class="h-12 w-12 rounded-full object-cover">
                     </div>
                 @endif
                 <div class="grid gap-3 sm:grid-cols-2">

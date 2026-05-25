@@ -7,8 +7,8 @@
 <section class="bg-white py-8">
     <div class="mx-auto grid max-w-[1400px] gap-8 px-4 sm:px-6 lg:grid-cols-[1.15fr_1fr] lg:px-8">
         <article class="overflow-hidden rounded-lg border border-[#e4cccc] bg-white">
-            <img
-                src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1600&q=80"
+            <img loading="eager" fetchpriority="high" decoding="async"
+                src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1600&q=70"
                 alt="Branded folders"
                 class="h-full min-h-[420px] w-full object-cover"
             >

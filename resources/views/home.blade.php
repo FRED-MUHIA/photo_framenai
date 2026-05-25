@@ -1255,7 +1255,7 @@
     if ($topCategories->isEmpty()) {
         $topCategories = collect($categories ?? [])->take(5)->map(fn ($category) => [
             'name' => $category->name,
-            'image' => $category->image ?: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80',
+            'image' => $category->image ?: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=70',
             'url' => route('products.index', ['category' => $category->slug]),
         ]);
     }
@@ -1272,7 +1272,7 @@
         $productTiles = collect($featuredProducts ?? [])->take(4)->map(fn ($product) => [
             'name' => $product->name,
             'description' => $product->short_description ?: $product->description,
-            'image' => $product->thumbnail ?: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80',
+            'image' => $product->thumbnail ?: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=70',
             'url' => route('products.show', $product),
         ]);
     }
@@ -1331,7 +1331,7 @@
         style="{{ $petPromoBackgroundStyle }};"
         aria-hidden="true"
     ></div>
-    <img
+    <img loading="eager" fetchpriority="high" decoding="async"
         src="{{ $publicAsset($petPromoDogImage) }}"
         class="pet-promo-dog"
         alt="{{ data_get($petPromoSection, 'title', 'Happy dog') }}"
@@ -1351,7 +1351,7 @@
             @endphp
             <div class="pet-promo-bag {{ $itemImageUrl ? 'has-image' : '' }}" style="background-color: {{ data_get($item, 'bg_color', '#f0c51e') }}; color: {{ data_get($item, 'text_color', '#173447') }};">
                 @if($itemImageUrl)
-                    <img src="{{ $itemImageUrl }}" alt="" class="pet-promo-bag-image">
+                    <img loading="lazy" decoding="async" src="{{ $itemImageUrl }}" alt="" class="pet-promo-bag-image">
                 @else
                     <span class="pet-promo-badge"></span>
                     <span class="pet-promo-logo">{{ data_get($item, 'subtitle', 'BIXBI') }}</span>
@@ -1386,7 +1386,7 @@
 
         <section class="mb-6 rounded-2xl border border-slate-200 p-5" style="background: {{ $bgColor }}; color: {{ $textColor }};">
             @if($imageUrl && $component === 'hero')
-                <img src="{{ $imageUrl }}" alt="{{ $title }}" class="mb-5 h-[260px] w-full rounded-xl object-cover">
+                <img loading="lazy" decoding="async" src="{{ $imageUrl }}" alt="{{ $title }}" class="mb-5 h-[260px] w-full rounded-xl object-cover">
             @endif
             <div class="grid gap-5 md:grid-cols-[1fr_280px] md:items-start">
                 <div>
@@ -1404,7 +1404,7 @@
                     @endif
                 </div>
                 @if($imageUrl && $component !== 'hero')
-                    <img src="{{ $imageUrl }}" alt="{{ $title }}" class="h-44 w-full rounded-xl object-cover">
+                    <img loading="lazy" decoding="async" src="{{ $imageUrl }}" alt="{{ $title }}" class="h-44 w-full rounded-xl object-cover">
                 @endif
             </div>
 
@@ -1417,7 +1417,7 @@
                         @endphp
                         <a href="{{ data_get($item, 'link_url', '#') }}" class="overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900">
                             @if($itemImageUrl)
-                                <img src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
+                                <img loading="lazy" decoding="async" src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
                             @endif
                             <div class="p-4">
                                 @if(data_get($item, 'title'))
@@ -1445,7 +1445,7 @@
         <div class="thumb-grid-5">
             @foreach($topCategories as $item)
                 <a href="{{ data_get($item, 'url', route('products.index')) }}" class="top-category-card">
-                    <img src="{{ $publicAsset($item['image']) }}" alt="{{ $item['name'] }}">
+                    <img loading="lazy" decoding="async" src="{{ $publicAsset($item['image']) }}" alt="{{ $item['name'] }}">
                     <span class="top-category-label">{{ $item['name'] }}</span>
                 </a>
             @endforeach
@@ -1458,7 +1458,7 @@
             @foreach($productTiles as $tile)
                 <a href="{{ data_get($tile, 'url', route('products.index')) }}" class="product-showcase-card">
                     <div class="product-showcase-media">
-                        <img src="{{ $publicAsset($tile['image']) }}" alt="{{ $tile['name'] }}">
+                        <img loading="lazy" decoding="async" src="{{ $publicAsset($tile['image']) }}" alt="{{ $tile['name'] }}">
                     </div>
                     <h3 class="product-showcase-title">{{ $tile['name'] }}</h3>
                     @if(! empty($tile['description']))
@@ -1512,7 +1512,7 @@
                     <a href="{{ $pick['url'] }}" class="top-pick-card">
                         <div class="top-pick-media">
                             <span class="top-pick-badge">{{ $pick['category'] }}</span>
-                            <img src="{{ $pick['image'] }}" alt="{{ $pick['name'] }}">
+                            <img loading="lazy" decoding="async" src="{{ $pick['image'] }}" alt="{{ $pick['name'] }}">
                         </div>
                         <div class="top-pick-body">
                             <h3 class="top-pick-name">{{ $pick['name'] }}</h3>
@@ -1543,7 +1543,7 @@
             <div class="thumb-grid-3">
                 @foreach($services as $service)
                     <a href="{{ data_get($service, 'url', route('products.index')) }}" class="home-card service-card">
-                        <img src="{{ $publicAsset($service['image']) }}" alt="{{ $service['title'] }}" class="service-card-image">
+                        <img loading="lazy" decoding="async" src="{{ $publicAsset($service['image']) }}" alt="{{ $service['title'] }}" class="service-card-image">
                         <div class="service-card-body">
                             <p class="service-card-small">{{ $service['small'] }}</p>
                             <h3 class="service-card-title">{{ $service['title'] }}</h3>
@@ -1584,7 +1584,7 @@
                     @if($productIconUrl || $productIcon)
                         <div class="favourite-product-icon">
                             @if($productIconUrl)
-                            <img src="{{ $productIconUrl }}" alt="{{ data_get($product, 'name') }} icon">
+                            <img loading="lazy" decoding="async" src="{{ $productIconUrl }}" alt="{{ data_get($product, 'name') }} icon">
                             @else
                                 <span>{{ $productIcon }}</span>
                             @endif

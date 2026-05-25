@@ -15,7 +15,7 @@
 
     @if($coverImageUrl)
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-            <img src="{{ $coverImageUrl }}" alt="{{ $post->title }}" class="h-[340px] w-full object-cover">
+            <img loading="eager" fetchpriority="high" decoding="async" src="{{ $coverImageUrl }}" alt="{{ $post->title }}" class="h-[340px] w-full object-cover">
         </div>
     @endif
 

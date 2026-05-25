@@ -79,7 +79,7 @@
         <div class="product-detail-image-column">
             <div class="overflow-hidden rounded-[10px] bg-[#eeeeee]">
                 @if($mainProductImage)
-                    <img src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-10 lg:p-12">
+                    <img loading="eager" fetchpriority="high" decoding="async" src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-10 lg:p-12">
                 @else
                     <div class="flex aspect-square items-center justify-center p-8 text-sm font-semibold text-slate-500">{{ $product->name }}</div>
                 @endif
@@ -89,7 +89,7 @@
                 <div class="mt-4 grid grid-cols-4 gap-3">
                     @foreach($product->mediaItems->take(4) as $media)
                         <div class="overflow-hidden rounded-lg border border-slate-200 bg-[#f5f5f5]">
-                            <img src="{{ $media->url }}" alt="{{ $media->alt_text ?: $product->name }}" class="aspect-square w-full object-contain p-3">
+                            <img loading="lazy" decoding="async" src="{{ $media->url }}" alt="{{ $media->alt_text ?: $product->name }}" class="aspect-square w-full object-contain p-3">
                         </div>
                     @endforeach
                 </div>
@@ -144,7 +144,7 @@
                                         class="sr-only"
                                     >
                                     @if($group->input_type === 'image_tabs' && $optionImageUrl)
-                                        <img src="{{ $optionImageUrl }}" alt="{{ $value->label }}" class="mb-3 h-16 w-full rounded bg-white object-contain">
+                                        <img loading="lazy" decoding="async" src="{{ $optionImageUrl }}" alt="{{ $value->label }}" class="mb-3 h-16 w-full rounded bg-white object-contain">
                                     @endif
                                     <span class="block text-[12px] font-extrabold leading-none text-slate-900">{{ $value->label }}</span>
                                 </label>

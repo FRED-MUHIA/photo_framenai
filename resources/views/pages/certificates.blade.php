@@ -8,16 +8,16 @@
     <div class="mx-auto grid max-w-[1480px] gap-8 px-4 sm:px-6 lg:grid-cols-[1.2fr_1fr] lg:px-8">
         <article>
             <div class="overflow-hidden rounded-lg border border-[#e4cccc] bg-white">
-                <img
-                    src="https://images.unsplash.com/photo-1516549655669-df2ccf7ed4f5?auto=format&fit=crop&w=1800&q=80"
+                <img loading="eager" fetchpriority="high" decoding="async"
+                    src="https://images.unsplash.com/photo-1516549655669-df2ccf7ed4f5?auto=format&fit=crop&w=1800&q=70"
                     alt="Certificates"
                     class="h-full min-h-[420px] w-full object-cover"
                 >
             </div>
             <div class="mt-3 grid grid-cols-3 gap-2">
-                <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=700&q=80" alt="Certificate sample 1" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
-                <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=700&q=80" alt="Certificate sample 2" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
-                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=700&q=80" alt="Certificate sample 3" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=700&q=70" alt="Certificate sample 1" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=700&q=70" alt="Certificate sample 2" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=700&q=70" alt="Certificate sample 3" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
             </div>
         </article>
 

@@ -8,16 +8,16 @@
     <div class="mx-auto grid max-w-[1480px] gap-8 px-4 sm:px-6 lg:grid-cols-[1.2fr_1fr] lg:px-8">
         <article>
             <div class="overflow-hidden rounded-lg border border-[#d8c6c6] bg-white">
-                <img
-                    src="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?auto=format&fit=crop&w=1800&q=80"
+                <img loading="eager" fetchpriority="high" decoding="async"
+                    src="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?auto=format&fit=crop&w=1800&q=70"
                     alt="Complementary Slips"
                     class="h-full min-h-[420px] w-full object-cover"
                 >
             </div>
             <div class="mt-3 grid grid-cols-3 gap-2">
-                <img src="https://images.unsplash.com/photo-1586892477838-2b96e85e0f96?auto=format&fit=crop&w=700&q=80" alt="Sample 1" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
-                <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=700&q=80" alt="Sample 2" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
-                <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=700&q=80" alt="Sample 3" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1586892477838-2b96e85e0f96?auto=format&fit=crop&w=700&q=70" alt="Sample 1" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=700&q=70" alt="Sample 2" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=700&q=70" alt="Sample 3" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
             </div>
         </article>
 

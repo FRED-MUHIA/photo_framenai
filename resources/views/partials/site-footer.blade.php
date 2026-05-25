@@ -246,7 +246,7 @@
     <div class="np-whatsapp-card">
         <span class="np-whatsapp-avatar" aria-hidden="true">
             @if($chatLogoUrl)
-                <img src="{{ $chatLogoUrl }}" alt="">
+                <img loading="lazy" decoding="async" src="{{ $chatLogoUrl }}" alt="">
             @else
                 NAI<br>PRINTS
             @endif

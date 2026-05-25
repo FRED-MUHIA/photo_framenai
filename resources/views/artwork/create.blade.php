@@ -17,7 +17,7 @@
             <p class="mt-3 text-xs text-slate-500">Drag and drop your file here or click to browse.</p>
             <template x-if="previewUrl">
                 <div class="mt-5">
-                    <img :src="previewUrl" alt="Preview" class="mx-auto h-40 rounded-xl border border-slate-200 object-contain">
+                    <img loading="lazy" decoding="async" :src="previewUrl" alt="Preview" class="mx-auto h-40 rounded-xl border border-slate-200 object-contain">
                 </div>
             </template>
             <template x-if="fileName">

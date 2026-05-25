@@ -30,7 +30,7 @@
             <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div class="h-44 overflow-hidden rounded-xl bg-slate-100">
                     @if($thumbnailUrl)
-                        <img src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
+                        <img loading="lazy" decoding="async" src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                     @endif
                 </div>
                 <div class="mt-4 flex items-start justify-between gap-3">

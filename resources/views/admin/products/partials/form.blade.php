@@ -42,7 +42,7 @@
         @endphp
         @if($thumbnailPreview)
             <div class="mb-3 h-32 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
-                <img src="{{ $thumbnailPreview }}" alt="{{ $product->name ?: 'Product thumbnail' }}" class="h-full w-full object-cover">
+                <img loading="lazy" decoding="async" src="{{ $thumbnailPreview }}" alt="{{ $product->name ?: 'Product thumbnail' }}" class="h-full w-full object-cover">
             </div>
         @endif
         <div class="grid gap-3 sm:grid-cols-2">
@@ -73,7 +73,7 @@
                 <input type="checkbox" name="media_ids[]" value="{{ $media->id }}" @checked(in_array($media->id, $oldMediaIds))>
                 <div class="mt-2 h-24 overflow-hidden rounded bg-slate-100">
                     @if($media->url)
-                        <img src="{{ $media->url }}" alt="{{ $media->alt_text ?: $media->title }}" class="h-full w-full object-cover">
+                        <img loading="lazy" decoding="async" src="{{ $media->url }}" alt="{{ $media->alt_text ?: $media->title }}" class="h-full w-full object-cover">
                     @endif
                 </div>
                 <p class="mt-1 truncate font-semibold">{{ $media->title ?: 'Media #' . $media->id }}</p>

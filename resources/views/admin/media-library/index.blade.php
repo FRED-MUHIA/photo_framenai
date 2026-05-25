@@ -33,7 +33,7 @@
                 <article class="overflow-hidden rounded-xl border border-slate-200">
                     <div class="h-40 bg-slate-100">
                         @if($item->url)
-                            <img src="{{ $item->url }}" alt="{{ $item->alt_text ?: $item->title }}" class="h-full w-full object-cover">
+                            <img loading="lazy" decoding="async" src="{{ $item->url }}" alt="{{ $item->alt_text ?: $item->title }}" class="h-full w-full object-cover">
                         @else
                             <div class="flex h-full items-center justify-center text-xs text-slate-400">No preview</div>
                         @endif

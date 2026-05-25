@@ -6,6 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $cmsPage?->meta_title ?: 'Design Services - NaiPrinters' }}</title>
     <meta name="description" content="{{ $cmsPage?->meta_description ?: 'Creative professional design and branding portfolio page.' }}">
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+    <link rel="preconnect" href="https://images.pexels.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -783,7 +785,7 @@
                                     <div style="margin-top:8px; font-size:11px; font-weight:900; text-transform:uppercase;">{{ data_get($heroItem, 'title') }}</div>
                                 </div>
                             @elseif(data_get($heroItem, 'image_url'))
-                                <img src="{{ data_get($heroItem, 'image_url') }}" alt="">
+                                <img loading="{{ $heroItemIndex < 3 ? 'eager' : 'lazy' }}" @if($heroItemIndex < 3) fetchpriority="high" @endif decoding="async" src="{{ data_get($heroItem, 'image_url') }}" alt="">
                             @endif
                         </div>
                     @endforeach
@@ -812,7 +814,7 @@
                                 $isCenter = str_contains((string) data_get($galleryItem, 'content'), 'center');
                             @endphp
                             <figure class="gallery-card {{ $isCenter ? 'center' : '' }}" data-slide data-gallery-category="{{ $galleryCategory }}">
-                                <img src="{{ data_get($galleryItem, 'image_url') }}" alt="{{ data_get($galleryItem, 'title', 'Design service mockup') }}">
+                                <img loading="lazy" decoding="async" src="{{ data_get($galleryItem, 'image_url') }}" alt="{{ data_get($galleryItem, 'title', 'Design service mockup') }}">
                             </figure>
                         @endforeach
                     </div>
@@ -848,7 +850,7 @@
                                 </div>
                                 <div>
                                     <div class="service-image">
-                                        <img src="{{ data_get($service, 'image_url') }}" alt="{{ data_get($service, 'title') }} mockup">
+                                        <img loading="lazy" decoding="async" src="{{ data_get($service, 'image_url') }}" alt="{{ data_get($service, 'title') }} mockup">
                                     </div>
                                 </div>
                             </div>
@@ -926,7 +928,7 @@
                 <div class="projects" data-slideshow="projects">
                     @foreach($projectItems as $projectIndex => $project)
                         <a href="{{ route('pages.design-projects.show', $project['slug']) }}" class="project project-slide {{ $projectIndex < 2 ? 'active' : '' }}" data-slide>
-                            <img src="{{ $project['images'][0] ?? asset('favicon.ico') }}" alt="{{ $project['title'] }} mockup">
+                            <img loading="lazy" decoding="async" src="{{ $project['images'][0] ?? asset('favicon.ico') }}" alt="{{ $project['title'] }} mockup">
                             <div class="project-meta">
                                 <div>
                                     <h3>{{ $project['title'] }}</h3>

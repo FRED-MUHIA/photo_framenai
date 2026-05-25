@@ -6,8 +6,8 @@
 <section class="bg-white py-8">
     <div class="mx-auto grid max-w-[1400px] gap-8 px-4 sm:px-6 lg:grid-cols-[1.15fr_1fr] lg:px-8">
         <article class="overflow-hidden rounded-lg border border-[#e8d3d3] bg-white">
-            <img
-                src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=1600&q=80"
+            <img loading="eager" fetchpriority="high" decoding="async"
+                src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=1600&q=70"
                 alt="Custom receipt books"
                 class="h-full min-h-[420px] w-full object-cover"
             >

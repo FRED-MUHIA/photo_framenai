@@ -38,7 +38,7 @@
                 @if($component === 'hero')
                     <article class="overflow-hidden rounded-2xl border border-slate-200" style="background: {{ $bgColor }}; color: {{ $textColor }};">
                         @if($imageUrl)
-                            <img src="{{ $imageUrl }}" alt="{{ $title }}" class="h-[260px] w-full object-cover">
+                            <img loading="lazy" decoding="async" src="{{ $imageUrl }}" alt="{{ $title }}" class="h-[260px] w-full object-cover">
                         @endif
                         <div class="p-6">
                             @if($title)
@@ -89,7 +89,7 @@
                                     @endphp
                                     <a href="{{ data_get($item, 'link_url', '#') }}" class="overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900">
                                         @if($itemImageUrl)
-                                            <img src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
+                                            <img loading="lazy" decoding="async" src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
                                         @endif
                                         <div class="p-4">
                                             <h3 class="text-lg font-bold">{{ data_get($item, 'title') }}</h3>
@@ -140,7 +140,7 @@
                                     @endphp
                                     @if($itemImageUrl)
                                         <a href="{{ data_get($item, 'link_url', '#') }}" class="overflow-hidden rounded-lg border border-slate-200 bg-white">
-                                            <img src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
+                                            <img loading="lazy" decoding="async" src="{{ $itemImageUrl }}" alt="{{ data_get($item, 'title') }}" class="h-40 w-full object-cover">
                                         </a>
                                     @endif
                                 @endforeach
@@ -166,7 +166,7 @@
                             </div>
                             @if($imageUrl)
                                 <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                                    <img src="{{ $imageUrl }}" alt="{{ $title }}" class="h-44 w-full object-cover">
+                                    <img loading="lazy" decoding="async" src="{{ $imageUrl }}" alt="{{ $title }}" class="h-44 w-full object-cover">
                                 </div>
                             @endif
                         </div>

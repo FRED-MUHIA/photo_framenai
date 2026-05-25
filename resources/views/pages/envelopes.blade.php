@@ -8,17 +8,17 @@
     <div class="mx-auto grid max-w-[1550px] gap-8 px-4 sm:px-6 lg:grid-cols-[1.2fr_1fr] lg:px-8">
         <article>
             <div class="overflow-hidden rounded-lg border border-[#d8c6c6] bg-white">
-                <img
-                    src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1800&q=80"
+                <img loading="eager" fetchpriority="high" decoding="async"
+                    src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1800&q=70"
                     alt="Envelopes"
                     class="h-full min-h-[420px] w-full object-cover"
                 >
             </div>
             <div class="mt-3 grid grid-cols-4 gap-2">
-                <img src="https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=700&q=80" alt="Envelope sample 1" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
-                <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=700&q=80" alt="Envelope sample 2" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
-                <img src="https://images.unsplash.com/photo-1523285367489-d38aec03b810?auto=format&fit=crop&w=700&q=80" alt="Envelope sample 3" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
-                <img src="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?auto=format&fit=crop&w=700&q=80" alt="Envelope sample 4" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1578926375605-eaf7559b1458?auto=format&fit=crop&w=700&q=70" alt="Envelope sample 1" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=700&q=70" alt="Envelope sample 2" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1523285367489-d38aec03b810?auto=format&fit=crop&w=700&q=70" alt="Envelope sample 3" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
+                <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?auto=format&fit=crop&w=700&q=70" alt="Envelope sample 4" class="h-28 w-full rounded border border-[#d8c6c6] object-cover">
             </div>
         </article>
 
