@@ -44,7 +44,7 @@
             @php
                 $thumbnailUrl = \App\Support\PublicAssetUrl::resolve($product->thumbnail);
             @endphp
-            <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            <a href="{{ route('products.show', $product) }}" class="block rounded-2xl border border-slate-200 bg-white p-4 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div class="aspect-square overflow-hidden rounded-xl bg-slate-100">
                     @if($thumbnailUrl)
                         <img loading="lazy" decoding="async" src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
@@ -64,9 +64,9 @@
                 <p class="mt-2 text-sm text-slate-600">{{ $product->short_description }}</p>
                 <div class="mt-4 flex items-center justify-between">
                     <span class="text-sm font-extrabold text-slate-900">{{ config('shop.currency_symbol') }} {{ number_format($product->base_price, 2) }}</span>
-                    <a href="{{ route('products.show', $product) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-bold hover:border-slate-400">Order Now</a>
+                    <span class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-bold hover:border-slate-400">Order Now</span>
                 </div>
-            </article>
+            </a>
         @empty
             <div class="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500 sm:col-span-2 lg:col-span-3">No products found for your filter.</div>
         @endforelse

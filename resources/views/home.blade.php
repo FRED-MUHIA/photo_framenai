@@ -1541,7 +1541,7 @@
                     <circle cx="23" cy="23" r="5.2" fill="#002d45"/>
                 </svg>
                 <span class="starlink-friday-label">
-                    <span class="starlink-friday-black">BLACK <span class="starlink-friday-day">FRI</span></span>
+                    <span class="starlink-friday-black">Bulk <span class="starlink-friday-day">Printing</span></span>
                     <span class="starlink-friday-percent">20</span>
                     <span class="starlink-friday-off">%<span class="starlink-friday-day">OFF</span></span>
                 </span>
