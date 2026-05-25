@@ -1475,27 +1475,6 @@
     <div class="top-picks-inner">
         <div class="top-picks-header">
             <h2 class="top-picks-title">{{ data_get($topPicksSection, 'title', 'Best Selling') }}</h2>
-            <div class="top-picks-tabs" aria-label="Best selling product groups">
-                @foreach($topPicksTabs as $tabIndex => $tab)
-                    @php
-                        $isActiveTab = $tabIndex === 0;
-                        $tabBg = data_get($tab, 'bg_color', $isActiveTab ? '#b10f1e' : '#ffffff');
-                        $tabText = data_get($tab, 'text_color', $isActiveTab ? '#ffffff' : data_get($topPicksSection, 'text_color', '#1f2937'));
-                        $tabBorder = strtolower((string) $tabBg) === '#ffffff' ? '#e1e1e1' : $tabBg;
-                        $tabUrl = data_get($tab, 'link_url') ?: route('products.index', ['q' => data_get($tab, 'title')]);
-                    @endphp
-                    <a
-                        href="{{ $tabUrl }}"
-                        class="top-picks-pill {{ $isActiveTab ? 'active' : '' }}"
-                        style="background: {{ $tabBg }}; border-color: {{ $tabBorder }}; color: {{ $tabText }};"
-                    >
-                        @if(data_get($tab, 'content'))
-                            <span aria-hidden="true">{{ data_get($tab, 'content') }}</span>
-                        @endif
-                        {{ data_get($tab, 'title') }}
-                    </a>
-                @endforeach
-            </div>
             <a href="{{ data_get($topPicksSection, 'button_url', route('products.index')) }}" class="top-picks-view-all">
                 {{ data_get($topPicksSection, 'button_label', 'All Products') }}
                 <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>

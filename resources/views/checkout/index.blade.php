@@ -3,6 +3,10 @@
 @section('meta_title', 'Checkout - NaiPrinters')
 
 @section('content')
+@php
+    $checkoutUser = auth()->user()?->isAdmin() ? null : auth()->user();
+@endphp
+
 <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
     <h1 class="np-type-page-title">Checkout</h1>
     <p class="mt-2 text-sm text-slate-600">Complete your order in a few steps.</p>
@@ -18,9 +22,8 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
                 <h2 class="text-lg font-bold">Contact Details</h2>
                 <div class="mt-4 grid gap-4 sm:grid-cols-2">
-                    <input type="text" name="name" value="{{ old('name', auth()->user()->name ?? '') }}" placeholder="Full Name" class="rounded-xl border-slate-300" required>
-                    <input type="email" name="email" value="{{ old('email', auth()->user()->email ?? '') }}" placeholder="Email Address" class="rounded-xl border-slate-300" required>
-                    <input type="text" name="phone" value="{{ old('phone', auth()->user()->phone ?? '') }}" placeholder="Phone Number" class="rounded-xl border-slate-300 sm:col-span-2">
+                    <input type="text" name="name" value="{{ old('name', $checkoutUser?->name ?? '') }}" placeholder="Name" class="rounded-xl border-slate-300" required>
+                    <input type="email" name="email" value="{{ old('email', $checkoutUser?->email ?? '') }}" placeholder="Email" class="rounded-xl border-slate-300" required>
                 </div>
             </div>
 

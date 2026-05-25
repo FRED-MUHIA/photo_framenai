@@ -79,6 +79,9 @@
                         <option value="design_projects">Design Services: Projects</option>
                         <option value="design_experience">Design Services: Experience</option>
                         <option value="design_contact">Design Services: Contact</option>
+                        <option value="contact_intro">Contact: Intro</option>
+                        <option value="contact_channels">Contact: Direct Channels</option>
+                        <option value="contact_form">Contact: Form</option>
                         <option value="hero">Hero</option>
                         <option value="text">Text Block</option>
                         <option value="cards">Cards Grid</option>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogPost;
 use App\Models\CmsPage;
+use App\Support\ContactContentDefaults;
 use App\Support\DesignServiceProjects;
 use App\Support\DesignServicesContentDefaults;
 
@@ -16,7 +17,10 @@ class PageController extends Controller
 
     public function contact()
     {
-        return $this->renderManagedPage('contact', 'pages.contact');
+        $cmsPage = CmsPage::query()->active()->where('slug', 'contact')->first();
+        $contactSections = ContactContentDefaults::mergedSections($cmsPage?->sections);
+
+        return view('pages.contact', compact('cmsPage', 'contactSections'));
     }
 
     public function blog()

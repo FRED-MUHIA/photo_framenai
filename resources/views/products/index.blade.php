@@ -22,13 +22,30 @@
         </form>
     </div>
 
+    <div class="mt-6 flex gap-2 overflow-x-auto pb-1">
+        <a
+            href="{{ route('products.index', array_filter(['q' => $search])) }}"
+            class="inline-flex h-9 shrink-0 items-center rounded-full border px-4 text-sm font-bold transition {{ $categorySlug === '' ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-400' }}"
+        >
+            All
+        </a>
+        @foreach($categories as $category)
+            <a
+                href="{{ route('products.index', array_filter(['q' => $search, 'category' => $category->slug])) }}"
+                class="inline-flex h-9 shrink-0 items-center rounded-full border px-4 text-sm font-bold transition {{ $categorySlug === $category->slug ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-400' }}"
+            >
+                {{ $category->name }}
+            </a>
+        @endforeach
+    </div>
+
     <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         @forelse($products as $product)
             @php
                 $thumbnailUrl = \App\Support\PublicAssetUrl::resolve($product->thumbnail);
             @endphp
             <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                <div class="h-44 overflow-hidden rounded-xl bg-slate-100">
+                <div class="aspect-square overflow-hidden rounded-xl bg-slate-100">
                     @if($thumbnailUrl)
                         <img loading="lazy" decoding="async" src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                     @endif
@@ -47,7 +64,7 @@
                 <p class="mt-2 text-sm text-slate-600">{{ $product->short_description }}</p>
                 <div class="mt-4 flex items-center justify-between">
                     <span class="text-sm font-extrabold text-slate-900">{{ config('shop.currency_symbol') }} {{ number_format($product->base_price, 2) }}</span>
-                    <a href="{{ route('products.show', $product) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-bold hover:border-slate-400">Configure</a>
+                    <a href="{{ route('products.show', $product) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-bold hover:border-slate-400">Order Now</a>
                 </div>
             </article>
         @empty

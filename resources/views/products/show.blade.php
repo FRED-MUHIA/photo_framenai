@@ -54,6 +54,17 @@
         }
 
     }
+
+    .product-quantity-input {
+        appearance: textfield;
+        -moz-appearance: textfield;
+    }
+
+    .product-quantity-input::-webkit-inner-spin-button,
+    .product-quantity-input::-webkit-outer-spin-button {
+        margin: 0;
+        -webkit-appearance: none;
+    }
 </style>
 @endpush
 
@@ -168,7 +179,7 @@
                             x-model.number="quantity"
                             @input.debounce.350ms="refreshQuote"
                             @blur="normalizeQuantity"
-                            class="h-[46px] w-[84px] rounded-lg border-slate-300 text-center text-base font-bold"
+                            class="product-quantity-input h-[46px] w-[116px] rounded-lg border-slate-300 px-4 text-center text-xl font-extrabold leading-none text-slate-950"
                             required
                         >
                         <button type="button" @click="incrementQuantity" class="h-[46px] w-[46px] rounded-lg border border-slate-200 text-xl font-normal text-slate-950">+</button>

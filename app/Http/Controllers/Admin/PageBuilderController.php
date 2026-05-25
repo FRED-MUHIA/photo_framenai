@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
 use App\Models\MediaItem;
+use App\Support\ContactContentDefaults;
 use App\Support\DesignServicesContentDefaults;
 use App\Support\HomepageContentDefaults;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class PageBuilderController extends Controller
         $defaults = [
             ['name' => 'Homepage', 'slug' => 'home'],
             ['name' => 'About Us', 'slug' => 'about'],
-            ['name' => 'Contact', 'slug' => 'contact'],
+            ['name' => 'Contact', 'slug' => 'contact', 'sections' => ContactContentDefaults::sections()],
             ['name' => 'Help Center', 'slug' => 'help'],
             ['name' => 'Blog', 'slug' => 'blog'],
             ['name' => 'Design Services', 'slug' => 'design-services', 'sections' => DesignServicesContentDefaults::sections()],
@@ -215,6 +216,7 @@ class PageBuilderController extends Controller
     {
         return match ($slug) {
             'home' => HomepageContentDefaults::sections(),
+            'contact' => ContactContentDefaults::sections(),
             'design-services' => DesignServicesContentDefaults::sections(),
             default => [],
         };
