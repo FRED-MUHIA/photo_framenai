@@ -3,6 +3,10 @@
 @section('meta_title', 'Invoice ' . $order->order_number)
 
 @section('content')
+@php
+    $paymentDetails = \App\Support\PaymentDetails::forOrder($order);
+@endphp
+
 <section class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
     <div class="rounded-2xl border border-slate-200 bg-white p-8">
         <div class="flex flex-wrap items-start justify-between gap-3">
@@ -24,6 +28,25 @@
                 <p class="text-xs uppercase tracking-wider text-slate-400">Shipping Address</p>
                 <p class="text-sm text-slate-700">{{ $order->shipping_address_line1 }}</p>
                 <p class="text-sm text-slate-700">{{ $order->shipping_country }}</p>
+            </div>
+        </div>
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h2 class="text-sm font-extrabold text-slate-900">Payment Details</h2>
+            <div class="mt-3 grid gap-4 sm:grid-cols-2">
+                <div>
+                    <p class="text-xs uppercase tracking-wider text-slate-400">Payment Method</p>
+                    <p class="font-semibold">{{ $paymentDetails['method'] }}</p>
+                </div>
+                <div>
+                    <p class="text-xs uppercase tracking-wider text-slate-400">Payment Status</p>
+                    <p class="font-semibold">{{ $paymentDetails['status'] }}</p>
+                </div>
+            </div>
+            <div class="mt-3 text-sm leading-6 text-slate-700">
+                @foreach($paymentDetails['instructions'] as $instruction)
+                    <p>{{ $instruction }}</p>
+                @endforeach
             </div>
         </div>
 

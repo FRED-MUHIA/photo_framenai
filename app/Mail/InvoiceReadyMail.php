@@ -20,16 +20,22 @@ class InvoiceReadyMail extends Mailable
     public function build(): self
     {
         $this->order->loadMissing('items');
+        $invoiceUrl = URL::temporarySignedRoute(
+            'invoices.show',
+            now()->addDays(30),
+            ['order' => $this->order]
+        );
 
         return $this
-            ->subject('Your Nai Prints invoice is ready')
+            ->subject('Your Nai Prints order has been received')
             ->view('emails.invoice-ready')
             ->with([
-                'invoiceUrl' => URL::temporarySignedRoute(
-                    'invoices.show',
-                    now()->addDays(30),
-                    ['order' => $this->order]
-                ),
-            ]);
+                'invoiceUrl' => $invoiceUrl,
+            ])
+            ->attachData(
+                view('emails.attachments.invoice', ['order' => $this->order])->render(),
+                'invoice-' . $this->order->order_number . '.html',
+                ['mime' => 'text/html']
+            );
     }
 }

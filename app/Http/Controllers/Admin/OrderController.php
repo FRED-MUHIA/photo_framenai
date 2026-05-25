@@ -47,11 +47,21 @@ class OrderController extends Controller
             'payment_status' => $newPaymentStatus,
         ]);
 
+        $notificationResult = ['customer_sent' => false, 'customer_failed' => false];
+
         if (! empty($changes)) {
-            $this->sendStatusUpdateEmails($order->fresh(), $changes);
+            $notificationResult = $this->sendStatusUpdateEmails($order->fresh(), $changes);
         }
 
-        return back()->with('status', 'Order status updated.');
+        $message = 'Order status updated.';
+
+        if (! empty($changes)) {
+            $message .= $notificationResult['customer_sent']
+                ? ' Client has been notified.'
+                : ' Client email could not be sent. Check SMTP settings.';
+        }
+
+        return back()->with('status', $message);
     }
 
     private function statusChanges(Order $order, string $newStatus, string $newPaymentStatus): array
@@ -77,12 +87,22 @@ class OrderController extends Controller
         return $changes;
     }
 
-    private function sendStatusUpdateEmails(Order $order, array $changes): void
+    private function sendStatusUpdateEmails(Order $order, array $changes): array
     {
+        $result = [
+            'customer_sent' => false,
+            'customer_failed' => false,
+            'internal_sent' => false,
+            'internal_failed' => false,
+        ];
+
         if ($order->customer_email) {
             try {
                 Mail::to($order->customer_email)->send(new OrderStatusUpdatedMail($order, $changes));
+                $result['customer_sent'] = true;
             } catch (Throwable $exception) {
+                $result['customer_failed'] = true;
+
                 Log::error('Failed to send customer order status update email.', [
                     'order_id' => $order->id,
                     'order_number' => $order->order_number,
@@ -95,12 +115,15 @@ class OrderController extends Controller
         $storeEmail = $this->storeNotificationEmail();
 
         if (! $storeEmail || strtolower($storeEmail) === strtolower((string) $order->customer_email)) {
-            return;
+            return $result;
         }
 
         try {
             Mail::to($storeEmail)->send(new OrderStatusUpdatedMail($order, $changes));
+            $result['internal_sent'] = true;
         } catch (Throwable $exception) {
+            $result['internal_failed'] = true;
+
             Log::error('Failed to send internal order status update email.', [
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
@@ -108,6 +131,8 @@ class OrderController extends Controller
                 'error' => $exception->getMessage(),
             ]);
         }
+
+        return $result;
     }
 
     private function storeNotificationEmail(): ?string
