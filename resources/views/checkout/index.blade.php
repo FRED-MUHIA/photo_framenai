@@ -24,6 +24,7 @@
                 <div class="mt-4 grid gap-4 sm:grid-cols-2">
                     <input type="text" name="name" value="{{ old('name', $checkoutUser?->name ?? '') }}" placeholder="Name" class="rounded-xl border-slate-300" required>
                     <input type="email" name="email" value="{{ old('email', $checkoutUser?->email ?? '') }}" placeholder="Email" class="rounded-xl border-slate-300" required>
+                    <input type="text" name="phone" value="{{ old('phone', $checkoutUser?->phone ?? '') }}" placeholder="Phone Number" class="rounded-xl border-slate-300 sm:col-span-2">
                 </div>
             </div>
 
