@@ -12,6 +12,22 @@
         ?: str($order->shipping_option)->replace('_', ' ')->title();
     $statusLabel = str($order->status)->replace('_', ' ')->title();
     $paymentLabel = str($order->payment_status)->replace('_', ' ')->title();
+    $headline = match ($order->status) {
+        'processing' => 'Your order is being processed',
+        'printing' => 'Your order is being printed',
+        'shipped' => 'Your order has been shipped',
+        'completed' => 'Your order has been completed',
+        'cancelled' => 'Your order has been cancelled',
+        default => 'Your order is pending review',
+    };
+    $summary = match ($order->status) {
+        'processing' => 'We have started preparing your order for production.',
+        'printing' => 'Your order is now in print production.',
+        'shipped' => 'Your order has left production and is on the way.',
+        'completed' => 'Your order has been completed. Thank you for printing with us.',
+        'cancelled' => 'Your order has been cancelled. Contact us if you need help placing a new order.',
+        default => 'We have received your order and will review it shortly.',
+    };
 @endphp
 
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; background: #eef2f6; padding: 0;">
@@ -37,8 +53,8 @@
                             <tr>
                                 <td style="padding: 30px 26px;">
                                     <p style="margin: 0 0 8px; color: #ffffff; font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Order update</p>
-                                    <h1 style="margin: 0; color: #ffffff; font-size: 32px; line-height: 1.05; font-weight: 900;">Your order has been updated</h1>
-                                    <p style="margin: 16px 0 0; max-width: 430px; color: #ffffff; font-size: 13px; line-height: 1.55; font-weight: 700;">We made a change to your order status. The latest details are below.</p>
+                                    <h1 style="margin: 0; color: #ffffff; font-size: 32px; line-height: 1.05; font-weight: 900;">{{ $headline }}</h1>
+                                    <p style="margin: 16px 0 0; max-width: 430px; color: #ffffff; font-size: 13px; line-height: 1.55; font-weight: 700;">{{ $summary }}</p>
                                 </td>
                             </tr>
                         </table>
@@ -48,9 +64,7 @@
                 <tr>
                     <td style="padding: 22px 22px 0;">
                         <p style="margin: 0 0 12px; color: #475467; font-size: 13px; line-height: 1.6;">Hello {{ $order->customer_name }},</p>
-                        <p style="margin: 0 0 20px; color: #475467; font-size: 13px; line-height: 1.6;">Order <strong style="color: #111827;">{{ $order->order_number }}</strong> has new information. You can view the invoice using the button below.</p>
-
-                        <a href="{{ $invoiceUrl }}" style="display: inline-block; border-radius: 999px; background: #e51b2b; color: #ffffff; font-size: 12px; font-weight: 800; line-height: 1; padding: 12px 18px; text-decoration: none;">View Invoice</a>
+                        <p style="margin: 0 0 20px; color: #475467; font-size: 13px; line-height: 1.6;">Order <strong style="color: #111827;">{{ $order->order_number }}</strong> status is now <strong style="color: #111827;">{{ $statusLabel }}</strong>. The latest details are below.</p>
                     </td>
                 </tr>
 
