@@ -78,6 +78,9 @@ class SiteSettingController extends Controller
             'whatsapp_logo_file' => ['nullable', 'image', 'max:4096'],
             'all_products_mega_menu_json' => ['nullable', 'json'],
             'header_theme_mega_menu_json' => ['nullable', 'json'],
+            'header_theme_mega_menu_images' => ['nullable', 'array'],
+            'header_theme_mega_menu_images.*' => ['nullable', 'array'],
+            'header_theme_mega_menu_images.*.*' => ['nullable', 'image', 'max:4096'],
         ]);
 
         if ($request->hasFile('header_logo_file')) {
@@ -92,6 +95,7 @@ class SiteSettingController extends Controller
 
         unset($validated['header_logo_file']);
         unset($validated['whatsapp_logo_file']);
+        unset($validated['header_theme_mega_menu_images']);
 
         $menuJson = $validated['all_products_mega_menu_json'] ?? null;
         unset($validated['all_products_mega_menu_json']);
@@ -102,7 +106,32 @@ class SiteSettingController extends Controller
         $themeMenuJson = $validated['header_theme_mega_menu_json'] ?? null;
         unset($validated['header_theme_mega_menu_json']);
 
-        $themeMenu = HeaderThemeMegaMenu::normalize(json_decode($themeMenuJson ?: '[]', true));
+        $themeMenuPayload = json_decode($themeMenuJson ?: '[]', true);
+
+        if (! is_array($themeMenuPayload)) {
+            $themeMenuPayload = [];
+        }
+
+        foreach ($request->file('header_theme_mega_menu_images', []) as $menuIndex => $tileFiles) {
+            if (! is_array($tileFiles)) {
+                continue;
+            }
+
+            foreach ($tileFiles as $tileIndex => $file) {
+                if (! $file || ! $file->isValid()) {
+                    continue;
+                }
+
+                if (! isset($themeMenuPayload[$menuIndex]['items'][$tileIndex])) {
+                    continue;
+                }
+
+                $path = $file->store('site/mega-menu', 'public');
+                $themeMenuPayload[$menuIndex]['items'][$tileIndex]['image'] = '/storage/' . $path;
+            }
+        }
+
+        $themeMenu = HeaderThemeMegaMenu::normalize($themeMenuPayload);
         $validated['header_theme_mega_menu'] = json_encode($themeMenu, JSON_PRETTY_PRINT);
 
         SiteSetting::setValues($validated);

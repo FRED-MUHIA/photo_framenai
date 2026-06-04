@@ -182,7 +182,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                                    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                                         <select class="rounded border-slate-300 text-xs" @change="applyLinkToTile(menuIndex, tileIndex, $event.target.value); $event.target.value = ''">
                                             <option value="">Link existing page/product...</option>
                                             <template x-for="link in linkOptions" :key="link.url + link.label">
@@ -192,10 +192,13 @@
                                         <input type="text" x-model="tile.title" placeholder="Tile title" class="rounded border-slate-300 text-xs">
                                         <input type="text" x-model="tile.subtitle" placeholder="Subtitle" class="rounded border-slate-300 text-xs">
                                         <input type="text" x-model="tile.url" placeholder="Tile URL (optional)" class="rounded border-slate-300 text-xs">
-                                        <input type="text" x-model="tile.image" placeholder="Image URL" class="rounded border-slate-300 text-xs">
                                     </div>
-                                    <template x-if="tile.image">
-                                        <img :src="tile.image" :alt="tile.title || 'Menu tile preview'" class="mt-2 h-16 w-28 rounded object-cover">
+                                    <div class="mt-2 grid gap-2 sm:grid-cols-2">
+                                        <input type="text" x-model="tile.image" placeholder="Image URL" class="rounded border-slate-300 text-xs">
+                                        <input type="file" accept="image/*" :name="`header_theme_mega_menu_images[${menuIndex}][${tileIndex}]`" class="rounded border border-slate-300 bg-white px-2 py-1.5 text-xs" @change="previewTileImage(menuIndex, tileIndex, $event)">
+                                    </div>
+                                    <template x-if="tile.preview || tile.image">
+                                        <img :src="tile.preview || tile.image" :alt="tile.title || 'Menu tile preview'" class="mt-2 h-16 w-28 rounded object-cover">
                                     </template>
                                 </div>
                             </template>
@@ -321,7 +324,8 @@
             title: tile.title || '',
             subtitle: tile.subtitle || '',
             image: tile.image || '',
-            url: tile.url || ''
+            url: tile.url || '',
+            preview: ''
         });
         const normalizeMenu = (menu = {}) => ({
             id: nextId++,
@@ -374,6 +378,11 @@
                 const link = this.linkOptions.find((entry) => entry.url === url);
                 if (!link) return;
                 this.menus[menuIndex].items[tileIndex].url = link.url;
+            },
+            previewTileImage(menuIndex, tileIndex, event) {
+                const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
+                if (!file) return;
+                this.menus[menuIndex].items[tileIndex].preview = URL.createObjectURL(file);
             },
             get json() {
                 return JSON.stringify(this.menus.map((menu, index) => ({
