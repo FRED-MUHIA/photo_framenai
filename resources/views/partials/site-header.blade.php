@@ -223,6 +223,27 @@
         $themeMegaMenus = array_merge($themeMegaMenus, $dynamicThemeMegaMenus);
     }
 
+    $configuredHeaderThemeMegaMenu = json_decode($siteSettings->get('header_theme_mega_menu', ''), true);
+    $headerThemeMegaMenu = \App\Support\HeaderThemeMegaMenu::normalize($configuredHeaderThemeMegaMenu);
+
+    if (! $siteSettings->has('header_theme_mega_menu')) {
+        $headerThemeMegaMenu = \App\Support\HeaderThemeMegaMenu::defaults();
+    }
+
+    $themeNavItems = collect($headerThemeMegaMenu)
+        ->map(fn (array $menu) => [
+            'key' => $menu['key'],
+            'label' => $menu['label'],
+            'url' => $menu['url'],
+            'show_all_label' => $menu['show_all_label'],
+        ])
+        ->values()
+        ->all();
+
+    $themeMegaMenus = collect($headerThemeMegaMenu)
+        ->mapWithKeys(fn (array $menu) => [$menu['key'] => $menu['items']])
+        ->all();
+
     $headerShippingText = $siteSettings->get('header_shipping_text', 'Free standard shipping');
     $headerExperienceText = $siteSettings->get('header_experience_text', '40 years of experience');
     $headerProductionText = $siteSettings->get('header_production_text', 'Our own production');
@@ -951,10 +972,12 @@
         >
             <div class="np-wrap">
                 <div class="np-overlay-grid">
-                    @foreach($themeMegaMenus[$menu['key']] as $entry)
-                        <a href="{{ data_get($entry, 'url', $menu['url']) }}" class="np-overlay-card">
+                    @foreach($themeMegaMenus[$menu['key']] ?? [] as $entry)
+                        <a href="{{ ! empty($entry['url']) ? $entry['url'] : $menu['url'] }}" class="np-overlay-card">
                             <div class="np-overlay-media">
-                                <img loading="lazy" decoding="async" src="{{ $entry['image'] }}" alt="{{ $entry['title'] }}">
+                                @if(! empty($entry['image']))
+                                    <img loading="lazy" decoding="async" src="{{ $entry['image'] }}" alt="{{ $entry['title'] }}">
+                                @endif
                             </div>
                             <div class="np-overlay-title">{{ $entry['title'] }}</div>
                             @if($entry['subtitle'])
@@ -965,7 +988,7 @@
 
                     <a href="{{ $menu['url'] }}" class="np-overlay-card">
                         <div class="np-overlay-showall">
-                            SHOW ALL {{ strtoupper($menu['label']) }}
+                            {{ $menu['show_all_label'] ?? 'SHOW ALL ' . strtoupper($menu['label']) }}
                         </div>
                     </a>
                 </div>

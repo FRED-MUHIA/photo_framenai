@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\SiteSetting;
 use App\Support\AllProductsMegaMenu;
+use App\Support\HeaderThemeMegaMenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
@@ -21,7 +22,15 @@ class SiteSettingController extends Controller
             $megaMenu = AllProductsMegaMenu::defaults();
         }
 
+        $savedThemeMenu = json_decode($settings->get('header_theme_mega_menu', ''), true);
+        $themeMegaMenu = HeaderThemeMegaMenu::normalize($savedThemeMenu);
+
+        if (! $settings->has('header_theme_mega_menu')) {
+            $themeMegaMenu = HeaderThemeMegaMenu::defaults();
+        }
+
         $megaMenuJson = json_encode($megaMenu, JSON_PRETTY_PRINT);
+        $themeMegaMenuJson = json_encode($themeMegaMenu, JSON_PRETTY_PRINT);
         $productLinks = Product::query()
             ->active()
             ->orderBy('name')
@@ -32,7 +41,22 @@ class SiteSettingController extends Controller
             ])
             ->values();
 
-        return view('admin.site-settings.edit', compact('settings', 'megaMenuJson', 'productLinks'));
+        $menuLinkOptions = collect([
+            ['label' => 'All Products', 'url' => route('products.index')],
+            ['label' => 'Brochures / Flyers', 'url' => route('products.index', ['category' => 'flyers-brochures'])],
+            ['label' => 'Posters', 'url' => route('products.index', ['category' => 'posters'])],
+            ['label' => 'Banners', 'url' => route('products.index', ['category' => 'banners'])],
+            ['label' => 'Business Cards', 'url' => route('products.index', ['category' => 'business-cards'])],
+            ['label' => 'Branded Folders Page', 'url' => route('pages.branded-folders')],
+            ['label' => 'Certificates Page', 'url' => route('pages.certificates')],
+            ['label' => 'Custom Receipts Page', 'url' => route('pages.custom-receipts')],
+            ['label' => 'Envelopes Page', 'url' => route('pages.envelopes')],
+            ['label' => 'Complementary Slips Page', 'url' => route('pages.token-business')],
+            ['label' => 'Design Services Page', 'url' => route('pages.design-services')],
+            ['label' => 'Help Page', 'url' => route('pages.help')],
+        ])->concat($productLinks)->values();
+
+        return view('admin.site-settings.edit', compact('settings', 'megaMenuJson', 'themeMegaMenuJson', 'productLinks', 'menuLinkOptions'));
     }
 
     public function update(Request $request)
@@ -53,6 +77,7 @@ class SiteSettingController extends Controller
             'whatsapp_logo_url' => ['nullable', 'string', 'max:255'],
             'whatsapp_logo_file' => ['nullable', 'image', 'max:4096'],
             'all_products_mega_menu_json' => ['nullable', 'json'],
+            'header_theme_mega_menu_json' => ['nullable', 'json'],
         ]);
 
         if ($request->hasFile('header_logo_file')) {
@@ -73,6 +98,12 @@ class SiteSettingController extends Controller
 
         $menu = AllProductsMegaMenu::normalize(json_decode($menuJson ?: '[]', true));
         $validated['all_products_mega_menu'] = json_encode($menu, JSON_PRETTY_PRINT);
+
+        $themeMenuJson = $validated['header_theme_mega_menu_json'] ?? null;
+        unset($validated['header_theme_mega_menu_json']);
+
+        $themeMenu = HeaderThemeMegaMenu::normalize(json_decode($themeMenuJson ?: '[]', true));
+        $validated['header_theme_mega_menu'] = json_encode($themeMenu, JSON_PRETTY_PRINT);
 
         SiteSetting::setValues($validated);
 
