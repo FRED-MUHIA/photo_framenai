@@ -20,7 +20,7 @@
         <button type="button" @click="tab = 'upload'" :class="tab === 'upload' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'" class="rounded-lg px-3 py-2 text-xs font-bold">Upload</button>
     </div>
 
-    <input type="hidden" name="option_groups_json" :value="JSON.stringify(groups)">
+    <input type="hidden" name="option_groups_json" :value="JSON.stringify(cleanGroups())">
     <input type="hidden" name="quantity_prices_json" :value="JSON.stringify(quantities)">
 
     <section x-show="tab === 'options'" class="space-y-4">
@@ -51,16 +51,25 @@
                         <button type="button" @click="addValue(group)" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-bold">Add Option</button>
                     </div>
                     <template x-for="(value, valueIndex) in group.values" :key="valueIndex">
-                        <div class="grid gap-2 rounded-lg bg-slate-50 p-3 sm:grid-cols-7">
-                            <input type="text" x-model="value.label" placeholder="Label" class="rounded border-slate-300 text-xs sm:col-span-2">
-                            <input type="text" x-model="value.value" placeholder="Value" class="rounded border-slate-300 text-xs">
-                            <input type="number" step="0.01" x-model.number="value.price_modifier" placeholder="Extra price" class="rounded border-slate-300 text-xs">
-                            <input type="number" x-model.number="value.delivery_modifier" placeholder="Extra days" class="rounded border-slate-300 text-xs">
-                            <input type="text" x-model="value.image_url" placeholder="Image URL" class="rounded border-slate-300 text-xs">
-                            <div class="flex items-center justify-end gap-2">
-                                <label class="text-xs font-semibold"><input type="checkbox" x-model="value.is_default"> Default</label>
-                                <button type="button" @click="group.values.splice(valueIndex, 1)" class="rounded border border-rose-200 px-2 py-1 text-xs font-bold text-rose-700">Remove</button>
+                        <div class="rounded-lg bg-slate-50 p-3">
+                            <div class="grid gap-2 sm:grid-cols-6">
+                                <input type="text" x-model="value.label" placeholder="Label" class="rounded border-slate-300 text-xs sm:col-span-2">
+                                <input type="text" x-model="value.value" placeholder="Value" class="rounded border-slate-300 text-xs">
+                                <input type="number" step="0.01" x-model.number="value.price_modifier" placeholder="Extra price" class="rounded border-slate-300 text-xs">
+                                <input type="number" x-model.number="value.delivery_modifier" placeholder="Extra days" class="rounded border-slate-300 text-xs">
+                                <div class="flex items-center justify-end gap-2">
+                                    <label class="text-xs font-semibold"><input type="checkbox" x-model="value.is_default"> Default</label>
+                                    <button type="button" @click="group.values.splice(valueIndex, 1)" class="rounded border border-rose-200 px-2 py-1 text-xs font-bold text-rose-700">Remove</button>
+                                </div>
                             </div>
+
+                            <div x-show="group.input_type === 'image_tabs'" class="mt-2 grid gap-2 sm:grid-cols-2">
+                                <input type="text" x-model="value.image_url" placeholder="Image URL" class="rounded border-slate-300 text-xs">
+                                <input type="file" accept="image/*" :name="`option_images[${groupIndex}][${valueIndex}]`" class="rounded border border-slate-300 bg-white px-2 py-1.5 text-xs" @change="previewOptionImage(groupIndex, valueIndex, $event)">
+                            </div>
+                            <template x-if="group.input_type === 'image_tabs' && (value.preview || value.image_url)">
+                                <img :src="value.preview || value.image_url" :alt="value.label || 'Option image preview'" class="mt-2 h-16 w-28 rounded object-cover">
+                            </template>
                         </div>
                     </template>
                 </div>
@@ -136,7 +145,21 @@
                     delivery_modifier: 0,
                     is_default: false,
                     image_url: '',
+                    preview: '',
                 });
+            },
+            previewOptionImage(groupIndex, valueIndex, event) {
+                const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
+                if (!file) return;
+                this.groups[groupIndex].values[valueIndex].preview = URL.createObjectURL(file);
+            },
+            cleanGroups() {
+                return this.groups.map((group) => ({
+                    ...group,
+                    values: Array.isArray(group.values)
+                        ? group.values.map(({ preview, ...value }) => value)
+                        : [],
+                }));
             },
             addQuantity() {
                 this.quantities.push({

@@ -50,6 +50,7 @@ class ProductFormTemplateController extends Controller
         abort_unless($this->tablesReady(), 503, 'Run database migrations before creating product forms.');
 
         $validated = $this->validateTemplate($request);
+        $validated = $this->attachUploadedOptionImages($request, $validated);
 
         ProductFormTemplate::query()->create($this->payload($validated));
 
@@ -72,6 +73,7 @@ class ProductFormTemplateController extends Controller
         abort_unless($this->tablesReady(), 503, 'Run database migrations before editing product forms.');
 
         $validated = $this->validateTemplate($request, $productFormTemplate->id);
+        $validated = $this->attachUploadedOptionImages($request, $validated);
 
         $productFormTemplate->update($this->payload($validated, $productFormTemplate->id));
 
@@ -99,8 +101,47 @@ class ProductFormTemplateController extends Controller
             'settings.upload_enabled' => ['nullable', 'boolean'],
             'settings.upload_label' => ['nullable', 'string', 'max:190'],
             'settings.upload_help' => ['nullable', 'string', 'max:255'],
+            'option_images' => ['nullable', 'array'],
+            'option_images.*' => ['nullable', 'array'],
+            'option_images.*.*' => ['nullable', 'image', 'max:4096'],
             'is_active' => ['nullable', 'boolean'],
         ]);
+    }
+
+    private function attachUploadedOptionImages(Request $request, array $validated): array
+    {
+        $groups = $this->decodeJson($validated['option_groups_json'] ?? null, 'option_groups_json');
+
+        foreach ($request->file('option_images', []) as $groupIndex => $valueFiles) {
+            if (! is_array($valueFiles)) {
+                continue;
+            }
+
+            foreach ($valueFiles as $valueIndex => $file) {
+                if (! $file || ! $file->isValid()) {
+                    continue;
+                }
+
+                if (! isset($groups[$groupIndex]['values'][$valueIndex])) {
+                    continue;
+                }
+
+                $path = $file->store('product-option-images', 'public');
+                $groups[$groupIndex]['values'][$valueIndex]['image_url'] = '/storage/' . $path;
+            }
+        }
+
+        foreach ($groups as &$group) {
+            foreach (($group['values'] ?? []) as &$value) {
+                unset($value['preview']);
+            }
+        }
+
+        unset($value, $group, $validated['option_images']);
+
+        $validated['option_groups_json'] = json_encode($groups);
+
+        return $validated;
     }
 
     private function tablesReady(): bool

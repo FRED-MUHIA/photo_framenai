@@ -3,7 +3,7 @@
 @section('heading', 'Edit Product Form')
 
 @section('content')
-<form method="POST" action="{{ route('admin.product-form-templates.update', $template) }}" class="space-y-4 rounded-xl bg-white p-6 shadow-sm">
+<form method="POST" action="{{ route('admin.product-form-templates.update', $template) }}" enctype="multipart/form-data" class="space-y-4 rounded-xl bg-white p-6 shadow-sm">
     @csrf
     @method('PUT')
     @include('admin.product-form-templates.partials.form', [
