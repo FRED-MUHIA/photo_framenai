@@ -61,9 +61,18 @@
             <h3 class="text-lg font-extrabold">Order Summary</h3>
             <div class="mt-4 space-y-2 text-sm">
                 @foreach($items as $item)
-                    <div class="flex justify-between gap-3 border-b border-slate-100 pb-2">
-                        <span>{{ $item['product_name'] }} x {{ $item['quantity'] }}</span>
-                        <span>{{ config('shop.currency_symbol') }} {{ number_format($item['line_total'], 2) }}</span>
+                    <div class="border-b border-slate-100 pb-2">
+                        <div class="flex justify-between gap-3">
+                            <span>{{ $item['product_name'] }} x {{ $item['quantity'] }}</span>
+                            <span>{{ config('shop.currency_symbol') }} {{ number_format($item['line_total'], 2) }}</span>
+                        </div>
+                        @if(! empty($item['selected_values']))
+                            <div class="mt-1 text-xs text-slate-500">
+                                @foreach($item['selected_values'] as $value)
+                                    <div>{{ strtoupper($value['group_code']) }}: {{ $value['label'] }}</div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 @endforeach
                 <div class="flex justify-between"><span>Subtotal</span><span>{{ config('shop.currency_symbol') }} {{ number_format($totals['subtotal'], 2) }}</span></div>

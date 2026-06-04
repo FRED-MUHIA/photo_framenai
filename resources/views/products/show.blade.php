@@ -142,8 +142,8 @@
                                     $optionImageUrl = \App\Support\PublicAssetUrl::resolve(data_get($value->metadata, 'image_url'));
                                 @endphp
                                 <label
-                                    class="flex cursor-pointer flex-col items-center justify-center rounded-lg border px-3 text-center transition {{ $group->input_type === 'image_tabs' ? 'min-h-[86px] py-3' : 'h-[34px] w-[180px] py-1' }}"
-                                    style="{{ $group->input_type === 'image_tabs' ? 'min-height: 86px;' : 'width: 180px; height: 34px; min-height: 34px;' }}"
+                                    class="flex cursor-pointer items-center rounded-lg border px-3 text-center transition {{ $group->input_type === 'image_tabs' ? 'min-h-[64px] justify-start gap-3 py-2' : 'h-[34px] w-[180px] justify-center py-1' }}"
+                                    style="{{ $group->input_type === 'image_tabs' ? 'min-height: 64px;' : 'width: 180px; height: 34px; min-height: 34px;' }}"
                                     :class="String(selectedOptions[@js($group->code)] || '') === @js((string) $value->id) ? 'border-[#ff0037] bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'"
                                 >
                                     <input
@@ -155,9 +155,11 @@
                                         class="sr-only"
                                     >
                                     @if($group->input_type === 'image_tabs' && $optionImageUrl)
-                                        <img loading="lazy" decoding="async" src="{{ $optionImageUrl }}" alt="{{ $value->label }}" class="mb-3 h-16 w-full rounded bg-white object-contain">
+                                        <span class="flex h-12 w-14 shrink-0 items-center justify-center overflow-hidden rounded bg-white">
+                                            <img loading="lazy" decoding="async" src="{{ $optionImageUrl }}" alt="{{ $value->label }}" class="h-full w-full object-contain">
+                                        </span>
                                     @endif
-                                    <span class="block text-[12px] font-extrabold leading-none text-slate-900">{{ $value->label }}</span>
+                                    <span class="block min-w-0 text-[12px] font-extrabold leading-tight text-slate-900">{{ $value->label }}</span>
                                 </label>
                             @endforeach
                         </div>
@@ -367,11 +369,11 @@
                 this.ensureDeliveryDate();
             },
             incrementQuantity() {
-                this.quantity = this.nextQuantity(1);
+                this.quantity = this.normalizedQuantityValue() + 1;
                 this.refreshQuote();
             },
             decrementQuantity() {
-                this.quantity = this.nextQuantity(-1);
+                this.quantity = Math.max(this.minQuantity, this.normalizedQuantityValue() - 1);
                 this.refreshQuote();
             },
             normalizeQuantity() {
