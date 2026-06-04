@@ -1279,9 +1279,7 @@
 
     $topPickUsdRate = (float) config('shop.usd_exchange_rate', 126);
     $topPicks = collect($topPickProducts ?? [])->map(function ($product) use ($publicAsset, $topPickUsdRate) {
-        $prices = $product->relationLoaded('quantityPrices') ? $product->quantityPrices : collect();
-        $minPrice = $prices->min('price');
-        $displayPrice = (float) ($minPrice ?: $product->base_price);
+        $displayPrice = (float) $product->base_price;
 
         $price = number_format($displayPrice, 0);
         $usdPrice = '$' . number_format($displayPrice / max($topPickUsdRate, 1), 2);

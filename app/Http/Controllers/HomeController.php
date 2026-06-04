@@ -31,7 +31,7 @@ class HomeController extends Controller
 
         $topPickProducts = Product::query()
             ->active()
-            ->with(['category', 'categories', 'quantityPrices'])
+            ->with(['category', 'categories'])
             ->orderByDesc('is_featured')
             ->latest()
             ->take(12)

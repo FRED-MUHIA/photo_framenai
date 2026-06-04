@@ -24,9 +24,10 @@ class PricingService
             ->get()
             ->keyBy('id');
 
-        $quantityPrice = $this->resolveQuantityPrice($product->quantityPrices, $quantity);
-
         $usesCalculatorForm = ! empty($product->product_form_template_id);
+        $quantityPrice = $usesCalculatorForm
+            ? null
+            : $this->resolveQuantityPrice($product->quantityPrices, $quantity);
 
         $baseTotal = $quantityPrice
             ? $this->calculateTieredBaseTotal($quantityPrice, $quantity)

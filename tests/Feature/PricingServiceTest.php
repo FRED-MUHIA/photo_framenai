@@ -41,7 +41,7 @@ class PricingServiceTest extends TestCase
         $this->assertSame(250.0, $quote['unit_price']);
     }
 
-    public function test_quantity_form_price_is_included_with_selected_option_prices(): void
+    public function test_calculator_form_uses_only_selected_option_prices_even_when_quantity_prices_exist(): void
     {
         $template = $this->createFormTemplate();
         $product = $this->createProduct([
@@ -58,8 +58,9 @@ class PricingServiceTest extends TestCase
 
         $quote = app(PricingService::class)->quote($product, [$option->id], 100);
 
-        $this->assertSame(3500.0, $quote['line_total']);
-        $this->assertSame(35.0, $quote['unit_price']);
+        $this->assertSame(2500.0, $quote['line_total']);
+        $this->assertSame(25.0, $quote['unit_price']);
+        $this->assertNull($quote['quantity_pricing']);
     }
 
     private function createProduct(array $overrides = []): Product
