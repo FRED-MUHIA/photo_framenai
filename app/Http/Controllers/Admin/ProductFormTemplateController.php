@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\ProductFormTemplate;
+use App\Models\ProductOptionValue;
+use App\Models\ProductQuantityPrice;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -75,9 +79,17 @@ class ProductFormTemplateController extends Controller
         $validated = $this->validateTemplate($request, $productFormTemplate->id);
         $validated = $this->attachUploadedOptionImages($request, $validated);
 
-        $productFormTemplate->update($this->payload($validated, $productFormTemplate->id));
+        $updatedProductCount = 0;
 
-        return redirect()->route('admin.product-form-templates.index')->with('status', 'Product form updated.');
+        DB::transaction(function () use ($productFormTemplate, $validated, &$updatedProductCount) {
+            $productFormTemplate->update($this->payload($validated, $productFormTemplate->id));
+            $productFormTemplate->refresh();
+            $updatedProductCount = $this->syncTemplateToProducts($productFormTemplate);
+        });
+
+        return redirect()
+            ->route('admin.product-form-templates.index')
+            ->with('status', 'Product form updated. ' . $updatedProductCount . ' linked product(s) refreshed.');
     }
 
     public function destroy(ProductFormTemplate $productFormTemplate)
@@ -147,6 +159,112 @@ class ProductFormTemplateController extends Controller
     private function tablesReady(): bool
     {
         return Schema::hasTable('product_form_templates') && Schema::hasColumn('products', 'product_form_template_id');
+    }
+
+    private function syncTemplateToProducts(ProductFormTemplate $template): int
+    {
+        $count = 0;
+
+        Product::query()
+            ->where('product_form_template_id', $template->id)
+            ->with('optionGroups')
+            ->chunkById(50, function ($products) use ($template, &$count) {
+                foreach ($products as $product) {
+                    $this->syncProductOptions($product, $template->option_groups ?: []);
+                    $this->syncProductQuantityPricing($product, $template->quantity_prices ?: []);
+                    $this->syncProductUploadSettings($product, $template->settings ?: []);
+                    $count++;
+                }
+            });
+
+        return $count;
+    }
+
+    private function syncProductOptions(Product $product, array $groups): void
+    {
+        $groupIds = $product->optionGroups()->pluck('id');
+
+        if ($groupIds->isNotEmpty()) {
+            ProductOptionValue::query()
+                ->whereIn('product_option_group_id', $groupIds)
+                ->delete();
+        }
+
+        $product->optionGroups()->delete();
+
+        $usedCodes = [];
+
+        foreach ($groups as $index => $groupPayload) {
+            $groupName = data_get($groupPayload, 'name', 'Option Group ' . ($index + 1));
+            $codeSeed = data_get($groupPayload, 'code') ?: $groupName ?: 'group-' . ($index + 1);
+            $baseCode = Str::of($codeSeed)->slug('_')->toString() ?: 'group_' . ($index + 1);
+            $code = $baseCode;
+            $counter = 2;
+
+            while (in_array($code, $usedCodes, true)) {
+                $code = $baseCode . '_' . $counter;
+                $counter++;
+            }
+
+            $usedCodes[] = $code;
+
+            $group = $product->optionGroups()->create([
+                'name' => $groupName,
+                'code' => $code,
+                'input_type' => data_get($groupPayload, 'input_type', 'select'),
+                'is_required' => (bool) data_get($groupPayload, 'is_required', true),
+                'sort_order' => $index,
+            ]);
+
+            foreach ((array) data_get($groupPayload, 'values', []) as $valueIndex => $valuePayload) {
+                $valueLabel = data_get($valuePayload, 'label', 'Option ' . ($valueIndex + 1));
+                $value = data_get($valuePayload, 'value') ?: Str::slug($valueLabel) ?: 'option-' . ($valueIndex + 1);
+
+                $group->values()->create([
+                    'label' => $valueLabel,
+                    'value' => $value,
+                    'price_modifier' => (float) data_get($valuePayload, 'price_modifier', 0),
+                    'delivery_modifier' => (int) data_get($valuePayload, 'delivery_modifier', 0),
+                    'metadata' => [
+                        'image_url' => data_get($valuePayload, 'image_url', data_get($valuePayload, 'metadata.image_url', '')),
+                    ],
+                    'is_default' => (bool) data_get($valuePayload, 'is_default', false),
+                    'sort_order' => $valueIndex,
+                ]);
+            }
+        }
+    }
+
+    private function syncProductQuantityPricing(Product $product, array $rows): void
+    {
+        ProductQuantityPrice::query()->where('product_id', $product->id)->delete();
+
+        foreach ($rows as $row) {
+            $quantity = (int) data_get($row, 'quantity', 0);
+
+            if ($quantity < 1) {
+                continue;
+            }
+
+            ProductQuantityPrice::query()->create([
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'price' => (float) data_get($row, 'price', 0),
+                'discount_percentage' => (float) data_get($row, 'discount_percentage', 0),
+                'delivery_days' => data_get($row, 'delivery_days') !== null ? (int) data_get($row, 'delivery_days') : null,
+                'is_active' => (bool) data_get($row, 'is_active', true),
+            ]);
+        }
+    }
+
+    private function syncProductUploadSettings(Product $product, array $settings): void
+    {
+        $metadata = $product->metadata ?: [];
+        $metadata['upload_enabled'] = (bool) data_get($settings, 'upload_enabled', true);
+        $metadata['upload_label'] = data_get($settings, 'upload_label', 'Upload Design (Optional)');
+        $metadata['upload_help'] = data_get($settings, 'upload_help', 'PDF, AI, PSD, JPG, PNG (max 50MB)');
+
+        $product->update(['metadata' => $metadata]);
     }
 
     private function payload(array $validated, ?int $ignoreId = null): array
