@@ -38,6 +38,7 @@
                         <option value="buttons">Button tabs</option>
                         <option value="image_tabs">Image tabs</option>
                         <option value="select">Dropdown</option>
+                        <option value="text">Text</option>
                     </select>
                     <label class="inline-flex items-center gap-2 text-sm font-semibold">
                         <input type="checkbox" x-model="group.is_required">
@@ -45,7 +46,11 @@
                     </label>
                 </div>
 
-                <div class="mt-4 space-y-3">
+                <div x-show="group.input_type === 'text'" class="mt-4 rounded-lg bg-slate-50 p-3 text-xs font-semibold text-slate-500">
+                    This field will show as a free-text input on the product page. Text fields do not use option prices.
+                </div>
+
+                <div x-show="group.input_type !== 'text'" class="mt-4 space-y-3">
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-bold text-slate-500">Options, prices and image tabs</p>
                         <button type="button" @click="addValue(group)" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-bold">Add Option</button>
@@ -156,7 +161,9 @@
             cleanGroups() {
                 return this.groups.map((group) => ({
                     ...group,
-                    values: Array.isArray(group.values)
+                    values: group.input_type === 'text'
+                        ? []
+                        : Array.isArray(group.values)
                         ? group.values.map(({ preview, ...value }) => value)
                         : [],
                 }));

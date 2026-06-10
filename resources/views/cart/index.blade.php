@@ -24,6 +24,9 @@
                                     @foreach(($item['selected_values'] ?? []) as $value)
                                         <span class="rounded-full bg-slate-100 px-2 py-1">{{ strtoupper($value['group_code']) }}: {{ $value['label'] }}</span>
                                     @endforeach
+                                    @foreach(($item['custom_fields'] ?? []) as $field)
+                                        <span class="rounded-full bg-slate-100 px-2 py-1">{{ $field['label'] }}: {{ $field['value'] }}</span>
+                                    @endforeach
                                 </div>
                                 @if(!empty($item['artwork_name']))
                                     <p class="mt-2 text-xs font-semibold text-teal-700">Artwork: {{ $item['artwork_name'] }}</p>

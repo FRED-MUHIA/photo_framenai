@@ -216,6 +216,10 @@ class ProductFormTemplateController extends Controller
                 'sort_order' => $index,
             ]);
 
+            if (data_get($groupPayload, 'input_type') === 'text') {
+                continue;
+            }
+
             foreach ((array) data_get($groupPayload, 'values', []) as $valueIndex => $valuePayload) {
                 $valueLabel = data_get($valuePayload, 'label', 'Option ' . ($valueIndex + 1));
                 $value = data_get($valuePayload, 'value') ?: Str::slug($valueLabel) ?: 'option-' . ($valueIndex + 1);

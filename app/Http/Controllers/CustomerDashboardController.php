@@ -48,6 +48,7 @@ class CustomerDashboardController extends Controller
                 'quantity' => $item->quantity,
                 'selected_options' => data_get($item->configuration, 'selected_options', []),
                 'selected_values' => data_get($item->configuration, 'selected_values', []),
+                'custom_fields' => data_get($item->configuration, 'custom_fields', []),
                 'unit_price' => (float) $item->unit_price,
                 'line_total' => (float) $item->line_total,
                 'delivery_days' => $item->delivery_days,

@@ -62,6 +62,25 @@ class ProductController extends Controller
         $defaultQuantity = (int) ($quantitySuggestions->first() ?? $product->min_quantity);
         $defaultQuantity = max($minQuantity, $defaultQuantity);
         $defaultQuote = $this->pricingService->quote($product, $defaultSelections, $defaultQuantity);
+        $relatedCategoryIds = $product->categories
+            ->pluck('id')
+            ->when($product->category_id, fn ($ids) => $ids->push($product->category_id))
+            ->unique()
+            ->values();
+        $relatedProducts = Product::query()
+            ->active()
+            ->with(['category', 'categories'])
+            ->whereKeyNot($product->id)
+            ->when($relatedCategoryIds->isNotEmpty(), function ($query) use ($relatedCategoryIds) {
+                $query->where(function ($inner) use ($relatedCategoryIds) {
+                    $inner->whereIn('category_id', $relatedCategoryIds)
+                        ->orWhereHas('categories', fn ($category) => $category->whereIn('categories.id', $relatedCategoryIds));
+                });
+            })
+            ->orderByDesc('is_featured')
+            ->latest()
+            ->take(4)
+            ->get();
         $artworks = Artwork::query()
             ->when(auth()->check(), fn ($query) => $query->where('user_id', auth()->id()))
             ->when(! auth()->check(), fn ($query) => $query->where('guest_token', session()->getId()))
@@ -75,6 +94,7 @@ class ProductController extends Controller
             'defaultQuantity' => $defaultQuantity,
             'defaultQuote' => $defaultQuote,
             'quantitySuggestions' => $quantitySuggestions,
+            'relatedProducts' => $relatedProducts,
             'artworks' => $artworks,
         ]);
     }

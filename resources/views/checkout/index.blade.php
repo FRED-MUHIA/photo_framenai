@@ -73,6 +73,13 @@
                                 @endforeach
                             </div>
                         @endif
+                        @if(! empty($item['custom_fields']))
+                            <div class="mt-1 text-xs text-slate-500">
+                                @foreach($item['custom_fields'] as $field)
+                                    <div>{{ $field['label'] }}: {{ $field['value'] }}</div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 @endforeach
                 <div class="flex justify-between"><span>Subtotal</span><span>{{ config('shop.currency_symbol') }} {{ number_format($totals['subtotal'], 2) }}</span></div>

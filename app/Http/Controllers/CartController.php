@@ -35,6 +35,8 @@ class CartController extends Controller
             'quantity' => ['required', 'integer', 'min:1'],
             'selected_options' => ['nullable', 'array'],
             'selected_options.*' => ['nullable', 'integer'],
+            'custom_fields' => ['nullable', 'array'],
+            'custom_fields.*' => ['nullable', 'string', 'max:500'],
             'shipping_option' => ['nullable', 'in:not_necessary,standard,express,pickup'],
             'artwork_id' => ['nullable', 'exists:artworks,id'],
             'delivery_date' => ['nullable', 'date_format:Y-m-d'],
@@ -57,6 +59,7 @@ class CartController extends Controller
         }
 
         $selections = array_filter($validated['selected_options'] ?? []);
+        $customFields = $this->collectCustomFields($product, $validated['custom_fields'] ?? []);
 
         $shippingOption = $validated['shipping_option'] ?? 'standard';
         $quote = $this->pricingService->quote($product, $selections, $quantity, $shippingOption);
@@ -102,6 +105,7 @@ class CartController extends Controller
             'min_quantity' => $minQuantity,
             'selected_options' => $selections,
             'selected_values' => $quote['selected_values'],
+            'custom_fields' => $customFields,
             'unit_price' => $quote['unit_price'],
             'line_total' => $quote['line_total'],
             'delivery_days' => $quote['delivery_days'],
@@ -200,5 +204,32 @@ class CartController extends Controller
         }
 
         return $requestedDate;
+    }
+
+    private function collectCustomFields(Product $product, array $input): array
+    {
+        $fields = [];
+
+        foreach ($product->optionGroups->where('input_type', 'text') as $group) {
+            $value = trim((string) data_get($input, $group->code, ''));
+
+            if ($group->is_required && $value === '') {
+                throw ValidationException::withMessages([
+                    'custom_fields.' . $group->code => $group->name . ' is required.',
+                ]);
+            }
+
+            if ($value === '') {
+                continue;
+            }
+
+            $fields[] = [
+                'group_code' => $group->code,
+                'label' => $group->name,
+                'value' => $value,
+            ];
+        }
+
+        return $fields;
     }
 }

@@ -33,6 +33,11 @@
         min-width: 0;
     }
 
+    .product-related-section {
+        grid-column: 1 / -1;
+        min-width: 0;
+    }
+
     @media (max-width: 1472px) {
         .product-detail-shell {
             padding-left: 24px;
@@ -48,7 +53,8 @@
 
         .product-detail-image-column,
         .product-detail-form-column,
-        .product-detail-description {
+        .product-detail-description,
+        .product-related-section {
             grid-column: 1;
             grid-row: auto;
         }
@@ -121,10 +127,20 @@
                 </div>
 
                 @foreach($product->optionGroups as $group)
-                    @continue($group->values->isEmpty())
+                    @continue($group->input_type !== 'text' && $group->values->isEmpty())
                     <fieldset>
                         <legend class="mb-4 text-[13px] font-bold text-slate-900">{{ $loop->first ? 'Select Print Option' : $group->name }}</legend>
-                        @if($group->input_type === 'select')
+                        @if($group->input_type === 'text')
+                            <input
+                                type="text"
+                                name="custom_fields[{{ $group->code }}]"
+                                value="{{ old('custom_fields.' . $group->code) }}"
+                                maxlength="500"
+                                placeholder="{{ $group->name }}"
+                                class="w-full rounded-xl border-slate-300"
+                                @required($group->is_required)
+                            >
+                        @elseif($group->input_type === 'select')
                             <select name="selected_options[{{ $group->code }}]" x-model="selectedOptions[@js($group->code)]" @change="refreshQuote" class="w-full rounded-xl border-slate-300">
                                 @foreach($group->values as $value)
                                     <option value="{{ $value->id }}">
@@ -342,6 +358,45 @@
                 @endforeach
             </div>
         </div>
+
+        @if(($relatedProducts ?? collect())->isNotEmpty())
+            <section class="product-related-section mt-10">
+                <div class="mb-4 flex items-end justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">You may also like</p>
+                        <h2 class="mt-1 text-2xl font-extrabold text-slate-950">Related products</h2>
+                    </div>
+                    <a href="{{ route('products.index') }}" class="text-sm font-bold text-[#ff0037]">View all</a>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    @foreach($relatedProducts as $relatedProduct)
+                        @php
+                            $relatedThumbnail = \App\Support\PublicAssetUrl::resolve($relatedProduct->thumbnail);
+                        @endphp
+                        <a href="{{ route('products.show', $relatedProduct) }}" class="block rounded-xl border border-slate-200 bg-white p-3 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            <div class="aspect-square overflow-hidden rounded-lg bg-slate-100">
+                                @if($relatedThumbnail)
+                                    <img loading="lazy" decoding="async" src="{{ $relatedThumbnail }}" alt="{{ $relatedProduct->name }}" class="h-full w-full object-cover">
+                                @else
+                                    <div class="flex h-full w-full items-center justify-center p-4 text-center text-xs font-semibold text-slate-500">{{ $relatedProduct->name }}</div>
+                                @endif
+                            </div>
+                            <div class="mt-3">
+                                <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                    {{ $relatedProduct->categories->pluck('name')->join(' / ') ?: $relatedProduct->category?->name }}
+                                </p>
+                                <h3 class="mt-1 text-sm font-extrabold leading-tight">{{ $relatedProduct->name }}</h3>
+                                <div class="mt-3 flex items-center justify-between gap-3">
+                                    <span class="text-sm font-extrabold text-[#ff0037]">KES {{ number_format((float) $relatedProduct->base_price, 0) }}</span>
+                                    <span class="rounded-lg border border-slate-300 px-2.5 py-1 text-[11px] font-bold">Order Now</span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
     </div>
 </section>
 @endsection

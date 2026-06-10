@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @php
+        $storefrontBreadcrumbs = \App\Support\StorefrontBreadcrumbs::forCurrentRequest(request());
+    @endphp
     <title>@yield('meta_title', 'NaiPrinters - Online Printing eCommerce')</title>
     <meta name="description" content="@yield('meta_description', 'Customize and order print products online with live pricing, artwork uploads, and fast delivery.')">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -25,12 +28,19 @@
             "sameAs": ["{{ $siteSettings->get('whatsapp_link', config('shop.whatsapp_link')) }}"]
         }
     </script>
+    @if(count($storefrontBreadcrumbs) > 1)
+        <script type="application/ld+json">
+            {!! json_encode(\App\Support\StorefrontBreadcrumbs::toSchema($storefrontBreadcrumbs), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+        </script>
+    @endif
 </head>
 <body style="background:#f4f4f4; color:#111;">
 <div class="min-h-screen">
     @include('partials.site-header')
 
     @include('partials.flash')
+
+    @include('partials.breadcrumbs', ['items' => $storefrontBreadcrumbs])
 
     <main>
         @yield('content')

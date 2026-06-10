@@ -98,6 +98,7 @@ class CheckoutController extends Controller
                     'configuration' => [
                         'selected_options' => $item['selected_options'] ?? [],
                         'selected_values' => $item['selected_values'] ?? [],
+                        'custom_fields' => $item['custom_fields'] ?? [],
                         'delivery_date' => $item['delivery_date'] ?? null,
                     ],
                     'quantity' => $item['quantity'],
