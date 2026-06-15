@@ -53,7 +53,31 @@
     </div>
 </div>
 <input type="text" name="short_description" value="{{ old('short_description', $product->short_description) }}" placeholder="Short Description" class="w-full rounded-xl border-slate-300">
-<textarea name="description" placeholder="Description" class="w-full rounded-xl border-slate-300">{{ old('description', $product->description) }}</textarea>
+<div class="rounded-xl border border-slate-300 bg-white" x-data="richTextEditor()" x-init="init($refs.descriptionInput, $refs.descriptionEditor)">
+    <div class="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 px-3 py-2">
+        <button type="button" title="Bold" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm font-extrabold hover:bg-slate-100" @click="format('bold')">B</button>
+        <button type="button" title="Italic" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm italic hover:bg-slate-100" @click="format('italic')">I</button>
+        <button type="button" title="Underline" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm underline hover:bg-slate-100" @click="format('underline')">U</button>
+        <span class="mx-1 h-6 w-px bg-slate-200"></span>
+        <button type="button" title="Heading" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-extrabold hover:bg-slate-100" @click="block('h3')">H</button>
+        <button type="button" title="Paragraph" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-semibold hover:bg-slate-100" @click="block('p')">P</button>
+        <button type="button" title="Bulleted list" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm hover:bg-slate-100" @click="format('insertUnorderedList')">•</button>
+        <button type="button" title="Numbered list" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm hover:bg-slate-100" @click="format('insertOrderedList')">1.</button>
+        <span class="mx-1 h-6 w-px bg-slate-200"></span>
+        <button type="button" title="Add link" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-bold hover:bg-slate-100" @click="link()">Link</button>
+        <button type="button" title="Clear formatting" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-bold hover:bg-slate-100" @click="format('removeFormat')">Tx</button>
+    </div>
+    <div
+        x-ref="descriptionEditor"
+        contenteditable="true"
+        role="textbox"
+        aria-label="Description"
+        class="rich-text-editor min-h-[220px] w-full overflow-auto rounded-b-xl px-4 py-3 text-sm leading-7 outline-none focus:ring-2 focus:ring-slate-300"
+        @input="sync()"
+        @blur="sync()"
+    ></div>
+    <textarea x-ref="descriptionInput" name="description" class="hidden">{{ old('description', $product->description) }}</textarea>
+</div>
 
 <div class="grid gap-4 sm:grid-cols-2">
     <input type="text" name="metadata[meta_title]" value="{{ old('metadata.meta_title', data_get($product->metadata, 'meta_title')) }}" placeholder="Meta Title" class="rounded-xl border-slate-300">

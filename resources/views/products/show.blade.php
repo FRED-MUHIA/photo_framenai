@@ -85,7 +85,7 @@
         ->values();
     $usdRate = (float) config('shop.usd_exchange_rate', 126);
     $whatsappLink = config('shop.whatsapp_link');
-    $description = trim(strip_tags($product->description ?: $product->short_description ?: ''));
+    $descriptionHtml = \App\Support\RichTextSanitizer::clean($product->description ?: $product->short_description ?: '');
     $uploadEnabled = (bool) data_get($product->metadata, 'upload_enabled', true);
     $uploadLabel = data_get($product->metadata, 'upload_label') ?: 'Upload Design (Optional)';
     $uploadHelp = data_get($product->metadata, 'upload_help') ?: 'PDF, AI, PSD, JPG, PNG (max 50MB)';
@@ -332,9 +332,9 @@
                     </summary>
                     <div class="mt-4 max-w-[1080px]">
                         <h2 class="text-xl font-extrabold leading-tight text-slate-950">{{ $product->name }}</h2>
-                        <p class="mt-4 text-justify text-sm leading-7 text-slate-700">
-                            {{ $description ?: 'Configure this product with your preferred print options, quantity, delivery timeline, and artwork.' }}
-                        </p>
+                        <div class="rich-text-content mt-4 text-justify text-sm leading-7 text-slate-700">
+                            {!! $descriptionHtml ?: 'Configure this product with your preferred print options, quantity, delivery timeline, and artwork.' !!}
+                        </div>
                     </div>
                 </details>
 

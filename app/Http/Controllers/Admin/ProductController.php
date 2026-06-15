@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\MediaItem;
 use App\Models\Product;
 use App\Models\ProductFormTemplate;
+use App\Support\RichTextSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -187,7 +188,7 @@ class ProductController extends Controller
             'name' => $validated['name'],
             'sku' => $validated['sku'] ?? null,
             'short_description' => $validated['short_description'] ?? null,
-            'description' => $validated['description'] ?? null,
+            'description' => RichTextSanitizer::clean($validated['description'] ?? null),
             'base_price' => $validated['base_price'],
             'min_quantity' => $validated['min_quantity'],
             'base_delivery_days' => $validated['base_delivery_days'],
