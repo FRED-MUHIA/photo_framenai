@@ -739,9 +739,9 @@
 
     .starlink-friday-banner {
         display: grid;
-        grid-template-columns: minmax(250px, 1fr) minmax(340px, 1.45fr) auto;
+        grid-template-columns: minmax(500px, 0.95fr) minmax(360px, 1fr) minmax(210px, auto);
         align-items: center;
-        gap: clamp(18px, 2.2vw, 36px);
+        gap: clamp(24px, 3vw, 48px);
         min-height: 100px;
         margin: 0 0 28px;
         overflow: hidden;
@@ -757,6 +757,7 @@
         align-items: center;
         gap: 18px;
         min-width: 0;
+        max-width: 100%;
         color: var(--red);
         font-weight: 900;
         text-transform: uppercase;
@@ -771,7 +772,7 @@
 
     .starlink-friday-label {
         display: grid;
-        grid-template-columns: auto auto auto;
+        grid-template-columns: minmax(170px, max-content) max-content max-content;
         align-items: center;
         gap: 8px;
         min-width: 0;
@@ -781,6 +782,7 @@
     .starlink-friday-black {
         font-size: clamp(1.5rem, 2.3vw, 2.6rem);
         letter-spacing: 0.02em;
+        overflow-wrap: anywhere;
     }
 
     .starlink-friday-day {
@@ -804,6 +806,8 @@
         line-height: 1.45;
         font-weight: 300;
         text-align: center;
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
 
     .starlink-friday-button {
@@ -824,6 +828,25 @@
     @media (max-width: 1200px) {
         .hero-grid {
             grid-template-rows: 200px 200px 165px;
+        }
+
+        .starlink-friday-banner {
+            grid-template-columns: 1fr auto;
+            border-radius: 32px;
+            padding: 20px;
+        }
+
+        .starlink-friday-sale {
+            grid-column: 1 / -1;
+        }
+
+        .starlink-friday-copy {
+            max-width: none;
+            text-align: left;
+        }
+
+        .starlink-friday-button {
+            justify-self: start;
         }
     }
 
@@ -908,20 +931,6 @@
         .top-pick-card { flex-basis: 300px; }
         .top-pick-media { height: 290px; }
 
-        .starlink-friday-banner {
-            grid-template-columns: 1fr auto;
-            border-radius: 32px;
-            padding: 20px;
-        }
-
-        .starlink-friday-copy {
-            max-width: none;
-            text-align: left;
-        }
-
-        .starlink-friday-button {
-            justify-self: start;
-        }
     }
 
     @media (max-width: 640px) {

@@ -1116,6 +1116,10 @@
                 </a>
             @endauth
             <a href="{{ route('products.index') }}" class="np-quick-btn"><span data-ea-i18n="quick_quote">Quick Quote</span></a>
+            <a href="{{ route('cart.index') }}" class="np-icon-action">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.25 3h1.386a1.5 1.5 0 0 1 1.45 1.12L5.74 7.5m0 0h13.01l-1.5 6H7.24m-1.5-6 1.5 6m0 0-1.12 2.24A1.5 1.5 0 0 0 7.5 18h9m-9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"/></svg>
+                <span data-ea-i18n="shopping_cart">Shopping Cart</span>
+            </a>
             <div
                 class="np-country-selector notranslate"
                 x-data="eastAfricaLanguageSelector(@js($eastAfricaLocales))"
@@ -1140,10 +1144,6 @@
                     <p class="np-country-response" aria-live="polite" x-text="responseText"></p>
                 </div>
             </div>
-            <a href="{{ route('cart.index') }}" class="np-icon-action">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.25 3h1.386a1.5 1.5 0 0 1 1.45 1.12L5.74 7.5m0 0h13.01l-1.5 6H7.24m-1.5-6 1.5 6m0 0-1.12 2.24A1.5 1.5 0 0 0 7.5 18h9m-9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"/></svg>
-                <span data-ea-i18n="shopping_cart">Shopping Cart</span>
-            </a>
         </div>
     </div>
 </header>
