@@ -747,7 +747,7 @@
         overflow: hidden;
         border-radius: 46px;
         background: #002d45;
-        padding: 10px 14px 10px 30px;
+        padding: 10px clamp(28px, 2.6vw, 42px) 10px 30px;
         color: #fff;
         text-decoration: none;
     }
@@ -816,6 +816,7 @@
         min-height: 52px;
         align-items: center;
         justify-content: center;
+        justify-self: end;
         border-radius: 999px;
         background: var(--red);
         padding: 0 24px;
