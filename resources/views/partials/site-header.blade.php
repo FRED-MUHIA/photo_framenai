@@ -38,6 +38,7 @@
     ];
 
     $eastAfricaLocales = [
+        ['country' => 'English', 'code' => 'EN', 'language' => 'English', 'locale' => 'en'],
         ['country' => 'Kenya', 'code' => 'KE', 'language' => 'Kiswahili', 'locale' => 'sw'],
         ['country' => 'Tanzania', 'code' => 'TZ', 'language' => 'Kiswahili', 'locale' => 'sw'],
         ['country' => 'Uganda', 'code' => 'UG', 'language' => 'English', 'locale' => 'en'],
@@ -273,6 +274,17 @@
     }
 
     [x-cloak] { display: none !important; }
+
+    body {
+        top: 0 !important;
+    }
+
+    .goog-te-banner-frame,
+    .goog-te-balloon-frame,
+    .goog-te-gadget,
+    iframe.skiptranslate {
+        display: none !important;
+    }
 
     .np-wrap {
         max-width: 1240px;
@@ -893,6 +905,23 @@
     }
 </style>
 
+@once
+    <div id="google_translate_element" class="hidden" aria-hidden="true"></div>
+    <script>
+        window.googleTranslateElementInit = function () {
+            new window.google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,sw,rw,rn,so,am',
+                autoDisplay: false
+            }, 'google_translate_element');
+
+            window.npGoogleTranslateReady = true;
+            window.dispatchEvent(new Event('np-google-translate-ready'));
+        };
+    </script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+@endonce
+
 <div class="np-header-top">
     <div class="np-wrap np-header-top-inner">
         <div class="np-header-perks">
@@ -1047,7 +1076,7 @@
             @endauth
             <a href="{{ route('products.index') }}" class="np-quick-btn"><span data-ea-i18n="quick_quote">Quick Quote</span></a>
             <div
-                class="np-country-selector"
+                class="np-country-selector notranslate"
                 x-data="eastAfricaLanguageSelector(@js($eastAfricaLocales))"
                 x-init="init()"
                 @keydown.escape.window="open = false"

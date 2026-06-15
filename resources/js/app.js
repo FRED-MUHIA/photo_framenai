@@ -58,122 +58,87 @@ window.richTextEditor = function () {
 };
 
 window.eastAfricaLanguageSelector = function (locales = []) {
-    const translations = {
-        en: {
-            all_products: 'All products',
-            admin_panel: 'Admin Panel',
-            country: 'Country',
-            dashboard: 'Dashboard',
-            language_response: 'Language set for your country.',
-            login: 'Login',
-            quick_quote: 'Quick Quote',
-            search_placeholder: 'Search...',
-            shopping_cart: 'Shopping Cart',
-            what_we_print: 'What We Print',
-        },
-        sw: {
-            all_products: 'Bidhaa zote',
-            admin_panel: 'Paneli ya Admin',
-            country: 'Nchi',
-            dashboard: 'Dashibodi',
-            language_response: 'Lugha imewekwa kwa nchi yako.',
-            login: 'Ingia',
-            quick_quote: 'Nukuu ya Haraka',
-            search_placeholder: 'Tafuta...',
-            shopping_cart: 'Kikapu',
-            what_we_print: 'Tunachochapisha',
-        },
-        rw: {
-            all_products: 'Ibicuruzwa byose',
-            admin_panel: 'Ubuyobozi',
-            country: 'Igihugu',
-            dashboard: 'Ahabanza',
-            language_response: 'Ururimi rwashyizweho ku gihugu cyawe.',
-            login: 'Injira',
-            quick_quote: 'Saba igiciro',
-            search_placeholder: 'Shaka...',
-            shopping_cart: 'Igare ryo kugura',
-            what_we_print: 'Ibyo duca',
-        },
-        rn: {
-            all_products: 'Ibicuruzwa vyose',
-            admin_panel: 'Ubuyobozi',
-            country: 'Igihugu',
-            dashboard: 'Ikibaho',
-            language_response: 'Ururimi rwashizwe ku gihugu cawe.',
-            login: 'Injira',
-            quick_quote: 'Saba igiciro',
-            search_placeholder: 'Rondera...',
-            shopping_cart: 'Igare ryo kugura',
-            what_we_print: 'Ivyo ducapa',
-        },
-        so: {
-            all_products: 'Dhammaan alaabta',
-            admin_panel: 'Maamulka',
-            country: 'Dal',
-            dashboard: 'Dashboard',
-            language_response: 'Luuqadda waxaa loo dejiyay dalkaaga.',
-            login: 'Gal',
-            quick_quote: 'Qiime degdeg ah',
-            search_placeholder: 'Raadi...',
-            shopping_cart: 'Gaariga iibsiga',
-            what_we_print: 'Waxaan daabacno',
-        },
-        am: {
-            all_products: 'ሁሉም ምርቶች',
-            admin_panel: 'አስተዳዳሪ',
-            country: 'ሀገር',
-            dashboard: 'ዳሽቦርድ',
-            language_response: 'ቋንቋው ለሀገርዎ ተዘጋጅቷል።',
-            login: 'ግባ',
-            quick_quote: 'ፈጣን ዋጋ',
-            search_placeholder: 'ፈልግ...',
-            shopping_cart: 'የግዢ ቅርጫት',
-            what_we_print: 'የምናትመው',
-        },
-    };
-
     return {
         locales,
         open: false,
-        responseText: '',
-        selected: { code: 'EA', country: 'East Africa', language: 'English', locale: 'en' },
+        responseText: 'Choose a country to translate the website.',
+        storageKey: 'np_country_code_v2',
+        selected: { code: 'EN', country: 'English', language: 'English', locale: 'en' },
+        ready: false,
 
         init() {
-            const savedCode = window.localStorage.getItem('np_country_code');
+            window.localStorage.removeItem('np_country_code');
+            const savedCode = window.localStorage.getItem(this.storageKey);
             const saved = this.locales.find((locale) => locale.code === savedCode);
 
             if (saved) {
                 this.selected = saved;
             }
 
-            this.applyTranslation();
+            this.responseText = this.messageFor(this.selected);
+            window.addEventListener('np-google-translate-ready', () => {
+                this.ready = true;
+                this.applyWebsiteTranslation(false);
+            });
+
+            if (window.npGoogleTranslateReady) {
+                this.ready = true;
+                this.applyWebsiteTranslation(false);
+            }
         },
 
         choose(locale) {
             this.selected = locale;
             this.open = false;
-            window.localStorage.setItem('np_country_code', locale.code);
-            this.applyTranslation();
+            window.localStorage.setItem(this.storageKey, locale.code);
+            this.responseText = this.messageFor(locale);
+            this.applyWebsiteTranslation(true);
         },
 
-        applyTranslation() {
-            const copy = translations[this.selected.locale] || translations.en;
-            const fallback = translations.en;
+        messageFor(locale) {
+            if (! locale) {
+                return 'Choose a country to translate the website.';
+            }
 
-            document.documentElement.lang = this.selected.locale || 'en';
+            if (locale.locale === 'en') {
+                return 'Website language set to English.';
+            }
 
-            document.querySelectorAll('[data-ea-i18n]').forEach((element) => {
-                const key = element.dataset.eaI18n;
-                element.textContent = copy[key] || fallback[key] || element.textContent;
-            });
+            return `Website will translate to ${locale.language}.`;
+        },
 
-            document.querySelectorAll('[data-ea-placeholder]').forEach((element) => {
-                const key = element.dataset.eaPlaceholder;
-                element.setAttribute('placeholder', copy[key] || fallback[key] || element.getAttribute('placeholder'));
-            });
+        applyWebsiteTranslation(shouldReload = false) {
+            const language = this.selected.locale || 'en';
 
-            this.responseText = copy.language_response || fallback.language_response;
+            document.documentElement.lang = language;
+
+            if (language === 'en') {
+                this.clearTranslateCookie();
+            } else {
+                this.setTranslateCookie(language);
+            }
+
+            const combo = document.querySelector('.goog-te-combo');
+            if (combo) {
+                combo.value = language === 'en' ? '' : language;
+                combo.dispatchEvent(new Event('change'));
+                return;
+            }
+
+            if (shouldReload) {
+                window.location.reload();
+            }
+        },
+
+        setTranslateCookie(language) {
+            const value = `/en/${language}`;
+            document.cookie = `googtrans=${value}; path=/; SameSite=Lax`;
+            document.cookie = `googtrans=${value}; path=/; domain=${window.location.hostname}; SameSite=Lax`;
+        },
+
+        clearTranslateCookie() {
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+            document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
         },
     };
 };
