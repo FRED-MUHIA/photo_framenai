@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\BusinessStationeryRequestMail;
+use App\Mail\BusinessStationeryRequesterConfirmationMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -56,10 +57,19 @@ class BusinessStationeryRequestController extends Controller
                 requesterPhone: $validated['phone'] ?? null,
                 userId: auth()->id(),
             ));
+
+            if (! empty($validated['email'])) {
+                Mail::to($validated['email'])->send(new BusinessStationeryRequesterConfirmationMail(
+                    pageTitle: $validated['page_title'],
+                    fields: $fields,
+                    requesterName: $validated['full_name'] ?? null,
+                ));
+            }
         } catch (Throwable $exception) {
             Log::error('Failed to send business stationery request email.', [
                 'page_slug' => $validated['page_slug'],
                 'page_title' => $validated['page_title'],
+                'requester_email' => $validated['email'] ?? null,
                 'exception' => $exception->getMessage(),
             ]);
 
@@ -76,4 +86,3 @@ class BusinessStationeryRequestController extends Controller
         return ucwords(str_replace('_', ' ', $key));
     }
 }
-

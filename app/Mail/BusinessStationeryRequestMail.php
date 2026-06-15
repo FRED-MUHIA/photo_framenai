@@ -26,8 +26,9 @@ class BusinessStationeryRequestMail extends Mailable
     public function build(): self
     {
         return $this
+            ->from(config('shop.notification_email'), config('shop.notification_name'))
+            ->replyTo($this->requesterEmail ?: config('shop.notification_email'), $this->requesterName ?: config('shop.notification_name'))
             ->subject('New Request: ' . $this->pageTitle)
             ->view('emails.business-stationery-request');
     }
 }
-
