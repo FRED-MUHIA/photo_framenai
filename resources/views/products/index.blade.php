@@ -39,7 +39,7 @@
         @endforeach
     </div>
 
-    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @forelse($products as $product)
             @php
                 $thumbnailUrl = \App\Support\PublicAssetUrl::resolve($product->thumbnail);
@@ -68,7 +68,7 @@
                 </div>
             </a>
         @empty
-            <div class="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500 sm:col-span-2 lg:col-span-3">No products found for your filter.</div>
+            <div class="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500 sm:col-span-2 lg:col-span-3 xl:col-span-4">No products found for your filter.</div>
         @endforelse
     </div>
 
