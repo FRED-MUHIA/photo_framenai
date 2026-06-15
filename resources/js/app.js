@@ -114,6 +114,11 @@ window.eastAfricaLanguageSelector = function (locales = []) {
 
             if (language === 'en') {
                 this.clearTranslateCookie();
+                if (shouldReload) {
+                    window.location.reload();
+                }
+
+                return;
             } else {
                 this.setTranslateCookie(language);
             }

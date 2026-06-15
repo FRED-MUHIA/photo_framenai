@@ -935,8 +935,12 @@
             });
         };
 
-        if ((window.localStorage.getItem('np_country_code_v2') || 'EN') === 'EN') {
+        window.localStorage.removeItem('np_country_code');
+        if (! window.localStorage.getItem('np_country_code_v2')) {
             window.localStorage.setItem('np_country_code_v2', 'EN');
+        }
+
+        if (window.localStorage.getItem('np_country_code_v2') === 'EN') {
             window.npClearGoogleTranslate();
         }
 
@@ -950,8 +954,13 @@
             window.npGoogleTranslateReady = true;
             window.dispatchEvent(new Event('np-google-translate-ready'));
         };
+
+        if (window.localStorage.getItem('np_country_code_v2') !== 'EN') {
+            var translateScript = document.createElement('script');
+            translateScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            document.head.appendChild(translateScript);
+        }
     </script>
-    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 @endonce
 
 <div class="np-header-top">
