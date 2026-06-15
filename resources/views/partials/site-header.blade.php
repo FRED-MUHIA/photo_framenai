@@ -37,6 +37,17 @@
         ['key' => 'services', 'label' => 'Services', 'url' => route('pages.help')],
     ];
 
+    $eastAfricaLocales = [
+        ['country' => 'Kenya', 'code' => 'KE', 'language' => 'Kiswahili', 'locale' => 'sw'],
+        ['country' => 'Tanzania', 'code' => 'TZ', 'language' => 'Kiswahili', 'locale' => 'sw'],
+        ['country' => 'Uganda', 'code' => 'UG', 'language' => 'English', 'locale' => 'en'],
+        ['country' => 'Rwanda', 'code' => 'RW', 'language' => 'Kinyarwanda', 'locale' => 'rw'],
+        ['country' => 'Burundi', 'code' => 'BI', 'language' => 'Kirundi', 'locale' => 'rn'],
+        ['country' => 'South Sudan', 'code' => 'SS', 'language' => 'English', 'locale' => 'en'],
+        ['country' => 'Somalia', 'code' => 'SO', 'language' => 'Somali', 'locale' => 'so'],
+        ['country' => 'Ethiopia', 'code' => 'ET', 'language' => 'Amharic', 'locale' => 'am'],
+    ];
+
     $configuredAllProductsMegaMenu = json_decode($siteSettings->get('all_products_mega_menu', ''), true);
     $allProductsMegaMenu = \App\Support\AllProductsMegaMenu::normalize($configuredAllProductsMegaMenu);
 
@@ -475,6 +486,103 @@
         width: 28px;
     }
 
+    .np-country-selector {
+        position: relative;
+    }
+
+    .np-country-trigger {
+        display: flex;
+        min-width: 76px;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        border: 0;
+        background: transparent;
+        color: var(--np-red);
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    .np-country-trigger svg {
+        height: 28px;
+        width: 28px;
+    }
+
+    .np-country-code {
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+    }
+
+    .np-country-menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 12px);
+        z-index: 90;
+        width: 286px;
+        overflow: hidden;
+        border: 1px solid var(--np-line);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+        color: #172033;
+        text-align: left;
+    }
+
+    .np-country-option {
+        display: grid;
+        width: 100%;
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 10px;
+        border: 0;
+        border-bottom: 1px solid #eceff3;
+        background: #fff;
+        padding: 10px 12px;
+        text-align: left;
+    }
+
+    .np-country-option:hover,
+    .np-country-option.is-active {
+        background: #f7f8fa;
+    }
+
+    .np-country-option-code {
+        display: inline-flex;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: #f1f5f9;
+        color: var(--np-red);
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+    .np-country-option-title {
+        display: block;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.15;
+    }
+
+    .np-country-option-lang {
+        display: block;
+        margin-top: 2px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+    }
+
+    .np-country-response {
+        padding: 10px 12px;
+        background: #fff7f7;
+        color: var(--np-red);
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
     .np-quick-btn {
         display: inline-flex;
         align-items: center;
@@ -722,6 +830,11 @@
             gap: 12px;
         }
 
+        .np-country-menu {
+            left: 0;
+            right: auto;
+        }
+
         .np-overlay-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -761,6 +874,12 @@
             width: 100%;
             justify-content: center;
             text-align: center;
+        }
+
+        .np-country-menu {
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
         }
 
         .np-overlay-grid {
@@ -821,7 +940,7 @@
                 @click="openWhatPrint = !openWhatPrint; openSubMenu = openWhatPrint ? 0 : null"
                 :aria-expanded="openWhatPrint.toString()"
             >
-                <span>What We Print</span>
+                <span data-ea-i18n="what_we_print">What We Print</span>
                 <svg viewBox="0 0 24 24" class="np-stroke-chevron" :style="openWhatPrint ? 'transform: rotate(180deg);' : ''" style="transition: transform .18s ease;">
                     <path d="m6 9 6 6 6-6"/>
                 </svg>
@@ -864,12 +983,53 @@
             </div>
         </div>
 
-        <form action="{{ route('products.index') }}" method="GET" class="w-full">
-            <div class="relative">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search..." class="h-12 w-full rounded-md border-0 bg-white px-4 pr-12 text-[16px] text-[#222]">
+        <form action="{{ route('products.index') }}" method="GET" class="w-full" x-data="productSearchSuggestions('{{ url('/api/product-suggestions') }}')" @submit="open = false">
+            <div class="relative" @click.outside="open = false">
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ request('q') }}"
+                    placeholder="Search..."
+                    data-ea-placeholder="search_placeholder"
+                    autocomplete="off"
+                    class="h-12 w-full rounded-md border-0 bg-white px-4 pr-12 text-[16px] text-[#222]"
+                    x-model.debounce.250ms="query"
+                    @focus="show()"
+                    @keydown.escape="open = false"
+                >
                 <button class="absolute right-3 top-1/2 -translate-y-1/2 text-[#5e5e5e]" type="submit">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 6 16.65a7.5 7.5 0 0 0 10.65 0Z" /></svg>
                 </button>
+                <div
+                    class="absolute left-0 right-0 top-full z-[95] mt-2 overflow-hidden rounded-lg border border-slate-200 bg-white text-left shadow-xl"
+                    x-show="open"
+                    x-cloak
+                    x-transition.opacity.duration.120ms
+                >
+                    <div x-show="loading" class="px-4 py-3 text-sm font-semibold text-slate-500">Searching...</div>
+                    <template x-if="! loading && suggestions.length === 0 && query.trim().length >= 2">
+                        <div class="px-4 py-3 text-sm font-semibold text-slate-500">No products found</div>
+                    </template>
+                    <template x-for="product in suggestions" :key="product.url">
+                        <a :href="product.url" class="grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-3 border-b border-slate-100 px-3 py-2 text-slate-900 last:border-b-0 hover:bg-slate-50">
+                            <span class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-md bg-slate-100">
+                                <img x-show="product.thumbnail" :src="product.thumbnail" :alt="product.name" class="h-full w-full object-cover">
+                            </span>
+                            <span class="min-w-0">
+                                <span class="block truncate text-sm font-extrabold" x-text="product.name"></span>
+                                <span class="block truncate text-xs font-semibold uppercase tracking-wide text-teal-700" x-text="product.category"></span>
+                            </span>
+                            <span class="whitespace-nowrap text-xs font-extrabold text-slate-900" x-text="product.price"></span>
+                        </a>
+                    </template>
+                    <a
+                        :href="allResultsUrl"
+                        class="block bg-slate-50 px-4 py-3 text-center text-xs font-extrabold uppercase tracking-wide text-[#b10f1e] hover:bg-slate-100"
+                        x-show="query.trim().length >= 2"
+                    >
+                        View all results
+                    </a>
+                </div>
             </div>
         </form>
 
@@ -877,18 +1037,42 @@
             @auth
                 <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="np-icon-action">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 5.25A2.25 2.25 0 0 1 6.25 3h11.5A2.25 2.25 0 0 1 20 5.25v13.5A2.25 2.25 0 0 1 17.75 21H6.25A2.25 2.25 0 0 1 4 18.75V5.25ZM8 8h8M8 12h8M8 16h6"/></svg>
-                    {{ auth()->user()->isAdmin() ? 'Admin Panel' : 'Dashboard' }}
+                    <span data-ea-i18n="{{ auth()->user()->isAdmin() ? 'admin_panel' : 'dashboard' }}">{{ auth()->user()->isAdmin() ? 'Admin Panel' : 'Dashboard' }}</span>
                 </a>
             @else
                 <a href="{{ route('login') }}" class="np-icon-action">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.75 6.75a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0"/></svg>
-                    Login
+                    <span data-ea-i18n="login">Login</span>
                 </a>
             @endauth
-            <a href="{{ route('products.index') }}" class="np-quick-btn">Quick Quote</a>
+            <a href="{{ route('products.index') }}" class="np-quick-btn"><span data-ea-i18n="quick_quote">Quick Quote</span></a>
+            <div
+                class="np-country-selector"
+                x-data="eastAfricaLanguageSelector(@js($eastAfricaLocales))"
+                x-init="init()"
+                @keydown.escape.window="open = false"
+            >
+                <button type="button" class="np-country-trigger" @click="open = !open" :aria-expanded="open.toString()" aria-haspopup="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21a9 9 0 1 0 0-18m0 18a9 9 0 1 1 0-18m0 18c2.25-2.25 3.375-5.25 3.375-9S14.25 5.25 12 3m0 18c-2.25-2.25-3.375-5.25-3.375-9S9.75 5.25 12 3M3.75 9h16.5M3.75 15h16.5"/></svg>
+                    <span class="np-country-code" x-text="selected.code || 'EA'"></span>
+                    <span data-ea-i18n="country">Country</span>
+                </button>
+                <div class="np-country-menu" x-show="open" x-cloak x-transition.opacity.duration.120ms @click.outside="open = false">
+                    <template x-for="locale in locales" :key="locale.code + locale.country">
+                        <button type="button" class="np-country-option" :class="{ 'is-active': selected.code === locale.code }" @click="choose(locale)">
+                            <span class="np-country-option-code" x-text="locale.code"></span>
+                            <span>
+                                <span class="np-country-option-title" x-text="locale.country"></span>
+                                <span class="np-country-option-lang" x-text="locale.language"></span>
+                            </span>
+                        </button>
+                    </template>
+                    <p class="np-country-response" aria-live="polite" x-text="responseText"></p>
+                </div>
+            </div>
             <a href="{{ route('cart.index') }}" class="np-icon-action">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mb-1 h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.25 3h1.386a1.5 1.5 0 0 1 1.45 1.12L5.74 7.5m0 0h13.01l-1.5 6H7.24m-1.5-6 1.5 6m0 0-1.12 2.24A1.5 1.5 0 0 0 7.5 18h9m-9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"/></svg>
-                Shopping Cart
+                <span data-ea-i18n="shopping_cart">Shopping Cart</span>
             </a>
         </div>
     </div>
@@ -904,7 +1088,7 @@
                 @mouseenter="openMenu = 'all_products'"
                 @click="openMenu = openMenu === 'all_products' ? null : 'all_products'"
             >
-                All products
+                <span data-ea-i18n="all_products">All products</span>
                 <svg
                     viewBox="0 0 24 24"
                     class="np-stroke-chevron"
