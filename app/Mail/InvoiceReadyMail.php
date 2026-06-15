@@ -27,6 +27,8 @@ class InvoiceReadyMail extends Mailable
         );
 
         return $this
+            ->from(config('shop.notification_email'), config('shop.notification_name'))
+            ->replyTo(config('shop.notification_email'), config('shop.notification_name'))
             ->subject('Your Nai Prints order has been received')
             ->view('emails.invoice-ready')
             ->with([

@@ -41,5 +41,7 @@ return [
     'max_artwork_size_kb' => 51200,
     'min_dpi' => 150,
     'mpesa_paybill' => env('MPESA_PAYBILL', 'Pending setup'),
+    'notification_email' => env('SHOP_NOTIFICATION_EMAIL', 'info@naiprinters.co.ke'),
+    'notification_name' => env('SHOP_NOTIFICATION_NAME', 'NaiPrinters'),
     'whatsapp_link' => 'https://wa.me/254700000000?text=Hello%20NaiPrinters%2C%20I%20need%20a%20quote.',
 ];

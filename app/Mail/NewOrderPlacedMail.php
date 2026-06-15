@@ -21,6 +21,8 @@ class NewOrderPlacedMail extends Mailable
         $this->order->loadMissing('items');
 
         return $this
+            ->from(config('shop.notification_email'), config('shop.notification_name'))
+            ->replyTo(config('shop.notification_email'), config('shop.notification_name'))
             ->subject('New order placed: ' . $this->order->order_number)
             ->view('emails.new-order-placed')
             ->with([

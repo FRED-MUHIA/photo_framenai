@@ -137,6 +137,6 @@ class OrderController extends Controller
 
     private function storeNotificationEmail(): ?string
     {
-        return config('mail.mailers.smtp.username') ?: config('mail.from.address');
+        return config('shop.notification_email');
     }
 }

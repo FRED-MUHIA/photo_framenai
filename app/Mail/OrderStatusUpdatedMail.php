@@ -21,6 +21,8 @@ class OrderStatusUpdatedMail extends Mailable
     public function build(): self
     {
         return $this
+            ->from(config('shop.notification_email'), config('shop.notification_name'))
+            ->replyTo(config('shop.notification_email'), config('shop.notification_name'))
             ->subject('Update on your Nai Prints order ' . $this->order->order_number)
             ->view('emails.order-status-updated');
     }
