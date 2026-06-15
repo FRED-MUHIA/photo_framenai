@@ -908,6 +908,38 @@
 @once
     <div id="google_translate_element" class="hidden" aria-hidden="true"></div>
     <script>
+        window.npTranslateCookieDomains = function () {
+            const hostname = window.location.hostname;
+            const parts = hostname.split('.').filter(Boolean);
+            const domains = ['', hostname, `.${hostname}`];
+
+            if (parts.length > 2) {
+                domains.push(parts.slice(-2).join('.'), `.${parts.slice(-2).join('.')}`);
+            }
+
+            return [...new Set(domains)];
+        };
+
+        window.npClearGoogleTranslate = function () {
+            window.npTranslateCookieDomains().forEach(function (domain) {
+                const domainPart = domain ? `; domain=${domain}` : '';
+                document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${domainPart}`;
+            });
+        };
+
+        window.npSetGoogleTranslate = function (language) {
+            const value = `/en/${language}`;
+            window.npTranslateCookieDomains().forEach(function (domain) {
+                const domainPart = domain ? `; domain=${domain}` : '';
+                document.cookie = `googtrans=${value}; path=/${domainPart}; SameSite=Lax`;
+            });
+        };
+
+        if ((window.localStorage.getItem('np_country_code_v2') || 'EN') === 'EN') {
+            window.localStorage.setItem('np_country_code_v2', 'EN');
+            window.npClearGoogleTranslate();
+        }
+
         window.googleTranslateElementInit = function () {
             new window.google.translate.TranslateElement({
                 pageLanguage: 'en',

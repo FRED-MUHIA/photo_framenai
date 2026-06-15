@@ -131,14 +131,21 @@ window.eastAfricaLanguageSelector = function (locales = []) {
         },
 
         setTranslateCookie(language) {
-            const value = `/en/${language}`;
-            document.cookie = `googtrans=${value}; path=/; SameSite=Lax`;
-            document.cookie = `googtrans=${value}; path=/; domain=${window.location.hostname}; SameSite=Lax`;
+            if (window.npSetGoogleTranslate) {
+                window.npSetGoogleTranslate(language);
+                return;
+            }
+
+            document.cookie = `googtrans=/en/${language}; path=/; SameSite=Lax`;
         },
 
         clearTranslateCookie() {
+            if (window.npClearGoogleTranslate) {
+                window.npClearGoogleTranslate();
+                return;
+            }
+
             document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-            document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
         },
     };
 };
