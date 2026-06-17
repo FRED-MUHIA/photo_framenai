@@ -599,10 +599,12 @@
 
     .top-pick-price-wrap {
         display: flex;
+        flex: 1 1 auto;
         min-width: 0;
         align-items: baseline;
+        flex-wrap: wrap;
         gap: 10px;
-        white-space: nowrap;
+        white-space: normal;
     }
 
     .top-pick-currency {
@@ -630,6 +632,7 @@
 
     .top-pick-order {
         display: inline-flex;
+        flex: 0 0 auto;
         min-height: 40px;
         align-items: center;
         justify-content: center;
@@ -925,6 +928,14 @@
         .thumb-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .thumb-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .top-picks-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .top-pick-footer {
+            align-items: stretch;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .top-pick-order {
+            width: 100%;
+        }
 
     }
 
