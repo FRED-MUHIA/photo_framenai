@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\SiteSetting;
 use App\Support\AllProductsMegaMenu;
 use App\Support\HeaderThemeMegaMenu;
+use App\Support\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
@@ -85,11 +86,13 @@ class SiteSettingController extends Controller
 
         if ($request->hasFile('header_logo_file')) {
             $path = $request->file('header_logo_file')->store('site', 'public');
+            ImageOptimizer::optimizePublicPath($path);
             $validated['header_logo_url'] = '/storage/' . $path;
         }
 
         if ($request->hasFile('whatsapp_logo_file')) {
             $path = $request->file('whatsapp_logo_file')->store('site', 'public');
+            ImageOptimizer::optimizePublicPath($path);
             $validated['whatsapp_logo_url'] = '/storage/' . $path;
         }
 
@@ -127,6 +130,7 @@ class SiteSettingController extends Controller
                 }
 
                 $path = $file->store('site/mega-menu', 'public');
+                ImageOptimizer::optimizePublicPath($path);
                 $themeMenuPayload[$menuIndex]['items'][$tileIndex]['image'] = '/storage/' . $path;
             }
         }

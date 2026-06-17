@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
+use App\Models\Artwork;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
@@ -62,6 +64,28 @@ class OrderController extends Controller
         }
 
         return back()->with('status', $message);
+    }
+
+    public function destroy(Order $order)
+    {
+        $orderNumber = $order->order_number;
+
+        DB::transaction(function () use ($order) {
+            $itemIds = $order->items()->pluck('id');
+
+            if ($itemIds->isNotEmpty()) {
+                Artwork::query()
+                    ->whereIn('order_item_id', $itemIds)
+                    ->update(['order_item_id' => null]);
+            }
+
+            $order->items()->delete();
+            $order->delete();
+        });
+
+        return redirect()
+            ->route('admin.orders.index')
+            ->with('status', "Order {$orderNumber} deleted.");
     }
 
     private function statusChanges(Order $order, string $newStatus, string $newPaymentStatus): array

@@ -38,15 +38,15 @@
         <div class="mt-5 border-t border-slate-200 pt-5">
             <h3 class="font-bold">Delete Artwork</h3>
             @if($isInUse)
-                <p class="mt-2 text-sm text-slate-600">This artwork is attached to an order and cannot be deleted.</p>
+                <p class="mt-2 text-sm text-slate-600">This artwork is attached to an order. Deleting it will remove the artwork link from that order.</p>
             @else
                 <p class="mt-2 text-sm text-slate-600">This artwork is not attached to any order.</p>
-                <form method="POST" action="{{ route('admin.artworks.destroy', $artwork) }}" class="mt-3" onsubmit="return confirm('Delete this unused artwork? This cannot be undone.');">
-                    @csrf
-                    @method('DELETE')
-                    <button class="w-full rounded-xl bg-rose-700 py-2 text-sm font-bold text-white hover:bg-rose-800">Delete Artwork</button>
-                </form>
             @endif
+            <form method="POST" action="{{ route('admin.artworks.destroy', $artwork) }}" class="mt-3" onsubmit='return confirm(@js('Delete artwork ' . $artwork->original_name . '? This cannot be undone.'));'>
+                @csrf
+                @method('DELETE')
+                <button class="w-full rounded-xl bg-rose-700 py-2 text-sm font-bold text-white hover:bg-rose-800">Delete Artwork</button>
+            </form>
         </div>
     </aside>
 </div>

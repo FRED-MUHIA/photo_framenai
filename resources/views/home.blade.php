@@ -515,13 +515,10 @@
     }
 
     .top-picks-row {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 18px;
-        overflow-x: auto;
-        scroll-behavior: smooth;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
+        overflow: visible;
     }
 
     .top-picks-row::-webkit-scrollbar {
@@ -530,24 +527,22 @@
 
     .top-pick-card {
         display: flex;
-        flex: 0 0 323px;
         flex-direction: column;
         min-width: 0;
-        min-height: 439px;
+        min-height: 0;
         overflow: hidden;
         border: 1px solid #f0f0f0;
         border-radius: 20px;
         background: #fff;
         color: #111;
         text-decoration: none;
-        scroll-snap-align: start;
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
     }
 
     .top-pick-media {
         position: relative;
         display: flex;
-        height: 321px;
+        aspect-ratio: 1 / 1;
         align-items: center;
         justify-content: center;
         overflow: hidden;
@@ -653,10 +648,10 @@
     }
 
     .top-picks-arrow {
+        display: none;
         position: absolute;
         top: 50%;
         z-index: 2;
-        display: inline-flex;
         width: 46px;
         height: 46px;
         align-items: center;
@@ -929,8 +924,7 @@
         .icon-grid-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .thumb-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .thumb-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .top-pick-card { flex-basis: 300px; }
-        .top-pick-media { height: 290px; }
+        .top-picks-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
     }
 
@@ -1052,41 +1046,71 @@
         }
 
         .top-picks-row {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 12px;
         }
 
         .top-pick-card {
-            flex-basis: min(323px, calc(100vw - 32px));
-            min-height: 439px;
+            border-radius: 14px;
         }
 
         .top-pick-media {
-            height: 321px;
+            border-radius: 14px 14px 0 0;
         }
 
         .top-pick-name {
-            min-height: 22px;
-            font-size: 16px;
-        }
-
-        .top-pick-price {
-            font-size: 18px;
+            display: -webkit-box;
+            min-height: 34px;
+            overflow: hidden;
+            white-space: normal;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            font-size: 14px;
+            line-height: 1.2;
         }
 
         .top-pick-body {
-            padding: 23px 20px 20px;
+            padding: 12px;
         }
 
         .top-pick-footer {
-            align-items: center;
-            gap: 8px;
+            align-items: stretch;
+            flex-direction: column;
+            gap: 10px;
             margin-top: auto;
         }
 
-        .top-pick-order {
-            min-height: 40px;
-            padding: 0 17px;
+        .top-pick-price-wrap {
+            flex-wrap: wrap;
+            gap: 4px 7px;
+            white-space: normal;
+        }
+
+        .top-pick-currency {
+            font-size: 13px;
+        }
+
+        .top-pick-price {
             font-size: 16px;
+        }
+
+        .top-pick-usd {
+            font-size: 12px;
+        }
+
+        .top-pick-order {
+            width: 100%;
+            min-height: 34px;
+            padding: 0 10px;
+            font-size: 13px;
+        }
+
+        .top-pick-badge {
+            left: 10px;
+            top: 10px;
+            max-width: calc(100% - 20px);
+            padding: 7px 10px;
+            font-size: 11px;
         }
 
         .top-picks-header {
@@ -1302,7 +1326,7 @@
         'url' => route('products.show', $product),
         'category' => $product->category?->name ?: $product->categories->first()?->name ?: 'Products',
         ];
-    })->values();
+    })->take(8)->values();
 
     $topPicksSection = $sectionMap->get('home_top_picks', []);
     $topPicksTabs = collect(data_get($topPicksSection, 'items', []))
@@ -1359,7 +1383,7 @@
             @endphp
             <div class="pet-promo-bag {{ $itemImageUrl ? 'has-image' : '' }}" style="background-color: {{ data_get($item, 'bg_color', '#f0c51e') }}; color: {{ data_get($item, 'text_color', '#173447') }};">
                 @if($itemImageUrl)
-                    <img loading="lazy" decoding="async" src="{{ $itemImageUrl }}" alt="" class="pet-promo-bag-image">
+                    <img loading="eager" fetchpriority="high" decoding="async" src="{{ $itemImageUrl }}" alt="" class="pet-promo-bag-image">
                 @else
                     <span class="pet-promo-badge"></span>
                     <span class="pet-promo-logo">{{ data_get($item, 'subtitle', 'BIXBI') }}</span>
@@ -1451,9 +1475,13 @@
             <a href="{{ data_get($topCategoriesSection, 'button_url', route('products.index')) }}" class="text-sm font-medium text-[#3f5f8e]">{{ data_get($topCategoriesSection, 'button_label', 'SHOW ALL') }}</a>
         </div>
         <div class="thumb-grid-5">
-            @foreach($topCategories as $item)
+        @foreach($topCategories as $item)
+                @php
+                    $imageLoading = $loop->iteration <= 5 ? 'eager' : 'lazy';
+                    $imagePriority = $loop->iteration <= 5 ? 'high' : 'auto';
+                @endphp
                 <a href="{{ data_get($item, 'url', route('products.index')) }}" class="top-category-card">
-                    <img loading="lazy" decoding="async" src="{{ $publicAsset($item['image']) }}" alt="{{ $item['name'] }}">
+                    <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $publicAsset($item['image']) }}" alt="{{ $item['name'] }}">
                     <span class="top-category-label">{{ $item['name'] }}</span>
                 </a>
             @endforeach
@@ -1464,9 +1492,13 @@
         <h2 class="section-title mb-4">{{ data_get($productTilesSection, 'title', 'Discover our huge variety of products') }}</h2>
         <div class="thumb-grid-4">
             @foreach($productTiles as $tile)
+                @php
+                    $imageLoading = $loop->iteration <= 4 ? 'eager' : 'lazy';
+                    $imagePriority = $loop->iteration <= 4 ? 'high' : 'auto';
+                @endphp
                 <a href="{{ data_get($tile, 'url', route('products.index')) }}" class="product-showcase-card">
                     <div class="product-showcase-media">
-                        <img loading="lazy" decoding="async" src="{{ $publicAsset($tile['image']) }}" alt="{{ $tile['name'] }}">
+                        <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $publicAsset($tile['image']) }}" alt="{{ $tile['name'] }}">
                     </div>
                     <h3 class="product-showcase-title">{{ $tile['name'] }}</h3>
                     @if(! empty($tile['description']))

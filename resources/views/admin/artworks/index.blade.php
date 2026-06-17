@@ -35,13 +35,11 @@
                     <td>
                         <div class="flex flex-wrap items-center gap-3">
                             <a href="{{ route('admin.artworks.show', $artwork) }}" class="text-xs font-bold">Review</a>
-                            @unless($isInUse)
-                                <form method="POST" action="{{ route('admin.artworks.destroy', $artwork) }}" onsubmit="return confirm('Delete this unused artwork? This cannot be undone.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="text-xs font-bold text-rose-700">Delete</button>
-                                </form>
-                            @endunless
+                            <form method="POST" action="{{ route('admin.artworks.destroy', $artwork) }}" onsubmit='return confirm(@js('Delete artwork ' . $artwork->original_name . '? This cannot be undone.'));'>
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-xs font-bold text-rose-700">Delete</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

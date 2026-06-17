@@ -22,7 +22,16 @@
                     <td>{{ $order->customer_name }}</td>
                     <td>{{ ucfirst($order->status) }}</td>
                     <td>{{ $order->currency }} {{ number_format($order->total_amount, 2) }}</td>
-                    <td><a href="{{ route('admin.orders.show', $order) }}" class="text-xs font-bold">View</a></td>
+                    <td>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <a href="{{ route('admin.orders.show', $order) }}" class="text-xs font-bold">View</a>
+                            <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" onsubmit='return confirm(@js('Delete order ' . $order->order_number . '? This cannot be undone.'));'>
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-xs font-bold text-rose-700">Delete</button>
+                            </form>
+                        </div>
+                    </td>
                 </tr>
             @endforeach
         </tbody>

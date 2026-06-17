@@ -22,7 +22,7 @@ class PublicAssetUrl
             $path = $parts['path'] ?? '';
 
             if (self::isPublicPath($path) && (str_starts_with('/' . ltrim($path, '/'), '/storage/') || self::isLocalHost($host))) {
-                return asset(ltrim($path, '/')) . self::queryString($parts);
+                return self::assetForPublicPath($path) . self::queryString($parts);
             }
 
             return $url;
@@ -33,7 +33,7 @@ class PublicAssetUrl
         }
 
         if (self::isPublicPath($url)) {
-            return asset(ltrim($url, '/'));
+            return self::assetForPublicPath($url);
         }
 
         return asset(ltrim($url, '/'));
@@ -59,5 +59,22 @@ class PublicAssetUrl
     private static function queryString(array $parts): string
     {
         return isset($parts['query']) ? '?' . $parts['query'] : '';
+    }
+
+    private static function assetForPublicPath(string $path): string
+    {
+        $normalizedPath = '/' . ltrim($path, '/');
+        $assetPath = ltrim($normalizedPath, '/');
+
+        if (str_starts_with($normalizedPath, '/storage/')) {
+            $relativePath = substr($normalizedPath, strlen('/storage/'));
+            $optimizedPath = ImageOptimizer::optimizedStorageRelativePath($relativePath);
+
+            if ($optimizedPath) {
+                $assetPath = 'storage/' . $optimizedPath;
+            }
+        }
+
+        return asset($assetPath);
     }
 }

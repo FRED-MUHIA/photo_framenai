@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MediaItem;
+use App\Support\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -30,6 +31,7 @@ class MediaLibraryController extends Controller
 
         foreach ((array) $request->file('files', []) as $file) {
             $path = $file->store('media-library', 'public');
+            ImageOptimizer::optimizePublicPath($path);
 
             MediaItem::query()->create([
                 'type' => 'upload',

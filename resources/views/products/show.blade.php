@@ -76,7 +76,16 @@
 
 @section('content')
 @php
-    $mainProductImage = \App\Support\PublicAssetUrl::resolve($product->thumbnail) ?: $product->mediaItems->first()?->url;
+    $productGalleryImages = collect([
+        \App\Support\PublicAssetUrl::resolve($product->thumbnail),
+        \App\Support\PublicAssetUrl::resolve(data_get($product->metadata, 'alternative_image_1')),
+        \App\Support\PublicAssetUrl::resolve(data_get($product->metadata, 'alternative_image_2')),
+    ])
+        ->merge($product->mediaItems->pluck('url'))
+        ->filter()
+        ->unique()
+        ->values();
+    $mainProductImage = $productGalleryImages->first();
     $minQuantity = max(1, (int) $product->min_quantity);
     $quantitySuggestions = collect($quantitySuggestions ?? [])
         ->map(fn ($quantity) => (int) $quantity)
@@ -93,21 +102,26 @@
 
 <section class="bg-white" x-data="productConfigurator()" x-init="init()">
     <div class="product-detail-shell">
-        <div class="product-detail-image-column">
+        <div class="product-detail-image-column" x-data="{ activeImage: @js($mainProductImage) }">
             <div class="overflow-hidden rounded-[10px] bg-[#eeeeee]">
                 @if($mainProductImage)
-                    <img loading="eager" fetchpriority="high" decoding="async" src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-10 lg:p-12">
+                    <img loading="eager" fetchpriority="high" decoding="async" :src="activeImage" src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-10 lg:p-12">
                 @else
                     <div class="flex aspect-square items-center justify-center p-8 text-sm font-semibold text-slate-500">{{ $product->name }}</div>
                 @endif
             </div>
 
-            @if($product->mediaItems->isNotEmpty())
+            @if($productGalleryImages->count() > 1)
                 <div class="mt-4 grid grid-cols-4 gap-3">
-                    @foreach($product->mediaItems->take(4) as $media)
-                        <div class="overflow-hidden rounded-lg border border-slate-200 bg-[#f5f5f5]">
-                            <img loading="lazy" decoding="async" src="{{ $media->url }}" alt="{{ $media->alt_text ?: $product->name }}" class="aspect-square w-full object-contain p-3">
-                        </div>
+                    @foreach($productGalleryImages->take(4) as $imageUrl)
+                        <button
+                            type="button"
+                            class="overflow-hidden rounded-lg border bg-[#f5f5f5]"
+                            :class="activeImage === @js($imageUrl) ? 'border-[#ff0037]' : 'border-slate-200 hover:border-slate-300'"
+                            @click="activeImage = @js($imageUrl)"
+                        >
+                            <img loading="lazy" decoding="async" src="{{ $imageUrl }}" alt="{{ $product->name }} image {{ $loop->iteration }}" class="aspect-square w-full object-contain p-3">
+                        </button>
                     @endforeach
                 </div>
             @endif

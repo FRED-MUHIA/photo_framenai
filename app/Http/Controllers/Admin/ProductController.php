@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\MediaItem;
 use App\Models\Product;
 use App\Models\ProductFormTemplate;
+use App\Support\ImageOptimizer;
 use App\Support\RichTextSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validateProduct($request);
-        $validated = $this->attachUploadedThumbnail($request, $validated);
+        $validated = $this->attachUploadedProductImages($request, $validated);
 
         DB::transaction(function () use ($validated) {
             $validated = $this->applyFormTemplatePayload($validated);
@@ -121,7 +122,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $validated = $this->validateProduct($request, $product->id);
-        $validated = $this->attachUploadedThumbnail($request, $validated);
+        $validated = $this->attachUploadedProductImages($request, $validated);
 
         DB::transaction(function () use ($product, $validated) {
             $validated = $this->applyFormTemplatePayload($validated);
@@ -170,6 +171,10 @@ class ProductController extends Controller
             'metadata.meta_description' => ['nullable', 'string', 'max:255'],
             'metadata.seo_keywords' => ['nullable', 'string', 'max:255'],
             'metadata.configurator_intro' => ['nullable', 'string', 'max:255'],
+            'metadata.alternative_image_1' => ['nullable', 'string', 'max:255'],
+            'metadata.alternative_image_2' => ['nullable', 'string', 'max:255'],
+            'alternative_image_1_file' => ['nullable', 'image', 'max:4096'],
+            'alternative_image_2_file' => ['nullable', 'image', 'max:4096'],
             'metadata.upload_enabled' => ['nullable', 'boolean'],
             'metadata.upload_label' => ['nullable', 'string', 'max:190'],
             'metadata.upload_help' => ['nullable', 'string', 'max:255'],
@@ -198,6 +203,8 @@ class ProductController extends Controller
                 'meta_description' => data_get($validated, 'metadata.meta_description'),
                 'seo_keywords' => data_get($validated, 'metadata.seo_keywords'),
                 'configurator_intro' => data_get($validated, 'metadata.configurator_intro'),
+                'alternative_image_1' => data_get($validated, 'metadata.alternative_image_1'),
+                'alternative_image_2' => data_get($validated, 'metadata.alternative_image_2'),
                 'upload_enabled' => (bool) data_get($validated, 'metadata.upload_enabled', true),
                 'upload_label' => data_get($validated, 'metadata.upload_label'),
                 'upload_help' => data_get($validated, 'metadata.upload_help'),
@@ -213,16 +220,30 @@ class ProductController extends Controller
         return $payload;
     }
 
-    private function attachUploadedThumbnail(Request $request, array $validated): array
+    private function attachUploadedProductImages(Request $request, array $validated): array
     {
-        if (! $request->hasFile('thumbnail_file')) {
-            return $validated;
+        if ($request->hasFile('thumbnail_file')) {
+            $validated['thumbnail'] = $this->storeProductImage($request, 'thumbnail_file');
         }
 
-        $path = $request->file('thumbnail_file')->store('product-thumbnails', 'public');
-        $validated['thumbnail'] = '/storage/' . $path;
+        foreach ([1, 2] as $index) {
+            $field = "alternative_image_{$index}_file";
+
+            if ($request->hasFile($field)) {
+                $validated['metadata'] ??= [];
+                $validated['metadata']["alternative_image_{$index}"] = $this->storeProductImage($request, $field);
+            }
+        }
 
         return $validated;
+    }
+
+    private function storeProductImage(Request $request, string $field): string
+    {
+        $path = $request->file($field)->store('product-thumbnails', 'public');
+        ImageOptimizer::optimizePublicPath($path);
+
+        return '/storage/' . $path;
     }
 
     private function resolveCategoryIds(array $validated): array

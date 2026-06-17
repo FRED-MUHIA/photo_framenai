@@ -57,19 +57,13 @@ class ArtworkController extends Controller
 
     public function destroy(Artwork $artwork)
     {
-        if ($this->artworkIsInUse($artwork)) {
-            return back()->withErrors(['artwork' => 'This artwork is attached to an order and cannot be deleted.']);
-        }
+        OrderItem::query()
+            ->where('artwork_id', $artwork->id)
+            ->update(['artwork_id' => null]);
 
         Storage::disk('public')->delete($artwork->file_path);
         $artwork->delete();
 
-        return redirect()->route('admin.artworks.index')->with('status', 'Unused artwork deleted.');
-    }
-
-    private function artworkIsInUse(Artwork $artwork): bool
-    {
-        return filled($artwork->order_item_id)
-            || OrderItem::query()->where('artwork_id', $artwork->id)->exists();
+        return redirect()->route('admin.artworks.index')->with('status', 'Artwork deleted.');
     }
 }

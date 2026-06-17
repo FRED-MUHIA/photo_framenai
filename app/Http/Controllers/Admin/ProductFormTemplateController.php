@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductFormTemplate;
 use App\Models\ProductOptionValue;
 use App\Models\ProductQuantityPrice;
+use App\Support\ImageOptimizer;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -139,6 +140,7 @@ class ProductFormTemplateController extends Controller
                 }
 
                 $path = $file->store('product-option-images', 'public');
+                ImageOptimizer::optimizePublicPath($path);
                 $groups[$groupIndex]['values'][$valueIndex]['image_url'] = '/storage/' . $path;
             }
         }

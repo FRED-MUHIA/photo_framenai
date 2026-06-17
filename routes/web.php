@@ -105,6 +105,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.reau
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
+    Route::delete('/orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
 
     Route::get('/artworks', [AdminArtworkController::class, 'index'])->name('artworks.index');
     Route::get('/artworks/{artwork}/download', [AdminArtworkController::class, 'download'])->name('artworks.download');

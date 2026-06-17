@@ -8,6 +8,7 @@ use App\Models\MediaItem;
 use App\Support\ContactContentDefaults;
 use App\Support\DesignServicesContentDefaults;
 use App\Support\HomepageContentDefaults;
+use App\Support\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -185,6 +186,7 @@ class PageBuilderController extends Controller
     private function storePageBuilderImage(UploadedFile $file): string
     {
         $path = $file->store('media-library', 'public');
+        ImageOptimizer::optimizePublicPath($path);
 
         $mediaItem = MediaItem::query()->create([
             'type' => 'upload',

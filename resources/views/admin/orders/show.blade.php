@@ -71,6 +71,16 @@
             <p><span class="font-semibold">Shipping:</span> {{ $shippingLabel }}</p>
             <p><span class="font-semibold">Address:</span> {{ $order->shipping_address_line1 }}, {{ $order->shipping_country }}</p>
         </div>
+
+        <div class="mt-5 border-t border-slate-200 pt-5">
+            <h3 class="font-bold">Delete Order</h3>
+            <p class="mt-2 text-sm text-slate-600">This removes the order and its line items.</p>
+            <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="mt-3" onsubmit='return confirm(@js('Delete order ' . $order->order_number . '? This cannot be undone.'));'>
+                @csrf
+                @method('DELETE')
+                <button class="w-full rounded-xl bg-rose-700 py-2 text-sm font-bold text-white hover:bg-rose-800">Delete Order</button>
+            </form>
+        </div>
     </aside>
 </div>
 @endsection

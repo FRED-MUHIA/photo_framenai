@@ -43,11 +43,13 @@
         @forelse($products as $product)
             @php
                 $thumbnailUrl = \App\Support\PublicAssetUrl::resolve($product->thumbnail);
+                $imageLoading = $loop->iteration <= 4 ? 'eager' : 'lazy';
+                $imagePriority = $loop->iteration <= 4 ? 'high' : 'auto';
             @endphp
             <a href="{{ route('products.show', $product) }}" class="block rounded-2xl border border-slate-200 bg-white p-4 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div class="aspect-square overflow-hidden rounded-xl bg-slate-100">
                     @if($thumbnailUrl)
-                        <img loading="lazy" decoding="async" src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
+                        <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                     @endif
                 </div>
                 <div class="mt-4 flex items-start justify-between gap-3">

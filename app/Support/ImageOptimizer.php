@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Support;
+
+use Symfony\Component\Process\Process;
+use Throwable;
+
+class ImageOptimizer
+{
+    private const CACHE_DIRECTORY = 'optimized-images';
+    private const OPTIMIZABLE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+
+    public static function optimizedStorageRelativePath(string $relativePath): ?string
+    {
+        $relativePath = self::normalizeRelativePath($relativePath);
+
+        if (! self::isOptimizable($relativePath)) {
+            return null;
+        }
+
+        $sourcePath = self::sourcePath($relativePath);
+
+        if (! is_file($sourcePath)) {
+            return null;
+        }
+
+        $targetPath = self::targetPath($relativePath, $sourcePath);
+
+        return is_file($targetPath)
+            ? self::targetRelativePath($relativePath, $sourcePath)
+            : null;
+    }
+
+    public static function optimizePublicPath(string $relativePath, int $maxDimension = 1600, int $quality = 78): ?string
+    {
+        $relativePath = self::normalizeRelativePath($relativePath);
+
+        if (! self::isOptimizable($relativePath)) {
+            return null;
+        }
+
+        $sourcePath = self::sourcePath($relativePath);
+
+        if (! is_file($sourcePath)) {
+            return null;
+        }
+
+        $targetRelativePath = self::targetRelativePath($relativePath, $sourcePath);
+        $targetPath = storage_path('app/public/' . $targetRelativePath);
+
+        if (is_file($targetPath)) {
+            return $targetRelativePath;
+        }
+
+        $scriptPath = base_path('scripts/optimize-image.mjs');
+
+        if (! is_file($scriptPath)) {
+            return null;
+        }
+
+        try {
+            $process = new Process([
+                self::nodeBinary(),
+                $scriptPath,
+                $sourcePath,
+                $targetPath,
+                (string) $maxDimension,
+                (string) $quality,
+            ], base_path());
+            $process->setTimeout(60);
+            $process->run();
+        } catch (Throwable) {
+            @unlink($targetPath);
+
+            return null;
+        }
+
+        if (! $process->isSuccessful() || ! is_file($targetPath)) {
+            @unlink($targetPath);
+
+            return null;
+        }
+
+        return $targetRelativePath;
+    }
+
+    private static function normalizeRelativePath(string $relativePath): string
+    {
+        $relativePath = str_replace('\\', '/', $relativePath);
+        $relativePath = preg_replace('#^/?storage/#', '', $relativePath) ?? $relativePath;
+
+        return ltrim($relativePath, '/');
+    }
+
+    private static function isOptimizable(string $relativePath): bool
+    {
+        if ($relativePath === '' || str_starts_with($relativePath, self::CACHE_DIRECTORY . '/')) {
+            return false;
+        }
+
+        $extension = strtolower(pathinfo($relativePath, PATHINFO_EXTENSION));
+
+        return in_array($extension, self::OPTIMIZABLE_EXTENSIONS, true);
+    }
+
+    private static function sourcePath(string $relativePath): string
+    {
+        return storage_path('app/public/' . $relativePath);
+    }
+
+    private static function targetPath(string $relativePath, string $sourcePath): string
+    {
+        return storage_path('app/public/' . self::targetRelativePath($relativePath, $sourcePath));
+    }
+
+    private static function targetRelativePath(string $relativePath, string $sourcePath): string
+    {
+        $directory = trim(str_replace('\\', '/', pathinfo($relativePath, PATHINFO_DIRNAME)), '.');
+        $filename = pathinfo($relativePath, PATHINFO_FILENAME);
+        $fingerprint = substr(sha1($relativePath . '|' . filesize($sourcePath) . '|' . filemtime($sourcePath)), 0, 12);
+        $targetDirectory = self::CACHE_DIRECTORY . ($directory ? '/' . $directory : '');
+
+        return $targetDirectory . '/' . $filename . '-' . $fingerprint . '.webp';
+    }
+
+    private static function nodeBinary(): string
+    {
+        return (string) config('shop.image_optimizer_node_binary', env('IMAGE_OPTIMIZER_NODE_BINARY', 'node'));
+    }
+}

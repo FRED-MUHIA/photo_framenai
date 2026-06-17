@@ -39,6 +39,10 @@
         @php
             $thumbnailValue = old('thumbnail', $product->thumbnail);
             $thumbnailPreview = \App\Support\PublicAssetUrl::resolve($thumbnailValue);
+            $alternativeImages = [
+                1 => old('metadata.alternative_image_1', data_get($product->metadata, 'alternative_image_1')),
+                2 => old('metadata.alternative_image_2', data_get($product->metadata, 'alternative_image_2')),
+            ];
         @endphp
         @if($thumbnailPreview)
             <div class="mb-3 h-32 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
@@ -50,6 +54,30 @@
             <input type="text" name="thumbnail" value="{{ $thumbnailValue }}" placeholder="Or paste Thumbnail URL" class="rounded-xl border-slate-300">
         </div>
         <p class="mt-1 text-xs text-slate-500">Upload an image, or paste a URL. Uploaded image will be used as the product thumbnail.</p>
+    </div>
+
+    <div class="sm:col-span-2">
+        <label class="mb-2 block text-sm font-bold">Alternative Images</label>
+        <div class="grid gap-4 lg:grid-cols-2">
+            @foreach($alternativeImages as $index => $alternativeValue)
+                @php
+                    $alternativePreview = \App\Support\PublicAssetUrl::resolve($alternativeValue);
+                @endphp
+                <div class="rounded-xl border border-slate-200 p-3">
+                    <p class="text-xs font-bold text-slate-600">Alternative image {{ $index }}</p>
+                    @if($alternativePreview)
+                        <div class="mt-2 h-24 w-24 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+                            <img loading="lazy" decoding="async" src="{{ $alternativePreview }}" alt="{{ ($product->name ?: 'Product') . ' alternative image ' . $index }}" class="h-full w-full object-cover">
+                        </div>
+                    @endif
+                    <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                        <input type="file" name="alternative_image_{{ $index }}_file" accept="image/*" class="rounded-xl border border-slate-300 px-3 py-2 text-sm">
+                        <input type="text" name="metadata[alternative_image_{{ $index }}]" value="{{ $alternativeValue }}" placeholder="Or paste image URL" class="rounded-xl border-slate-300">
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <p class="mt-1 text-xs text-slate-500">Add up to two extra product images. Uploaded files replace pasted URLs for that slot.</p>
     </div>
 </div>
 <input type="text" name="short_description" value="{{ old('short_description', $product->short_description) }}" placeholder="Short Description" class="w-full rounded-xl border-slate-300">
