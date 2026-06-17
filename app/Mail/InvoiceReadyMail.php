@@ -33,11 +33,6 @@ class InvoiceReadyMail extends Mailable
             ->view('emails.invoice-ready')
             ->with([
                 'invoiceUrl' => $invoiceUrl,
-            ])
-            ->attachData(
-                view('emails.attachments.invoice', ['order' => $this->order])->render(),
-                'invoice-' . $this->order->order_number . '.html',
-                ['mime' => 'text/html']
-            );
+            ]);
     }
 }

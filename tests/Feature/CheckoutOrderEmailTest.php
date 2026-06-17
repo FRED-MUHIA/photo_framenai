@@ -44,7 +44,10 @@ class CheckoutOrderEmailTest extends TestCase
 
             return $mail->hasTo('customer@example.com')
                 && $mail->hasFrom('info@naiprinters.co.ke')
-                && $mail->hasReplyTo('info@naiprinters.co.ke');
+                && $mail->hasReplyTo('info@naiprinters.co.ke')
+                && empty($mail->attachments)
+                && empty($mail->rawAttachments)
+                && empty($mail->diskAttachments);
         });
 
         Mail::assertSent(NewOrderPlacedMail::class, function ($mail) {
