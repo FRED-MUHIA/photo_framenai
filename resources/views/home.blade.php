@@ -712,20 +712,6 @@
         text-decoration: none;
     }
 
-    .service-card-button {
-        appearance: none;
-        width: 100%;
-        padding: 0;
-        font: inherit;
-        text-align: left;
-        cursor: pointer;
-    }
-
-    .service-card-button.is-active {
-        border-color: #b10f1e;
-        box-shadow: 0 0 0 2px rgba(177, 15, 30, 0.12);
-    }
-
     .service-card-image {
         height: 210px;
         width: 100%;
@@ -747,67 +733,6 @@
         font-size: 22px;
         font-weight: 700;
         line-height: 1.28;
-    }
-
-    .service-detail-panel {
-        margin-top: 18px;
-        overflow: hidden;
-        border: 1px solid #d9d9d9;
-        border-radius: 10px;
-        background: #fff;
-    }
-
-    .service-detail-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-        gap: 0;
-    }
-
-    .service-detail-image {
-        width: 100%;
-        height: 100%;
-        min-height: 300px;
-        object-fit: cover;
-    }
-
-    .service-detail-body {
-        padding: clamp(20px, 3vw, 36px);
-    }
-
-    .service-detail-small {
-        color: #5f6368;
-        font-size: 15px;
-        line-height: 1.4;
-    }
-
-    .service-detail-title {
-        margin-top: 8px;
-        color: #111;
-        font-size: clamp(1.6rem, 3vw, 2.45rem);
-        font-weight: 800;
-        line-height: 1.12;
-    }
-
-    .service-detail-copy {
-        margin-top: 16px;
-        color: #42464d;
-        font-size: 15px;
-        line-height: 1.7;
-    }
-
-    .service-detail-link {
-        display: inline-flex;
-        min-height: 44px;
-        align-items: center;
-        justify-content: center;
-        margin-top: 22px;
-        border-radius: 10px;
-        background: #111;
-        padding: 0 18px;
-        color: #fff;
-        font-size: 14px;
-        font-weight: 800;
-        text-decoration: none;
     }
 
     .starlink-friday-banner {
@@ -1131,15 +1056,6 @@
             line-height: 1.18;
         }
 
-        .service-detail-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .service-detail-image {
-            min-height: 210px;
-            aspect-ratio: 16 / 9;
-        }
-
         .top-picks-row {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 12px;
@@ -1429,15 +1345,9 @@
         ->values();
 
     $servicesSection = $sectionMap->get('home_services', []);
-    $serviceFallbackContent = [
-        'Samples of paper and more that you can touch' => 'Compare paper weights, finishes, textures, and print samples before placing a larger order. We help you choose the right material for business cards, flyers, brochures, packaging, and branded stationery.',
-        'Simply design your print products online' => 'Share your brief, logo, text, and preferred style, then our graphics team prepares clean artwork for print. This is ideal when you do not have design software or need files checked before production.',
-        'Simply contact us by phone, via e-mail or chat!' => 'Talk to our team about pricing, artwork, delivery timelines, custom sizes, and bulk orders. We can guide you through the right product options and help you complete your order faster.',
-    ];
     $services = collect(data_get($servicesSection, 'items', []))->map(fn ($item) => [
         'small' => data_get($item, 'subtitle', ''),
         'title' => data_get($item, 'title', ''),
-        'content' => data_get($item, 'content') ?: ($serviceFallbackContent[data_get($item, 'title', '')] ?? 'Explore this service, review what is included, and continue when you are ready to get started.'),
         'image' => data_get($item, 'image_url', ''),
         'url' => data_get($item, 'link_url', route('products.index')),
     ])->filter(fn ($item) => ! empty($item['title']))->values();
@@ -1658,43 +1568,19 @@
 
 <section class="home-wrap py-6">
     @if($services->isNotEmpty())
-        <section class="mt-10 bg-white px-4 py-5" x-data="{ activeService: null }">
+        <section class="mt-10 bg-white px-4 py-5">
             <h2 class="section-title mb-4">{{ data_get($servicesSection, 'title', 'Discover our services') }}</h2>
             <div class="thumb-grid-3">
                 @foreach($services as $service)
-                    <button
-                        type="button"
-                        class="home-card service-card service-card-button"
-                        :class="{ 'is-active': activeService === {{ $loop->index }} }"
-                        @click="activeService = activeService === {{ $loop->index }} ? null : {{ $loop->index }}"
-                        :aria-expanded="activeService === {{ $loop->index }} ? 'true' : 'false'"
-                    >
+                    <a href="{{ data_get($service, 'url', route('products.index')) }}" class="home-card service-card">
                         <img loading="lazy" decoding="async" src="{{ $publicAsset($service['image']) }}" alt="{{ $service['title'] }}" class="service-card-image">
                         <div class="service-card-body">
                             <p class="service-card-small">{{ $service['small'] }}</p>
                             <h3 class="service-card-title">{{ $service['title'] }}</h3>
                         </div>
-                    </button>
+                    </a>
                 @endforeach
             </div>
-
-            @foreach($services as $service)
-                <div
-                    x-cloak
-                    x-show="activeService === {{ $loop->index }}"
-                    class="service-detail-panel"
-                >
-                    <div class="service-detail-grid">
-                        <img loading="lazy" decoding="async" src="{{ $publicAsset($service['image']) }}" alt="{{ $service['title'] }}" class="service-detail-image">
-                        <div class="service-detail-body">
-                            <p class="service-detail-small">{{ $service['small'] }}</p>
-                            <h3 class="service-detail-title">{{ $service['title'] }}</h3>
-                            <p class="service-detail-copy">{{ $service['content'] }}</p>
-                            <a href="{{ data_get($service, 'url', route('products.index')) }}" class="service-detail-link">Continue</a>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
         </section>
     @endif
 
