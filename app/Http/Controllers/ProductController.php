@@ -40,8 +40,9 @@ class ProductController extends Controller
             ->withQueryString();
 
         $categories = Category::query()->active()->orderBy('sort_order')->get();
+        $selectedCategory = $categories->firstWhere('slug', $categorySlug);
 
-        return view('products.index', compact('products', 'categories', 'search', 'categorySlug'));
+        return view('products.index', compact('products', 'categories', 'search', 'categorySlug', 'selectedCategory'));
     }
 
     public function show(Product $product)

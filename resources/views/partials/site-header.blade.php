@@ -1151,12 +1151,12 @@
 <nav class="np-header-nav" x-data="{ openMenu: null }" @mouseleave="openMenu = null">
     <div class="np-wrap py-1">
         <div class="np-nav-row">
-            <button
-                type="button"
+            <a
+                href="{{ route('products.index') }}"
                 class="np-nav-trigger np-nav-first-trigger"
                 :class="{ 'active': openMenu === 'all_products' }"
                 @mouseenter="openMenu = 'all_products'"
-                @click="openMenu = openMenu === 'all_products' ? null : 'all_products'"
+                @focus="openMenu = 'all_products'"
             >
                 <span data-ea-i18n="all_products">All products</span>
                 <svg
@@ -1167,14 +1167,14 @@
                 >
                     <path d="m6 9 6 6 6-6"/>
                 </svg>
-            </button>
+            </a>
             @foreach($themeNavItems as $item)
-                <button
-                    type="button"
+                <a
+                    href="{{ $item['url'] }}"
                     class="np-nav-trigger"
                     :class="{ 'active': openMenu === '{{ $item['key'] }}' }"
                     @mouseenter="openMenu = '{{ $item['key'] }}'"
-                    @click="openMenu = openMenu === '{{ $item['key'] }}' ? null : '{{ $item['key'] }}'"
+                    @focus="openMenu = '{{ $item['key'] }}'"
                 >
                     {{ $item['label'] }}
                     <svg
@@ -1185,7 +1185,7 @@
                     >
                         <path d="m6 9 6 6 6-6"/>
                     </svg>
-                </button>
+                </a>
             @endforeach
         </div>
     </div>

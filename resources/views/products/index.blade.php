@@ -12,7 +12,7 @@
         </div>
         <form method="GET" class="flex flex-wrap gap-2">
             <input type="text" name="q" value="{{ $search }}" placeholder="Search products..." class="rounded-xl border-slate-300">
-            <select name="category" class="rounded-xl border-slate-300">
+            <select name="category" class="rounded-xl border-slate-300" onchange="this.form.submit()">
                 <option value="">All categories</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->slug }}" @selected($categorySlug === $category->slug)>{{ $category->name }}</option>
@@ -37,6 +37,16 @@
                 {{ $category->name }}
             </a>
         @endforeach
+    </div>
+
+    <div class="mt-6 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Showing category</p>
+        <h2 class="mt-1 text-xl font-extrabold text-slate-950">
+            {{ $selectedCategory?->name ?? 'All Products' }}
+        </h2>
+        @if($selectedCategory?->description)
+            <p class="mt-1 text-sm text-slate-600">{{ $selectedCategory->description }}</p>
+        @endif
     </div>
 
     <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
