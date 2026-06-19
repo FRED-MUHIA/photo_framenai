@@ -1,7 +1,22 @@
 @extends('layouts.storefront')
 
+@php
+    $productTags = collect(data_get($product->metadata, 'tags', []))
+        ->map(fn ($tag) => trim((string) $tag))
+        ->filter()
+        ->unique(fn ($tag) => \Illuminate\Support\Str::lower($tag))
+        ->values();
+    $productKeywords = collect(explode(',', (string) data_get($product->metadata, 'seo_keywords')))
+        ->map(fn ($keyword) => trim($keyword))
+        ->filter()
+        ->merge($productTags)
+        ->unique(fn ($keyword) => \Illuminate\Support\Str::lower($keyword))
+        ->values();
+@endphp
+
 @section('meta_title', data_get($product->metadata, 'meta_title') ?: $product->name . ' - Configure Print Specs')
 @section('meta_description', data_get($product->metadata, 'meta_description') ?: ($product->short_description ?: 'Configure and order this print product online.'))
+@section('meta_keywords', $productKeywords->join(', '))
 
 @push('head')
 <style>
@@ -72,6 +87,30 @@
         -webkit-appearance: none;
     }
 </style>
+@php
+    $productSchemaImage = \App\Support\PublicAssetUrl::image($product->thumbnail, 1100, 70);
+    $productSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'description' => $product->short_description ?: strip_tags((string) $product->description),
+        'sku' => $product->sku,
+        'image' => $productSchemaImage ? [$productSchemaImage] : [],
+        'category' => $product->categories->pluck('name')->join(' / ') ?: $product->category?->name,
+        'keywords' => $productKeywords->join(', '),
+        'url' => route('products.show', $product),
+        'offers' => [
+            '@type' => 'Offer',
+            'priceCurrency' => config('shop.currency', 'KES'),
+            'price' => number_format((float) $product->base_price, 2, '.', ''),
+            'availability' => 'https://schema.org/InStock',
+            'url' => route('products.show', $product),
+        ],
+    ];
+@endphp
+<script type="application/ld+json">
+    {!! json_encode($productSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+</script>
 @endpush
 
 @section('content')
@@ -149,6 +188,19 @@
                     <div class="mt-4 flex flex-wrap items-baseline gap-3">
                         <span class="text-[22px] font-extrabold leading-none text-[#ff0037]">KES {{ number_format((float) $product->base_price, 0) }}</span>
                     </div>
+                    @if($productTags->isNotEmpty())
+                        <nav class="mt-4 flex flex-wrap gap-2" aria-label="Product tags">
+                            @foreach($productTags as $tag)
+                                <a
+                                    href="{{ route('products.index', ['q' => $tag]) }}"
+                                    rel="tag"
+                                    class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700 hover:border-slate-300 hover:bg-white"
+                                >
+                                    {{ $tag }}
+                                </a>
+                            @endforeach
+                        </nav>
+                    @endif
                 </div>
 
                 @foreach($product->optionGroups as $group)

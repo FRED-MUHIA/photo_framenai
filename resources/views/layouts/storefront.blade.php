@@ -9,6 +9,9 @@
     @endphp
     <title>@yield('meta_title', 'NaiPrinters - Online Printing eCommerce')</title>
     <meta name="description" content="@yield('meta_description', 'Customize and order print products online with live pricing, artwork uploads, and fast delivery.')">
+    @if(trim($__env->yieldContent('meta_keywords')) !== '')
+        <meta name="keywords" content="{{ trim($__env->yieldContent('meta_keywords')) }}">
+    @endif
     <link rel="canonical" href="{{ url()->current() }}">
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
