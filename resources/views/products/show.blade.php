@@ -145,6 +145,16 @@
     $detailSections = collect(data_get($product->metadata, 'detail_sections') ?: $defaultDetailSections)
         ->filter(fn ($section) => trim((string) data_get($section, 'title')) !== '' || trim((string) data_get($section, 'content')) !== '')
         ->values();
+    $optionLookup = $product->optionGroups->mapWithKeys(function ($group) {
+        return [
+            $group->code => [
+                'name' => $group->name,
+                'values' => $group->values->mapWithKeys(fn ($value) => [
+                    (string) $value->id => $value->label,
+                ])->all(),
+            ],
+        ];
+    })->all();
     $uploadEnabled = (bool) data_get($product->metadata, 'upload_enabled', true);
     $uploadLabel = data_get($product->metadata, 'upload_label') ?: 'Upload Design (Optional)';
     $uploadHelp = data_get($product->metadata, 'upload_help') ?: 'PDF, AI, PSD, JPG, PNG (max 50MB)';
@@ -356,9 +366,13 @@
                     <span x-text="isAdding ? 'Adding...' : 'Add to Cart'"></span>
                 </button>
 
-                <a href="{{ $whatsappLink }}" class="inline-flex w-full items-center justify-center rounded-xl bg-emerald-500 py-3 text-sm font-extrabold text-white hover:bg-emerald-600">
+                <button
+                    type="button"
+                    @click="openWhatsAppOrder($event)"
+                    class="inline-flex w-full items-center justify-center rounded-xl bg-emerald-500 py-3 text-sm font-extrabold text-white hover:bg-emerald-600"
+                >
                     WhatsApp Order
-                </a>
+                </button>
 
                 <div class="flex items-center justify-center gap-8 border-b border-slate-200 pb-4 text-xs font-semibold text-slate-600">
                     <span>Free delivery 10k+</span>
@@ -485,11 +499,15 @@
     function productConfigurator() {
         return {
             productId: {{ $product->id }},
+            productName: @js($product->name),
+            productUrl: @js(route('products.show', $product)),
             quoteUrl: '{{ route('api.quote') }}',
+            whatsappNumber: '254745506619',
             minQuantity: {{ $minQuantity }},
             quantityOptions: @json($quantitySuggestions->values()),
             quantity: {{ $defaultQuantity }},
             selectedOptions: @json($defaultSelections),
+            optionLookup: @json($optionLookup),
             selectedShipping: 'standard',
             usdRate: {{ $usdRate ?: 126 }},
             quote: @json($defaultQuote),
@@ -611,6 +629,78 @@
             },
             formatUsd(value) {
                 return (Number(value || 0) / Math.max(Number(this.usdRate || 1), 1)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            },
+            selectedOptionLines() {
+                return Object.entries(this.selectedOptions || {})
+                    .map(([code, value]) => {
+                        const optionGroup = this.optionLookup?.[code];
+                        const label = optionGroup?.values?.[String(value)];
+
+                        if (! optionGroup || ! label) {
+                            return null;
+                        }
+
+                        return `${optionGroup.name}: ${label}`;
+                    })
+                    .filter(Boolean);
+            },
+            customFieldLines(form) {
+                return Array.from(form?.querySelectorAll('[name^="custom_fields["]') || [])
+                    .map((field) => {
+                        const value = String(field.value || '').trim();
+
+                        if (! value) {
+                            return null;
+                        }
+
+                        const name = field.getAttribute('placeholder')
+                            || field.closest('fieldset')?.querySelector('legend')?.textContent?.trim()
+                            || 'Custom field';
+
+                        return `${name}: ${value}`;
+                    })
+                    .filter(Boolean);
+            },
+            openWhatsAppOrder(event) {
+                this.normalizeQuantity();
+                this.ensureDeliveryDate();
+
+                if (this.quoteError) {
+                    window.alert(this.quoteError);
+                    return;
+                }
+
+                const form = event?.target?.closest('form');
+                const lines = [
+                    'Hello NaiPrinters, I would like to place this order:',
+                    '',
+                    `Product: ${this.productName}`,
+                    `Quantity: ${this.formatWhole(this.quantity)}`,
+                    `Delivery date: ${this.selectedDeliveryDate}`,
+                ];
+
+                const optionLines = this.selectedOptionLines();
+                if (optionLines.length) {
+                    lines.push('', 'Selected options:', ...optionLines.map((line) => `- ${line}`));
+                }
+
+                const customLines = this.customFieldLines(form);
+                if (customLines.length) {
+                    lines.push('', 'Custom details:', ...customLines.map((line) => `- ${line}`));
+                }
+
+                if (this.selectedArtworkName) {
+                    lines.push(`Artwork file selected: ${this.selectedArtworkName}`);
+                }
+
+                lines.push(
+                    '',
+                    `Estimated total: KES ${this.formatMoney(this.quote?.line_total)}`,
+                    `Product link: ${this.productUrl}`
+                );
+
+                const message = encodeURIComponent(lines.join('\n'));
+                window.open(`https://wa.me/${this.whatsappNumber}?text=${message}`, '_blank', 'noopener');
             },
         };
     }
