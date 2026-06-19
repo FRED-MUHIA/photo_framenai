@@ -1183,6 +1183,7 @@
         ->filter(fn ($section) => is_array($section) && ! empty($section['component']))
         ->keyBy('component');
     $publicAsset = fn ($url) => \App\Support\PublicAssetUrl::resolve($url) ?? '';
+    $displayImage = fn ($url, int $width = 640, int $quality = 66) => \App\Support\PublicAssetUrl::image($url, $width, $quality) ?? '';
 
     $heroMain = $sectionMap->get('home_hero_main', []);
     $heroNewsletter = $sectionMap->get('home_hero_newsletter', []);
@@ -1222,7 +1223,7 @@
     $petPromoItems = collect(data_get($petPromoSection, 'items', []))->values();
     $petPromoDogImage = data_get($petPromoSection, 'image_url', asset('storage/media-library/pet-promo-dog.jpg'));
     $petPromoBackgroundImage = data_get($petPromoSection, 'bg_image_url', '');
-    $petPromoBackgroundImageUrl = $publicAsset($petPromoBackgroundImage);
+    $petPromoBackgroundImageUrl = $displayImage($petPromoBackgroundImage, 1600, 70);
     $petPromoBgColor = data_get($petPromoSection, 'bg_color', '#f7a9b7');
     $petPromoTextColor = data_get($petPromoSection, 'text_color', '#00304a');
     $petPromoAccentColor = '#b10f1e';
@@ -1331,7 +1332,7 @@
 
         return [
         'name' => $product->name,
-        'image' => $publicAsset($product->thumbnail) ?: asset('favicon.ico'),
+        'image' => $displayImage($product->thumbnail, 420, 64) ?: asset('favicon.ico'),
         'price' => $price,
         'usd_price' => $usdPrice,
         'url' => route('products.show', $product),
@@ -1375,7 +1376,7 @@
         aria-hidden="true"
     ></div>
     <img loading="eager" fetchpriority="high" decoding="async"
-        src="{{ $publicAsset($petPromoDogImage) }}"
+        src="{{ $displayImage($petPromoDogImage, 900, 70) }}"
         class="pet-promo-dog"
         alt="{{ data_get($petPromoSection, 'title', 'Happy dog') }}"
     >
@@ -1390,7 +1391,7 @@
         @foreach($petPromoItems->slice(1, 1) as $item)
             @php
                 $itemImage = data_get($item, 'image_url', '');
-                $itemImageUrl = $publicAsset($itemImage);
+                $itemImageUrl = $displayImage($itemImage, 420, 64);
             @endphp
             <div class="pet-promo-bag {{ $itemImageUrl ? 'has-image' : '' }}" style="background-color: {{ data_get($item, 'bg_color', '#f0c51e') }}; color: {{ data_get($item, 'text_color', '#173447') }};">
                 @if($itemImageUrl)
@@ -1421,7 +1422,7 @@
             $subtitle = data_get($section, 'subtitle');
             $content = data_get($section, 'content');
             $image = data_get($section, 'image_url');
-            $imageUrl = $publicAsset($image);
+            $imageUrl = $displayImage($image, $component === 'hero' ? 1200 : 520, 66);
             $bgColor = data_get($section, 'bg_color', '#ffffff');
             $textColor = data_get($section, 'text_color', '#111111');
             $items = collect(data_get($section, 'items', []))->filter(fn ($item) => is_array($item))->values();
@@ -1456,7 +1457,7 @@
                     @foreach($items as $item)
                         @php
                             $itemImage = data_get($item, 'image_url');
-                            $itemImageUrl = $publicAsset($itemImage);
+                            $itemImageUrl = $displayImage($itemImage, 420, 64);
                         @endphp
                         <a href="{{ data_get($item, 'link_url', '#') }}" class="overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900">
                             @if($itemImageUrl)
@@ -1488,11 +1489,11 @@
         <div class="thumb-grid-5">
         @foreach($topCategories as $item)
                 @php
-                    $imageLoading = $loop->iteration <= 5 ? 'eager' : 'lazy';
-                    $imagePriority = $loop->iteration <= 5 ? 'high' : 'auto';
+                    $imageLoading = $loop->first ? 'eager' : 'lazy';
+                    $imagePriority = $loop->first ? 'high' : 'auto';
                 @endphp
                 <a href="{{ data_get($item, 'url', route('products.index')) }}" class="top-category-card">
-                    <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $publicAsset($item['image']) }}" alt="{{ $item['name'] }}">
+                    <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $displayImage($item['image'], 420, 64) }}" alt="{{ $item['name'] }}">
                     <span class="top-category-label">{{ $item['name'] }}</span>
                 </a>
             @endforeach
@@ -1504,12 +1505,12 @@
         <div class="thumb-grid-4">
             @foreach($productTiles as $tile)
                 @php
-                    $imageLoading = $loop->iteration <= 4 ? 'eager' : 'lazy';
-                    $imagePriority = $loop->iteration <= 4 ? 'high' : 'auto';
+                    $imageLoading = $loop->first ? 'eager' : 'lazy';
+                    $imagePriority = $loop->first ? 'high' : 'auto';
                 @endphp
                 <a href="{{ data_get($tile, 'url', route('products.index')) }}" class="product-showcase-card">
                     <div class="product-showcase-media">
-                        <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $publicAsset($tile['image']) }}" alt="{{ $tile['name'] }}">
+                        <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $displayImage($tile['image'], 560, 64) }}" alt="{{ $tile['name'] }}">
                     </div>
                     <h3 class="product-showcase-title">{{ $tile['name'] }}</h3>
                     @if(! empty($tile['description']))
@@ -1573,7 +1574,7 @@
             <div class="thumb-grid-3">
                 @foreach($services as $service)
                     <a href="{{ data_get($service, 'url', route('products.index')) }}" class="home-card service-card">
-                        <img loading="lazy" decoding="async" src="{{ $publicAsset($service['image']) }}" alt="{{ $service['title'] }}" class="service-card-image">
+                        <img loading="lazy" decoding="async" src="{{ $displayImage($service['image'], 560, 64) }}" alt="{{ $service['title'] }}" class="service-card-image">
                         <div class="service-card-body">
                             <p class="service-card-small">{{ $service['small'] }}</p>
                             <h3 class="service-card-title">{{ $service['title'] }}</h3>
@@ -1607,7 +1608,7 @@
                 @php
                     $productIcon = data_get($product, 'icon', '');
                     $productIconUrl = $productIcon && \Illuminate\Support\Str::startsWith($productIcon, ['http://', 'https://', '/', 'storage/'])
-                        ? $publicAsset($productIcon)
+                        ? $displayImage($productIcon, 180, 60)
                         : '';
                 @endphp
                 <a href="{{ data_get($product, 'url', route('products.index')) }}" class="home-card px-3 py-5 text-center">

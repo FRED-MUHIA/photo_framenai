@@ -39,6 +39,41 @@ class PublicAssetUrl
         return asset(ltrim($url, '/'));
     }
 
+    public static function image(?string $url, ?int $width = null, ?int $quality = null): ?string
+    {
+        $resolvedUrl = self::resolve($url);
+
+        if (! $resolvedUrl || ! preg_match('/^https?:\/\//i', $resolvedUrl)) {
+            return $resolvedUrl;
+        }
+
+        $parts = parse_url($resolvedUrl);
+        $host = strtolower($parts['host'] ?? '');
+
+        if ($host !== 'images.unsplash.com') {
+            return $resolvedUrl;
+        }
+
+        parse_str($parts['query'] ?? '', $query);
+
+        $query['auto'] = $query['auto'] ?? 'format';
+        $query['fit'] = $query['fit'] ?? 'crop';
+
+        if ($width) {
+            $query['w'] = max(120, $width);
+        }
+
+        if ($quality) {
+            $query['q'] = min(90, max(40, $quality));
+        }
+
+        $path = $parts['path'] ?? '';
+        $rebuilt = ($parts['scheme'] ?? 'https') . '://' . $host . $path;
+        $queryString = http_build_query($query, '', '&', PHP_QUERY_RFC3986);
+
+        return $queryString ? $rebuilt . '?' . $queryString : $rebuilt;
+    }
+
     private static function isLocalHost(string $host): bool
     {
         $appHost = strtolower(parse_url((string) config('app.url'), PHP_URL_HOST) ?: '');

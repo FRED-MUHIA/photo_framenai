@@ -77,11 +77,11 @@
 @section('content')
 @php
     $productGalleryImages = collect([
-        \App\Support\PublicAssetUrl::resolve($product->thumbnail),
-        \App\Support\PublicAssetUrl::resolve(data_get($product->metadata, 'alternative_image_1')),
-        \App\Support\PublicAssetUrl::resolve(data_get($product->metadata, 'alternative_image_2')),
+        \App\Support\PublicAssetUrl::image($product->thumbnail, 1100, 70),
+        \App\Support\PublicAssetUrl::image(data_get($product->metadata, 'alternative_image_1'), 1100, 70),
+        \App\Support\PublicAssetUrl::image(data_get($product->metadata, 'alternative_image_2'), 1100, 70),
     ])
-        ->merge($product->mediaItems->pluck('url'))
+        ->merge($product->mediaItems->pluck('url')->map(fn ($url) => \App\Support\PublicAssetUrl::image($url, 1100, 70)))
         ->filter()
         ->unique()
         ->values();
@@ -169,7 +169,7 @@
                         >
                             @foreach($group->values as $value)
                                 @php
-                                    $optionImageUrl = \App\Support\PublicAssetUrl::resolve(data_get($value->metadata, 'image_url'));
+                                    $optionImageUrl = \App\Support\PublicAssetUrl::image(data_get($value->metadata, 'image_url'), 180, 60);
                                 @endphp
                                 <label
                                     class="flex cursor-pointer items-center rounded-lg border px-3 text-center transition {{ $group->input_type === 'image_tabs' ? 'min-h-[64px] justify-start gap-3 py-2' : 'h-[34px] w-[180px] justify-center py-1' }}"
@@ -386,7 +386,7 @@
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach($relatedProducts as $relatedProduct)
                         @php
-                            $relatedThumbnail = \App\Support\PublicAssetUrl::resolve($relatedProduct->thumbnail);
+                            $relatedThumbnail = \App\Support\PublicAssetUrl::image($relatedProduct->thumbnail, 420, 64);
                         @endphp
                         <a href="{{ route('products.show', $relatedProduct) }}" class="block rounded-xl border border-slate-200 bg-white p-3 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <div class="aspect-square overflow-hidden rounded-lg bg-slate-100">

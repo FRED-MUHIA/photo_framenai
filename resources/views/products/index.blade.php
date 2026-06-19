@@ -52,9 +52,9 @@
     <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @forelse($products as $product)
             @php
-                $thumbnailUrl = \App\Support\PublicAssetUrl::resolve($product->thumbnail);
-                $imageLoading = $loop->iteration <= 4 ? 'eager' : 'lazy';
-                $imagePriority = $loop->iteration <= 4 ? 'high' : 'auto';
+                $thumbnailUrl = \App\Support\PublicAssetUrl::image($product->thumbnail, 520, 64);
+                $imageLoading = $loop->first ? 'eager' : 'lazy';
+                $imagePriority = $loop->first ? 'high' : 'auto';
             @endphp
             <a href="{{ route('products.show', $product) }}" class="block rounded-2xl border border-slate-200 bg-white p-4 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                 <div class="aspect-square overflow-hidden rounded-xl bg-slate-100">

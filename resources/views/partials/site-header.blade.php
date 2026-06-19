@@ -1227,10 +1227,17 @@
             <div class="np-wrap">
                 <div class="np-overlay-grid">
                     @foreach($themeMegaMenus[$menu['key']] ?? [] as $entry)
+                        @php
+                            $entryImageUrl = ! empty($entry['image'])
+                                ? \App\Support\PublicAssetUrl::image($entry['image'], 360, 62)
+                                : '';
+                        @endphp
                         <a href="{{ ! empty($entry['url']) ? $entry['url'] : $menu['url'] }}" class="np-overlay-card">
                             <div class="np-overlay-media">
-                                @if(! empty($entry['image']))
-                                    <img loading="lazy" decoding="async" src="{{ $entry['image'] }}" alt="{{ $entry['title'] }}">
+                                @if($entryImageUrl)
+                                    <template x-if="openMenu === @js($menu['key'])">
+                                        <img loading="lazy" decoding="async" src="{{ $entryImageUrl }}" alt="{{ $entry['title'] }}">
+                                    </template>
                                 @endif
                             </div>
                             <div class="np-overlay-title">{{ $entry['title'] }}</div>
