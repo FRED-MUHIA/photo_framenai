@@ -170,7 +170,7 @@ class ProductController extends Controller
             'metadata.meta_title' => ['nullable', 'string', 'max:190'],
             'metadata.meta_description' => ['nullable', 'string', 'max:255'],
             'metadata.seo_keywords' => ['nullable', 'string', 'max:255'],
-            'metadata.tags' => ['nullable', 'string', 'max:500'],
+            'metadata.tags' => ['nullable', 'string', 'max:2000'],
             'metadata.configurator_intro' => ['nullable', 'string', 'max:255'],
             'metadata.detail_sections' => ['nullable', 'array'],
             'metadata.detail_sections.*.title' => ['nullable', 'string', 'max:190'],
