@@ -170,7 +170,11 @@ class ProductController extends Controller
             'metadata.meta_title' => ['nullable', 'string', 'max:190'],
             'metadata.meta_description' => ['nullable', 'string', 'max:255'],
             'metadata.seo_keywords' => ['nullable', 'string', 'max:255'],
+            'metadata.tags' => ['nullable', 'string', 'max:500'],
             'metadata.configurator_intro' => ['nullable', 'string', 'max:255'],
+            'metadata.detail_sections' => ['nullable', 'array'],
+            'metadata.detail_sections.*.title' => ['nullable', 'string', 'max:190'],
+            'metadata.detail_sections.*.content' => ['nullable', 'string'],
             'metadata.alternative_image_1' => ['nullable', 'string', 'max:255'],
             'metadata.alternative_image_2' => ['nullable', 'string', 'max:255'],
             'alternative_image_1_file' => ['nullable', 'image', 'max:4096'],
@@ -202,7 +206,9 @@ class ProductController extends Controller
                 'meta_title' => data_get($validated, 'metadata.meta_title'),
                 'meta_description' => data_get($validated, 'metadata.meta_description'),
                 'seo_keywords' => data_get($validated, 'metadata.seo_keywords'),
+                'tags' => $this->normalizeTags(data_get($validated, 'metadata.tags')),
                 'configurator_intro' => data_get($validated, 'metadata.configurator_intro'),
+                'detail_sections' => $this->normalizeDetailSections(data_get($validated, 'metadata.detail_sections', [])),
                 'alternative_image_1' => data_get($validated, 'metadata.alternative_image_1'),
                 'alternative_image_2' => data_get($validated, 'metadata.alternative_image_2'),
                 'upload_enabled' => (bool) data_get($validated, 'metadata.upload_enabled', true),
@@ -218,6 +224,41 @@ class ProductController extends Controller
         }
 
         return $payload;
+    }
+
+    private function normalizeTags(mixed $tags): array
+    {
+        $rawTags = is_array($tags) ? $tags : explode(',', (string) $tags);
+
+        return collect($rawTags)
+            ->map(fn ($tag) => trim((string) $tag))
+            ->filter()
+            ->unique(fn ($tag) => Str::lower($tag))
+            ->take(30)
+            ->values()
+            ->all();
+    }
+
+    private function normalizeDetailSections(mixed $sections): array
+    {
+        return collect(is_array($sections) ? $sections : [])
+            ->map(function ($section) {
+                $title = trim((string) data_get($section, 'title'));
+                $content = trim((string) data_get($section, 'content'));
+
+                if ($title === '' && $content === '') {
+                    return null;
+                }
+
+                return [
+                    'title' => $title,
+                    'content' => $content,
+                ];
+            })
+            ->filter()
+            ->take(10)
+            ->values()
+            ->all();
     }
 
     private function attachUploadedProductImages(Request $request, array $validated): array

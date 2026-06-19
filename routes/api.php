@@ -32,6 +32,7 @@ Route::get('/product-suggestions', function (Request $request) {
         ->where(function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%')
                 ->orWhere('short_description', 'like', '%' . $search . '%')
+                ->orWhere('metadata', 'like', '%' . $search . '%')
                 ->orWhereHas('category', fn ($category) => $category->where('name', 'like', '%' . $search . '%'))
                 ->orWhereHas('categories', fn ($category) => $category->where('name', 'like', '%' . $search . '%'));
         })

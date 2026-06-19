@@ -8,6 +8,7 @@ window.richTextEditor = function () {
     return {
         input: null,
         editor: null,
+        savedRange: null,
 
         init(input, editor) {
             this.input = input;
@@ -20,22 +21,30 @@ window.richTextEditor = function () {
             }
 
             this.sync();
+            document.addEventListener('selectionchange', () => this.saveSelection());
+            this.editor.addEventListener('keyup', () => this.saveSelection());
+            this.editor.addEventListener('mouseup', () => this.saveSelection());
             this.editor.closest('form')?.addEventListener('submit', () => this.sync());
         },
 
         format(command) {
+            this.restoreSelection();
             this.editor.focus();
             document.execCommand(command, false, null);
             this.sync();
+            this.saveSelection();
         },
 
         block(tagName) {
+            this.restoreSelection();
             this.editor.focus();
-            document.execCommand('formatBlock', false, tagName);
+            document.execCommand('formatBlock', false, `<${tagName}>`);
             this.sync();
+            this.saveSelection();
         },
 
         link() {
+            this.restoreSelection();
             this.editor.focus();
             const url = window.prompt('Paste link URL');
 
@@ -43,8 +52,43 @@ window.richTextEditor = function () {
                 return;
             }
 
+            this.restoreSelection();
             document.execCommand('createLink', false, url);
             this.sync();
+            this.saveSelection();
+        },
+
+        saveSelection() {
+            if (! this.editor) {
+                return;
+            }
+
+            const selection = window.getSelection();
+
+            if (! selection || selection.rangeCount === 0) {
+                return;
+            }
+
+            const range = selection.getRangeAt(0);
+
+            if (this.editor.contains(range.commonAncestorContainer)) {
+                this.savedRange = range.cloneRange();
+            }
+        },
+
+        restoreSelection() {
+            if (! this.savedRange) {
+                return;
+            }
+
+            const selection = window.getSelection();
+
+            if (! selection) {
+                return;
+            }
+
+            selection.removeAllRanges();
+            selection.addRange(this.savedRange);
         },
 
         sync() {

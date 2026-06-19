@@ -25,7 +25,8 @@ class ProductController extends Controller
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
                     $inner->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('short_description', 'like', '%' . $search . '%');
+                        ->orWhere('short_description', 'like', '%' . $search . '%')
+                        ->orWhere('metadata', 'like', '%' . $search . '%');
                 });
             })
             ->when($categorySlug, function ($query) use ($categorySlug) {

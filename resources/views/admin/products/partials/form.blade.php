@@ -81,19 +81,24 @@
     </div>
 </div>
 <input type="text" name="short_description" value="{{ old('short_description', $product->short_description) }}" placeholder="Short Description" class="w-full rounded-xl border-slate-300">
+@php
+    $productTags = old('metadata.tags', data_get($product->metadata, 'tags', []));
+    $productTags = is_array($productTags) ? implode(', ', $productTags) : $productTags;
+@endphp
+<input type="text" name="metadata[tags]" value="{{ $productTags }}" placeholder="Product tags (comma separated, e.g. flyers, promo, events)" class="w-full rounded-xl border-slate-300">
 <div class="rounded-xl border border-slate-300 bg-white" x-data="richTextEditor()" x-init="init($refs.descriptionInput, $refs.descriptionEditor)">
     <div class="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 px-3 py-2">
-        <button type="button" title="Bold" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm font-extrabold hover:bg-slate-100" @click="format('bold')">B</button>
-        <button type="button" title="Italic" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm italic hover:bg-slate-100" @click="format('italic')">I</button>
-        <button type="button" title="Underline" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm underline hover:bg-slate-100" @click="format('underline')">U</button>
+        <button type="button" title="Bold" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm font-extrabold hover:bg-slate-100" @mousedown.prevent="format('bold')">B</button>
+        <button type="button" title="Italic" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm italic hover:bg-slate-100" @mousedown.prevent="format('italic')">I</button>
+        <button type="button" title="Underline" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm underline hover:bg-slate-100" @mousedown.prevent="format('underline')">U</button>
         <span class="mx-1 h-6 w-px bg-slate-200"></span>
-        <button type="button" title="Heading" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-extrabold hover:bg-slate-100" @click="block('h3')">H</button>
-        <button type="button" title="Paragraph" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-semibold hover:bg-slate-100" @click="block('p')">P</button>
-        <button type="button" title="Bulleted list" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm hover:bg-slate-100" @click="format('insertUnorderedList')">•</button>
-        <button type="button" title="Numbered list" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm hover:bg-slate-100" @click="format('insertOrderedList')">1.</button>
+        <button type="button" title="Heading" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-extrabold hover:bg-slate-100" @mousedown.prevent="block('h3')">H</button>
+        <button type="button" title="Paragraph" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-semibold hover:bg-slate-100" @mousedown.prevent="block('p')">P</button>
+        <button type="button" title="Bulleted list" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm hover:bg-slate-100" @mousedown.prevent="format('insertUnorderedList')">•</button>
+        <button type="button" title="Numbered list" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-sm hover:bg-slate-100" @mousedown.prevent="format('insertOrderedList')">1.</button>
         <span class="mx-1 h-6 w-px bg-slate-200"></span>
-        <button type="button" title="Add link" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-bold hover:bg-slate-100" @click="link()">Link</button>
-        <button type="button" title="Clear formatting" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-bold hover:bg-slate-100" @click="format('removeFormat')">Tx</button>
+        <button type="button" title="Add link" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-bold hover:bg-slate-100" @mousedown.prevent="link()">Link</button>
+        <button type="button" title="Clear formatting" class="h-8 min-w-8 rounded border border-slate-200 bg-white px-2 text-xs font-bold hover:bg-slate-100" @mousedown.prevent="format('removeFormat')">Tx</button>
     </div>
     <div
         x-ref="descriptionEditor"
@@ -105,6 +110,47 @@
         @blur="sync()"
     ></div>
     <textarea x-ref="descriptionInput" name="description" class="hidden">{{ old('description', $product->description) }}</textarea>
+</div>
+
+@php
+    $defaultDetailSections = [
+        ['title' => 'What is included with this product?', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'Available sizes and print options', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'Print quality and material', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'Ordering and delivery', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'Need a larger display or custom finish?', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'How artwork should be supplied', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+    ];
+    $detailSections = old('metadata.detail_sections', data_get($product->metadata, 'detail_sections', $defaultDetailSections));
+    $detailSections = collect(is_array($detailSections) ? $detailSections : $defaultDetailSections)
+        ->pad(6, ['title' => '', 'content' => ''])
+        ->take(6)
+        ->values();
+@endphp
+<div class="rounded-xl border border-slate-200 p-4">
+    <div class="mb-3">
+        <label class="block text-sm font-bold">Product detail accordions</label>
+        <p class="mt-1 text-xs text-slate-500">These rows appear on this product page only. Leave a row blank to hide it.</p>
+    </div>
+    <div class="space-y-4">
+        @foreach($detailSections as $index => $section)
+            <div class="rounded-lg border border-slate-200 p-3">
+                <input
+                    type="text"
+                    name="metadata[detail_sections][{{ $index }}][title]"
+                    value="{{ data_get($section, 'title') }}"
+                    placeholder="Accordion title"
+                    class="w-full rounded-lg border-slate-300 text-sm font-semibold"
+                >
+                <textarea
+                    name="metadata[detail_sections][{{ $index }}][content]"
+                    rows="3"
+                    placeholder="Accordion answer"
+                    class="mt-2 w-full rounded-lg border-slate-300 text-sm"
+                >{{ data_get($section, 'content') }}</textarea>
+            </div>
+        @endforeach
+    </div>
 </div>
 
 <div class="grid gap-4 sm:grid-cols-2">

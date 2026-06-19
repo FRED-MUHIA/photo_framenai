@@ -276,6 +276,16 @@
         const widget = document.querySelector('[data-whatsapp-widget]');
         const close = document.querySelector('[data-whatsapp-close]');
         let soundPlayed = false;
+        let autoHideTimer = null;
+
+        const hideWidgetCard = () => {
+            widget?.classList.remove('is-visible');
+        };
+
+        const scheduleAutoHide = () => {
+            window.clearTimeout(autoHideTimer);
+            autoHideTimer = window.setTimeout(hideWidgetCard, 8000);
+        };
 
         const playNotificationSound = () => {
             if (soundPlayed) {
@@ -319,11 +329,27 @@
             window.setTimeout(() => {
                 if (! widget.classList.contains('is-closed')) {
                     widget.classList.add('is-visible');
+                    scheduleAutoHide();
                     playNotificationSound();
                 }
             }, 10000);
 
+            widget.addEventListener('mouseenter', () => window.clearTimeout(autoHideTimer));
+            widget.addEventListener('mouseleave', () => {
+                if (widget.classList.contains('is-visible')) {
+                    scheduleAutoHide();
+                }
+            });
+
+            widget.addEventListener('focusin', () => window.clearTimeout(autoHideTimer));
+            widget.addEventListener('focusout', () => {
+                if (widget.classList.contains('is-visible')) {
+                    scheduleAutoHide();
+                }
+            });
+
             close.addEventListener('click', () => {
+                window.clearTimeout(autoHideTimer);
                 widget.classList.add('is-closed');
             });
         }

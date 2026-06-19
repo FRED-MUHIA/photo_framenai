@@ -95,6 +95,17 @@
     $usdRate = (float) config('shop.usd_exchange_rate', 126);
     $whatsappLink = config('shop.whatsapp_link');
     $descriptionHtml = \App\Support\RichTextSanitizer::clean($product->description ?: $product->short_description ?: '');
+    $defaultDetailSections = [
+        ['title' => 'What is included with this product?', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'Available sizes and print options', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'Print quality and material', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'Ordering and delivery', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'Need a larger display or custom finish?', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+        ['title' => 'How artwork should be supplied', 'content' => 'Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.'],
+    ];
+    $detailSections = collect(data_get($product->metadata, 'detail_sections') ?: $defaultDetailSections)
+        ->filter(fn ($section) => trim((string) data_get($section, 'title')) !== '' || trim((string) data_get($section, 'content')) !== '')
+        ->values();
     $uploadEnabled = (bool) data_get($product->metadata, 'upload_enabled', true);
     $uploadLabel = data_get($product->metadata, 'upload_label') ?: 'Upload Design (Optional)';
     $uploadHelp = data_get($product->metadata, 'upload_help') ?: 'PDF, AI, PSD, JPG, PNG (max 50MB)';
@@ -352,22 +363,15 @@
                     </div>
                 </details>
 
-                @foreach([
-                    'What is included with this product?',
-                    'Available sizes and print options',
-                    'Print quality and material',
-                    'Ordering and delivery',
-                    'Need a larger display or custom finish?',
-                    'How artwork should be supplied',
-                ] as $detailTitle)
+                @foreach($detailSections as $detailSection)
                     <details class="group border-t border-slate-200 py-4">
                         <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-slate-900">
-                            {{ $detailTitle }}
+                            {{ data_get($detailSection, 'title') }}
                             <span class="text-slate-500 group-open:rotate-180">v</span>
                         </summary>
-                        <p class="mt-3 max-w-[1080px] text-justify text-sm leading-6 text-slate-600">
-                            Select your options on the order panel and upload print-ready artwork after checkout, or send files to our team for review.
-                        </p>
+                        @if(trim((string) data_get($detailSection, 'content')) !== '')
+                            <p class="mt-3 max-w-[1080px] whitespace-pre-line text-justify text-sm leading-6 text-slate-600">{{ data_get($detailSection, 'content') }}</p>
+                        @endif
                     </details>
                 @endforeach
             </div>

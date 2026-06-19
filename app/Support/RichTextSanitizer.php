@@ -10,6 +10,7 @@ class RichTextSanitizer
 {
     private const ALLOWED_TAGS = [
         'a',
+        'b',
         'blockquote',
         'br',
         'em',
