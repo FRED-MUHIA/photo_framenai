@@ -188,19 +188,6 @@
                     <div class="mt-4 flex flex-wrap items-baseline gap-3">
                         <span class="text-[22px] font-extrabold leading-none text-[#ff0037]">KES {{ number_format((float) $product->base_price, 0) }}</span>
                     </div>
-                    @if($productTags->isNotEmpty())
-                        <nav class="mt-4 flex flex-wrap gap-2" aria-label="Product tags">
-                            @foreach($productTags as $tag)
-                                <a
-                                    href="{{ route('products.index', ['q' => $tag]) }}"
-                                    rel="tag"
-                                    class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700 hover:border-slate-300 hover:bg-white"
-                                >
-                                    {{ $tag }}
-                                </a>
-                            @endforeach
-                        </nav>
-                    @endif
                 </div>
 
                 @foreach($product->optionGroups as $group)
@@ -395,6 +382,28 @@
                         </details>
                     @endforeach
                 </div>
+
+                @if($productTags->isNotEmpty())
+                    <details class="group rounded-xl border border-slate-200 bg-white">
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-xs font-extrabold text-slate-700">
+                            Related search tags
+                            <span class="text-slate-400 group-open:rotate-180">v</span>
+                        </summary>
+                        <nav class="max-h-24 overflow-y-auto border-t border-slate-100 px-4 py-3" aria-label="Product tags">
+                            <div class="flex flex-wrap gap-1.5">
+                                @foreach($productTags as $tag)
+                                    <a
+                                        href="{{ route('products.index', ['q' => $tag]) }}"
+                                        rel="tag"
+                                        class="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold leading-none text-slate-600 hover:border-slate-300 hover:bg-white"
+                                    >
+                                        {{ $tag }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </nav>
+                    </details>
+                @endif
             </div>
         </form>
 
