@@ -1324,7 +1324,7 @@
     }
 
     $topPickUsdRate = (float) config('shop.usd_exchange_rate', 126);
-    $topPicks = collect($topPickProducts ?? [])->map(function ($product) use ($publicAsset, $topPickUsdRate) {
+    $topPicks = collect($topPickProducts ?? [])->map(function ($product) use ($displayImage, $topPickUsdRate) {
         $displayPrice = (float) $product->base_price;
 
         $price = number_format($displayPrice, 0);
