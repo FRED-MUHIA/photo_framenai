@@ -1,6 +1,6 @@
 @php
-    $footerBrand = $siteSettings->get('footer_brand_name', 'NaiPrinters');
-    $footerAbout = $siteSettings->get('footer_about_text', 'Custom printing at scale with fast turnaround and design-friendly workflows.');
+    $footerBrand = $siteSettings->get('footer_brand_name', config('app.name', 'Nai Printers'));
+    $footerAbout = $siteSettings->get('footer_about_text', config('app.tagline'));
     $footerCopyright = $siteSettings->get('footer_copyright_text', 'All rights reserved.');
     $whatsappLabel = $siteSettings->get('whatsapp_label', 'WhatsApp');
     $whatsappLink = $siteSettings->get('whatsapp_link', config('shop.whatsapp_link'));

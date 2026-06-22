@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Upload Artwork - NaiPrinters')
+@section('meta_title', 'Upload Artwork - Nai Printers')
 
 @section('content')
 <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8" x-data="artworkUploader()">

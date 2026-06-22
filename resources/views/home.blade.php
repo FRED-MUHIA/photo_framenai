@@ -1,7 +1,7 @@
 @extends('layouts.storefront')
 
-@section('meta_title', $cmsHome?->meta_title ?: 'NaiPrinters')
-@section('meta_description', $cmsHome?->meta_description ?: 'Customize and order print products online with live pricing, artwork uploads, and fast delivery.')
+@section('meta_title', $cmsHome?->meta_title ?: config('app.name', 'Nai Printers'))
+@section('meta_description', $cmsHome?->meta_description ?: config('app.tagline'))
 
 @push('head')
 <style>

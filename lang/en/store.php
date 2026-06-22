@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'brand' => 'NaiPrinters',
+    'brand' => 'Nai Printers',
     'print_now' => 'Print Now',
     'products' => 'Products',
     'help' => 'Help',

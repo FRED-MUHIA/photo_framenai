@@ -214,9 +214,9 @@
     <section>
         <h2 class="text-lg font-bold">Footer</h2>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
-            <input type="text" name="footer_brand_name" value="{{ old('footer_brand_name', $settings->get('footer_brand_name', 'NaiPrinters')) }}" class="rounded-xl border-slate-300" placeholder="Footer brand">
+            <input type="text" name="footer_brand_name" value="{{ old('footer_brand_name', $settings->get('footer_brand_name', config('app.name', 'Nai Printers'))) }}" class="rounded-xl border-slate-300" placeholder="Footer brand">
             <input type="text" name="footer_copyright_text" value="{{ old('footer_copyright_text', $settings->get('footer_copyright_text', 'All rights reserved.')) }}" class="rounded-xl border-slate-300" placeholder="Copyright text">
-            <textarea name="footer_about_text" rows="3" class="rounded-xl border-slate-300 sm:col-span-2" placeholder="Footer about text">{{ old('footer_about_text', $settings->get('footer_about_text', 'Custom printing at scale with fast turnaround and design-friendly workflows.')) }}</textarea>
+            <textarea name="footer_about_text" rows="3" class="rounded-xl border-slate-300 sm:col-span-2" placeholder="Footer about text">{{ old('footer_about_text', $settings->get('footer_about_text', config('app.tagline'))) }}</textarea>
         </div>
     </section>
 

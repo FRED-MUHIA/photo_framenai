@@ -99,7 +99,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'info@naiprinters.co.ke'),
-        'name' => env('MAIL_FROM_NAME', 'NaiPrinters'),
+        'name' => env('MAIL_FROM_NAME', 'Nai Printers'),
     ],
 
     /*

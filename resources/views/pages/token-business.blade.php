@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Complementary Slips - NaiPrinters')
+@section('meta_title', 'Complementary Slips - Nai Printers')
 @section('meta_description', 'Configure paper, finish, colour and quantity options for complementary slips.')
 
 @section('content')

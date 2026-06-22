@@ -1,8 +1,8 @@
 # nai-ken
 
-NaiPrinters - Web-to-Print eCommerce (Laravel + Blade + Tailwind + Alpine)
+Nai Printers - Web-to-Print eCommerce (Laravel + Blade + Tailwind + Alpine)
 
-NaiPrinters is a complete online printing platform inspired by onlineprinters-style workflows. It supports product configuration, live pricing, artwork uploads, cart/checkout, customer dashboard, and admin operations.
+Nai Printers is a complete online printing platform inspired by onlineprinters-style workflows. It supports product configuration, live pricing, artwork uploads, cart/checkout, customer dashboard, and admin operations.
 
 ## Core Features
 

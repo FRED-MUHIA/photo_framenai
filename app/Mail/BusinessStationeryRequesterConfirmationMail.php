@@ -23,7 +23,7 @@ class BusinessStationeryRequesterConfirmationMail extends Mailable
         return $this
             ->from(config('shop.notification_email'), config('shop.notification_name'))
             ->replyTo(config('shop.notification_email'), config('shop.notification_name'))
-            ->subject('We received your NaiPrinters request')
+            ->subject('We received your Nai Printers request')
             ->view('emails.business-stationery-request-confirmation');
     }
 }

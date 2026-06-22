@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Checkout - NaiPrinters')
+@section('meta_title', 'Checkout - Nai Printers')
 
 @section('content')
 @php

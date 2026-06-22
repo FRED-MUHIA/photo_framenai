@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $cmsPage?->meta_title ?: 'Design Services - NaiPrinters' }}</title>
+    <title>{{ $cmsPage?->meta_title ?: 'Design Services - Nai Printers' }}</title>
     <meta name="description" content="{{ $cmsPage?->meta_description ?: 'Creative professional design and branding portfolio page.' }}">
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>

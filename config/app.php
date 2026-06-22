@@ -15,7 +15,12 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Nai Printers'),
+
+    'tagline' => env(
+        'APP_TAGLINE',
+        'Online Printers Kenya, Ideal for business cards, flyers, banners, and branded apparel with nationwide delivery'
+    ),
 
     /*
     |--------------------------------------------------------------------------

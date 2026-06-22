@@ -7,8 +7,8 @@
     @php
         $storefrontBreadcrumbs = \App\Support\StorefrontBreadcrumbs::forCurrentRequest(request());
     @endphp
-    <title>@yield('meta_title', 'NaiPrinters - Online Printing eCommerce')</title>
-    <meta name="description" content="@yield('meta_description', 'Customize and order print products online with live pricing, artwork uploads, and fast delivery.')">
+    <title>@yield('meta_title', config('app.name', 'Nai Printers'))</title>
+    <meta name="description" content="@yield('meta_description', config('app.tagline'))">
     @if(trim($__env->yieldContent('meta_keywords')) !== '')
         <meta name="keywords" content="{{ trim($__env->yieldContent('meta_keywords')) }}">
     @endif
@@ -25,7 +25,7 @@
         {
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "NaiPrinters",
+            "name": @json(config('app.name', 'Nai Printers')),
             "url": "{{ url('/') }}",
             "logo": "{{ asset('favicon.ico') }}",
             "sameAs": ["{{ $siteSettings->get('whatsapp_link', config('shop.whatsapp_link')) }}"]

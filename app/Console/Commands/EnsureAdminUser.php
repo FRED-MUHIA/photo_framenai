@@ -12,7 +12,7 @@ class EnsureAdminUser extends Command
         {--email= : Admin email address}
         {--username= : Admin username}
         {--password= : Admin password}
-        {--name=NaiPrinters Admin : Admin display name}';
+        {--name=Nai Printers Admin : Admin display name}';
 
     protected $description = 'Create or update the admin login account.';
 

@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', $project['title'] . ' Project - NaiPrinters')
+@section('meta_title', $project['title'] . ' Project - Nai Printers')
 @section('meta_description', $project['summary'])
 
 @section('content')

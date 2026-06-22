@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Certificates - NaiPrinters')
+@section('meta_title', 'Certificates - Nai Printers')
 @section('meta_description', 'Order high-quality certificates in A4 or US Letter sizes with paper, finish, orientation, and delivery options.')
 
 @section('content')

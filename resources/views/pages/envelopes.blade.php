@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Envelopes - NaiPrinters')
+@section('meta_title', 'Envelopes - Nai Printers')
 @section('meta_description', 'Order branded envelopes with multiple envelope sizes, personalization, design and delivery options.')
 
 @section('content')

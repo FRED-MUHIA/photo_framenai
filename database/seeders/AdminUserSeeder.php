@@ -22,7 +22,7 @@ class AdminUserSeeder extends Seeder
         User::query()->updateOrCreate(
             ['email' => $email],
             [
-                'name' => 'NaiPrinters Admin',
+                'name' => 'Nai Printers Admin',
                 'username' => $username,
                 'phone' => '+254700000000',
                 'role' => 'admin',

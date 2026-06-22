@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Print Products - NaiPrinters')
+@section('meta_title', 'Print Products - Nai Printers')
 
 @section('content')
 <section class="bg-white">

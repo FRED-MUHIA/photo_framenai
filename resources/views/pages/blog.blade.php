@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', $cmsPage?->meta_title ?: 'Blog & Resources - NaiPrinters')
+@section('meta_title', $cmsPage?->meta_title ?: 'Blog & Resources - Nai Printers')
 @section('meta_description', $cmsPage?->meta_description ?: 'Read printing guides, product tips and web-to-print resources.')
 
 @section('content')
