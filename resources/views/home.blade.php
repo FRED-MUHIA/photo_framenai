@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', $cmsHome?->meta_title ?: config('app.name', 'Nai Printers'))
+@section('meta_title', ($cmsHome?->meta_title ?: config('app.name', 'Nai Printers')) . ' | ' . config('app.tagline'))
 @section('meta_description', $cmsHome?->meta_description ?: config('app.tagline'))
 
 @push('head')
