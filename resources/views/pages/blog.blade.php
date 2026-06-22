@@ -2,7 +2,7 @@
 
 @section('meta_title', $cmsPage?->meta_title ?: 'Blog & Resources - Nai Printers')
 @section('meta_description', $cmsPage?->meta_description ?: 'Read printing guides, product tips and web-to-print resources.')
-@section('canonical_url', $posts->currentPage() > 1 ? $posts->url($posts->currentPage()) : route('pages.blog'))
+@section('canonical_url', rtrim(config('app.url'), '/') . route('pages.blog', [], false) . ($posts->currentPage() > 1 ? '?page=' . $posts->currentPage() : ''))
 
 @push('head')
     @if($posts->previousPageUrl())

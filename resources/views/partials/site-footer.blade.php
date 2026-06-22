@@ -36,6 +36,35 @@
         color: #94a3b8;
     }
 
+    .np-printing-agent-button {
+        margin-top: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ff4b35;
+        border-radius: 10px;
+        background: #ff4b35;
+        padding: 10px 15px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 800;
+        transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .np-printing-agent-button:hover,
+    .np-printing-agent-button:focus-visible {
+        background: #e63d2a;
+        transform: translateY(-1px);
+        outline: none;
+    }
+
+    .np-printing-agent-status {
+        margin-top: 10px;
+        color: #ffffff !important;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
     .np-whatsapp-widget {
         position: fixed;
         right: 26px;
@@ -206,6 +235,12 @@
                 <p class="mt-3 max-w-xs text-[15px] leading-7">
                     {{ $footerAbout }}
                 </p>
+                <button type="button" class="np-printing-agent-button" aria-expanded="false" aria-controls="printing-agent-status" data-printing-agent-button>
+                    Register as Our Printing Agent
+                </button>
+                <p id="printing-agent-status" class="np-printing-agent-status" role="status" aria-live="polite" hidden data-printing-agent-status>
+                    Coming soon!
+                </p>
             </div>
 
             <div>
@@ -275,8 +310,15 @@
     document.addEventListener('DOMContentLoaded', () => {
         const widget = document.querySelector('[data-whatsapp-widget]');
         const close = document.querySelector('[data-whatsapp-close]');
+        const printingAgentButton = document.querySelector('[data-printing-agent-button]');
+        const printingAgentStatus = document.querySelector('[data-printing-agent-status]');
         let soundPlayed = false;
         let autoHideTimer = null;
+
+        printingAgentButton?.addEventListener('click', () => {
+            printingAgentStatus?.removeAttribute('hidden');
+            printingAgentButton.setAttribute('aria-expanded', 'true');
+        });
 
         const hideWidgetCard = () => {
             widget?.classList.remove('is-visible');

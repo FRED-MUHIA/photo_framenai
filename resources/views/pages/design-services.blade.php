@@ -7,7 +7,7 @@
     @php
         $designMetaTitle = $cmsPage?->meta_title ?: 'Design Services - Nai Printers';
         $designMetaDescription = $cmsPage?->meta_description ?: 'Creative professional design and branding portfolio page.';
-        $designCanonicalUrl = route('pages.design-services');
+        $designCanonicalUrl = rtrim(config('app.url'), '/') . route('pages.design-services', [], false);
     @endphp
     <title>{{ $designMetaTitle }}</title>
     <meta name="description" content="{{ $designMetaDescription }}">
@@ -21,6 +21,7 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ $designMetaTitle }}">
     <meta name="twitter:description" content="{{ $designMetaDescription }}">
+    <link rel="icon" href="{{ rtrim(config('app.url'), '/') }}/favicon.svg" type="image/svg+xml" sizes="any">
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -943,7 +944,7 @@
                 <div class="projects" data-slideshow="projects">
                     @foreach($projectItems as $projectIndex => $project)
                         <a href="{{ route('pages.design-projects.show', $project['slug']) }}" class="project project-slide {{ $projectIndex < 2 ? 'active' : '' }}" data-slide>
-                            <img loading="lazy" decoding="async" src="{{ $project['images'][0] ?? asset('favicon.ico') }}" alt="{{ $project['title'] }} mockup">
+                            <img loading="lazy" decoding="async" src="{{ $project['images'][0] ?? asset('favicon.svg') }}" alt="{{ $project['title'] }} mockup">
                             <div class="project-meta">
                                 <div>
                                     <h3>{{ $project['title'] }}</h3>

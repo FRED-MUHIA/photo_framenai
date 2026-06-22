@@ -1332,7 +1332,7 @@
 
         return [
         'name' => $product->name,
-        'image' => $displayImage($product->thumbnail, 420, 64) ?: asset('favicon.ico'),
+        'image' => $displayImage($product->thumbnail, 420, 64) ?: asset('favicon.svg'),
         'price' => $price,
         'usd_price' => $usdPrice,
         'url' => route('products.show', $product),

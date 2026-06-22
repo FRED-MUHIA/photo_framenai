@@ -37,6 +37,7 @@
     @if($metaImage !== '')
         <meta name="twitter:image" content="{{ $metaImage }}">
     @endif
+    <link rel="icon" href="{{ rtrim(config('app.url'), '/') }}/favicon.svg" type="image/svg+xml" sizes="any">
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,8 +51,8 @@
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": @json(config('app.name', 'Nai Printers')),
-            "url": "{{ url('/') }}",
-            "logo": "{{ asset('favicon.ico') }}",
+            "url": "{{ rtrim(config('app.url'), '/') }}/",
+            "logo": "{{ rtrim(config('app.url'), '/') }}/favicon.svg",
             "sameAs": ["{{ $siteSettings->get('whatsapp_link', config('shop.whatsapp_link')) }}"]
         }
     </script>

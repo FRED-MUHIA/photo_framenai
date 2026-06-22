@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Nai Printers</title>
+  <rect width="512" height="512" rx="96" fill="#061a33"/>
+  <rect x="42" y="42" width="428" height="428" rx="70" fill="none" stroke="#ff4b35" stroke-width="24"/>
+  <text x="256" y="316" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="190" font-weight="800" text-anchor="middle">NP</text>
+</svg>
