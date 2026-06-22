@@ -2,6 +2,30 @@
 
 @section('meta_title', $post->meta_title ?: $post->title)
 @section('meta_description', $post->meta_description ?: $post->excerpt)
+@section('meta_type', 'article')
+@section('meta_image', \App\Support\PublicAssetUrl::resolve($post->cover_image) ?: '')
+
+@push('head')
+@php
+    $articleSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BlogPosting',
+        'headline' => $post->title,
+        'description' => $post->meta_description ?: $post->excerpt,
+        'url' => route('pages.blog.show', ['post' => $post->slug]),
+        'datePublished' => optional($post->published_at ?: $post->created_at)?->toAtomString(),
+        'dateModified' => optional($post->updated_at)?->toAtomString(),
+        'image' => \App\Support\PublicAssetUrl::resolve($post->cover_image),
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => config('app.name', 'Nai Printers'),
+        ],
+    ];
+@endphp
+<script type="application/ld+json">
+    {!! json_encode(array_filter($articleSchema), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
 
 @section('content')
 <article class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">

@@ -6,13 +6,37 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
         $storefrontBreadcrumbs = \App\Support\StorefrontBreadcrumbs::forCurrentRequest(request());
+        $metaTitle = trim($__env->yieldContent('meta_title')) ?: config('app.name', 'Nai Printers');
+        $metaDescription = trim($__env->yieldContent('meta_description')) ?: config('app.tagline');
+        $metaRobots = trim($__env->yieldContent('meta_robots')) ?: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+        $configuredRoot = rtrim((string) config('app.url'), '/');
+        $requestPath = request()->getPathInfo();
+        $defaultCanonicalUrl = $configuredRoot . ($requestPath === '/' ? '/' : $requestPath);
+        $canonicalUrl = trim($__env->yieldContent('canonical_url')) ?: $defaultCanonicalUrl;
+        $metaType = trim($__env->yieldContent('meta_type')) ?: 'website';
+        $metaImage = trim($__env->yieldContent('meta_image'));
     @endphp
-    <title>@yield('meta_title', config('app.name', 'Nai Printers'))</title>
-    <meta name="description" content="@yield('meta_description', config('app.tagline'))">
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <meta name="robots" content="{{ $metaRobots }}">
     @if(trim($__env->yieldContent('meta_keywords')) !== '')
         <meta name="keywords" content="{{ trim($__env->yieldContent('meta_keywords')) }}">
     @endif
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <meta property="og:site_name" content="{{ config('app.name', 'Nai Printers') }}">
+    <meta property="og:type" content="{{ $metaType }}">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    @if($metaImage !== '')
+        <meta property="og:image" content="{{ $metaImage }}">
+    @endif
+    <meta name="twitter:card" content="{{ $metaImage !== '' ? 'summary_large_image' : 'summary' }}">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    @if($metaImage !== '')
+        <meta name="twitter:image" content="{{ $metaImage }}">
+    @endif
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">

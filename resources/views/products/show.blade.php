@@ -17,6 +17,8 @@
 @section('meta_title', data_get($product->metadata, 'meta_title') ?: $product->name . ' - Configure Print Specs')
 @section('meta_description', data_get($product->metadata, 'meta_description') ?: ($product->short_description ?: 'Configure and order this print product online.'))
 @section('meta_keywords', $productKeywords->join(', '))
+@section('meta_type', 'product')
+@section('meta_image', \App\Support\PublicAssetUrl::image($product->thumbnail, 1200, 80) ?: '')
 
 @push('head')
 <style>

@@ -1,6 +1,7 @@
 @extends('layouts.storefront')
 
 @section('meta_title', 'Customer Dashboard - Nai Printers')
+@section('meta_robots', 'noindex, nofollow, noarchive')
 
 @section('content')
 <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

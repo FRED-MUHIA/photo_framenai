@@ -4,8 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $cmsPage?->meta_title ?: 'Design Services - Nai Printers' }}</title>
-    <meta name="description" content="{{ $cmsPage?->meta_description ?: 'Creative professional design and branding portfolio page.' }}">
+    @php
+        $designMetaTitle = $cmsPage?->meta_title ?: 'Design Services - Nai Printers';
+        $designMetaDescription = $cmsPage?->meta_description ?: 'Creative professional design and branding portfolio page.';
+        $designCanonicalUrl = route('pages.design-services');
+    @endphp
+    <title>{{ $designMetaTitle }}</title>
+    <meta name="description" content="{{ $designMetaDescription }}">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="{{ $designCanonicalUrl }}">
+    <meta property="og:site_name" content="{{ config('app.name', 'Nai Printers') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $designMetaTitle }}">
+    <meta property="og:description" content="{{ $designMetaDescription }}">
+    <meta property="og:url" content="{{ $designCanonicalUrl }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ $designMetaTitle }}">
+    <meta name="twitter:description" content="{{ $designMetaDescription }}">
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">

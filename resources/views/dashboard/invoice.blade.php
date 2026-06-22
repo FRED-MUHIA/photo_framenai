@@ -1,6 +1,7 @@
 @extends('layouts.storefront')
 
 @section('meta_title', 'Invoice ' . $order->order_number)
+@section('meta_robots', 'noindex, nofollow, noarchive')
 
 @section('content')
 @php
