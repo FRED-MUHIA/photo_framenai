@@ -15,6 +15,8 @@
         $canonicalUrl = trim($__env->yieldContent('canonical_url')) ?: $defaultCanonicalUrl;
         $metaType = trim($__env->yieldContent('meta_type')) ?: 'website';
         $metaImage = trim($__env->yieldContent('meta_image'));
+        $faviconUrl = \App\Support\PublicAssetUrl::resolve($siteSettings->get('favicon_url'))
+            ?: $configuredRoot . '/favicon.svg';
     @endphp
     <title>{{ $metaTitle }}</title>
     <meta name="description" content="{{ $metaDescription }}">
@@ -37,7 +39,7 @@
     @if($metaImage !== '')
         <meta name="twitter:image" content="{{ $metaImage }}">
     @endif
-    <link rel="icon" href="{{ rtrim(config('app.url'), '/') }}/favicon.svg" type="image/svg+xml" sizes="any">
+    <link rel="icon" href="{{ $faviconUrl }}" sizes="any">
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,7 +54,7 @@
             "@type": "Organization",
             "name": @json(config('app.name', 'Nai Printers')),
             "url": "{{ rtrim(config('app.url'), '/') }}/",
-            "logo": "{{ rtrim(config('app.url'), '/') }}/favicon.svg",
+            "logo": "{{ $faviconUrl }}",
             "sameAs": ["{{ $siteSettings->get('whatsapp_link', config('shop.whatsapp_link')) }}"]
         }
     </script>

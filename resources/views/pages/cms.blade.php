@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', $cmsPage->meta_title ?: $cmsPage->name . ' - Nai Printers')
+@section('meta_title', $cmsPage->meta_title ?: $cmsPage->name . ' - ' . config('app.name'))
 @section('meta_description', $cmsPage->meta_description ?: \Illuminate\Support\Str::limit(strip_tags((string) $cmsPage->body), 160))
 
 @section('content')

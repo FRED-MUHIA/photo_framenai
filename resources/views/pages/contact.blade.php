@@ -1,7 +1,7 @@
 @extends('layouts.storefront')
 
-@section('meta_title', $cmsPage?->meta_title ?: 'Contact - Nai Printers')
-@section('meta_description', $cmsPage?->meta_description ?: 'Contact Nai Printers for support, bulk quotes, and custom print consultation.')
+@section('meta_title', $cmsPage?->meta_title ?: 'Contact - ' . config('app.name'))
+@section('meta_description', $cmsPage?->meta_description ?: 'Contact ' . config('app.name') . ' for support, bulk quotes, and custom print consultation.')
 
 @section('content')
 @php

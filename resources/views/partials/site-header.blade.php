@@ -260,7 +260,7 @@
     $headerExperienceText = $siteSettings->get('header_experience_text', '40 years of experience');
     $headerProductionText = $siteSettings->get('header_production_text', 'Our own production');
     $headerLiveChatLabel = $siteSettings->get('header_live_chat_label', 'Live Chat');
-    $headerBrandLabel = $siteSettings->get('header_brand_label', config('app.name', 'Nai Printers'));
+    $headerBrandLabel = config('app.name', 'Nai Printers');
     $headerLogoUrl = \App\Support\PublicAssetUrl::resolve($siteSettings->get('header_logo_url'));
     $whatsappLink = $siteSettings->get('whatsapp_link', config('shop.whatsapp_link'));
 @endphp

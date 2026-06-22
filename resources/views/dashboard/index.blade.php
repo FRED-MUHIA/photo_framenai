@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Customer Dashboard - Nai Printers')
+@section('meta_title', 'Customer Dashboard - ' . config('app.name'))
 @section('meta_robots', 'noindex, nofollow, noarchive')
 
 @section('content')

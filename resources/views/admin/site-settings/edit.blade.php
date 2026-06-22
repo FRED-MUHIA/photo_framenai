@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('heading', 'Header, Footer & Menu Settings')
+@section('heading', 'Site Identity, Header, Footer & Menu Settings')
 
 @section('content')
 @php
@@ -16,6 +16,8 @@
     $headerLogoPreview = \App\Support\PublicAssetUrl::resolve($headerLogoValue);
     $whatsappLogoValue = old('whatsapp_logo_url', $settings->get('whatsapp_logo_url'));
     $whatsappLogoPreview = \App\Support\PublicAssetUrl::resolve($whatsappLogoValue);
+    $faviconValue = old('favicon_url', $settings->get('favicon_url'));
+    $faviconPreview = \App\Support\PublicAssetUrl::resolve($faviconValue) ?: asset('favicon.svg');
 @endphp
 
 <form method="POST" action="{{ route('admin.site-settings.update') }}" enctype="multipart/form-data" class="space-y-6 rounded-xl bg-white p-5 shadow-sm">
@@ -23,9 +25,34 @@
     @method('PUT')
 
     <section>
+        <h2 class="text-lg font-bold">Site Identity & SEO</h2>
+        <p class="mt-1 text-xs text-slate-500">These values control the public header brand, default page title, search description, and browser icon.</p>
+        <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <div>
+                <label for="site_name" class="mb-2 block text-sm font-bold">Site Name</label>
+                <input id="site_name" type="text" name="site_name" value="{{ old('site_name', $settings->get('site_name', config('app.name', 'Nai Printers'))) }}" class="w-full rounded-xl border-slate-300" placeholder="Nai Printers">
+            </div>
+            <div>
+                <label for="site_tagline" class="mb-2 block text-sm font-bold">Tagline / Default SEO Description</label>
+                <input id="site_tagline" type="text" name="site_tagline" value="{{ old('site_tagline', $settings->get('site_tagline', config('app.tagline'))) }}" class="w-full rounded-xl border-slate-300" placeholder="Your site tagline">
+            </div>
+            <div class="sm:col-span-2">
+                <label class="mb-2 block text-sm font-bold">Favicon</label>
+                <div class="mb-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <img loading="lazy" decoding="async" src="{{ $faviconPreview }}" alt="Current favicon" class="h-12 w-12 rounded-lg object-contain">
+                    <p class="text-xs text-slate-500">Use a square PNG, JPG, WebP, or ICO image, up to 2 MB.</p>
+                </div>
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <input type="file" name="favicon_file" accept=".png,.jpg,.jpeg,.webp,.ico,image/png,image/jpeg,image/webp,image/x-icon,image/vnd.microsoft.icon" class="rounded-xl border border-slate-300 px-3 py-2 text-sm">
+                    <input type="text" name="favicon_url" value="{{ $faviconValue }}" class="rounded-xl border-slate-300" placeholder="Or paste a favicon URL">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
         <h2 class="text-lg font-bold">Header</h2>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
-            <input type="text" name="header_brand_label" value="{{ old('header_brand_label', $settings->get('header_brand_label', 'onlineprinters')) }}" class="rounded-xl border-slate-300" placeholder="Brand label">
             <input type="text" name="header_live_chat_label" value="{{ old('header_live_chat_label', $settings->get('header_live_chat_label', 'Live Chat')) }}" class="rounded-xl border-slate-300" placeholder="Live chat label">
             <div class="sm:col-span-2">
                 <label class="mb-2 block text-sm font-bold">Header Logo</label>

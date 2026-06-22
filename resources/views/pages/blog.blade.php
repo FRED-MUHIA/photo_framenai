@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', $cmsPage?->meta_title ?: 'Blog & Resources - Nai Printers')
+@section('meta_title', $cmsPage?->meta_title ?: 'Blog & Resources - ' . config('app.name'))
 @section('meta_description', $cmsPage?->meta_description ?: 'Read printing guides, product tips and web-to-print resources.')
 @section('canonical_url', rtrim(config('app.url'), '/') . route('pages.blog', [], false) . ($posts->currentPage() > 1 ? '?page=' . $posts->currentPage() : ''))
 

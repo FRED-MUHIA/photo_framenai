@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Flyers & Posters - Nai Printers')
+@section('meta_title', 'Flyers & Posters - ' . config('app.name'))
 @section('meta_description', 'Configure flyer, leaflet, and poster printing with paper, quantity, finishing, delivery, and artwork options.')
 
 @section('content')

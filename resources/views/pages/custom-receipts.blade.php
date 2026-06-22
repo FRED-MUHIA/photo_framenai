@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Custom Branded Receipts, Invoices & Delivery Books - Nai Printers')
+@section('meta_title', 'Custom Branded Receipts, Invoices & Delivery Books - ' . config('app.name'))
 
 @section('content')
 <section class="bg-white py-8">

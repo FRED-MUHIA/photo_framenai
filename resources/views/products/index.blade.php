@@ -1,7 +1,7 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Print Products - Nai Printers')
-@section('meta_description', 'Browse custom print products from Nai Printers, including business cards, flyers, banners, stationery, and branded apparel with delivery across Kenya.')
+@section('meta_title', 'Print Products - ' . config('app.name'))
+@section('meta_description', 'Browse custom print products from ' . config('app.name') . ', including business cards, flyers, banners, stationery, and branded apparel with delivery across Kenya.')
 @section('meta_robots', ($search !== '' || $categorySlug !== '' || $products->currentPage() > 1) ? 'noindex, follow' : 'index, follow, max-image-preview:large')
 @section('canonical_url', rtrim(config('app.url'), '/') . route('products.index', [], false))
 

@@ -21,6 +21,12 @@ class PublicAssetUrl
             $host = strtolower($parts['host'] ?? '');
             $path = $parts['path'] ?? '';
 
+            if (self::isPrivateNetworkHost($host)) {
+                return self::isPublicPath($path)
+                    ? self::assetForPublicPath($path) . self::queryString($parts)
+                    : null;
+            }
+
             if (self::isPublicPath($path) && (str_starts_with('/' . ltrim($path, '/'), '/storage/') || self::isLocalHost($host))) {
                 return self::assetForPublicPath($path) . self::queryString($parts);
             }
@@ -80,6 +86,25 @@ class PublicAssetUrl
 
         return in_array($host, ['localhost', '127.0.0.1', '::1'], true)
             || ($appHost !== '' && $host === $appHost);
+    }
+
+    private static function isPrivateNetworkHost(string $host): bool
+    {
+        $host = trim(strtolower($host), '[]');
+
+        if (in_array($host, ['localhost', 'localhost.localdomain', '0.0.0.0', '::1'], true)) {
+            return true;
+        }
+
+        if (! filter_var($host, FILTER_VALIDATE_IP)) {
+            return false;
+        }
+
+        return filter_var(
+            $host,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+        ) === false;
     }
 
     private static function isPublicPath(string $path): bool

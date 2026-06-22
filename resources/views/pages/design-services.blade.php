@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
-        $designMetaTitle = $cmsPage?->meta_title ?: 'Design Services - Nai Printers';
+        $designMetaTitle = $cmsPage?->meta_title ?: 'Design Services - ' . config('app.name');
         $designMetaDescription = $cmsPage?->meta_description ?: 'Creative professional design and branding portfolio page.';
         $designCanonicalUrl = rtrim(config('app.url'), '/') . route('pages.design-services', [], false);
+        $designFaviconUrl = \App\Support\PublicAssetUrl::resolve($siteSettings->get('favicon_url'))
+            ?: rtrim(config('app.url'), '/') . '/favicon.svg';
     @endphp
     <title>{{ $designMetaTitle }}</title>
     <meta name="description" content="{{ $designMetaDescription }}">
@@ -21,7 +23,7 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ $designMetaTitle }}">
     <meta name="twitter:description" content="{{ $designMetaDescription }}">
-    <link rel="icon" href="{{ rtrim(config('app.url'), '/') }}/favicon.svg" type="image/svg+xml" sizes="any">
+    <link rel="icon" href="{{ $designFaviconUrl }}" sizes="any">
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">

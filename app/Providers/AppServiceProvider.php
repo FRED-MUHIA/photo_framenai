@@ -25,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (app()->environment('production')) {
+            $publicUrl = rtrim((string) config('seo.site_url'), '/');
+
+            config()->set('app.url', $publicUrl);
+            URL::forceRootUrl($publicUrl);
             URL::forceScheme('https');
         }
 
@@ -41,6 +45,11 @@ class AppServiceProvider extends ServiceProvider
 
             if (Schema::hasTable('site_settings')) {
                 $siteSettings = SiteSetting::map();
+
+                config()->set([
+                    'app.name' => trim((string) $siteSettings->get('site_name')) ?: config('app.name'),
+                    'app.tagline' => trim((string) $siteSettings->get('site_tagline')) ?: config('app.tagline'),
+                ]);
             }
 
             $view->with('navCategories', $categories);

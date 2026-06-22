@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Order Confirmation - Nai Printers')
+@section('meta_title', 'Order Confirmation - ' . config('app.name'))
 @section('meta_robots', 'noindex, nofollow, noarchive')
 
 @section('content')

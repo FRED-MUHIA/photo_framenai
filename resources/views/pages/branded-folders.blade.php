@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', 'Branded Folders - Nai Printers')
+@section('meta_title', 'Branded Folders - ' . config('app.name'))
 @section('meta_description', 'Order custom branded folders with premium finishing, design options, and fast turnaround.')
 
 @section('content')

@@ -63,6 +63,10 @@ class SiteSettingController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
+            'site_name' => ['nullable', 'string', 'max:90'],
+            'site_tagline' => ['nullable', 'string', 'max:255'],
+            'favicon_url' => ['nullable', 'string', 'max:255'],
+            'favicon_file' => ['nullable', 'file', 'mimes:png,jpg,jpeg,webp,ico', 'max:2048'],
             'header_shipping_text' => ['nullable', 'string', 'max:190'],
             'header_experience_text' => ['nullable', 'string', 'max:190'],
             'header_production_text' => ['nullable', 'string', 'max:190'],
@@ -84,6 +88,11 @@ class SiteSettingController extends Controller
             'header_theme_mega_menu_images.*.*' => ['nullable', 'image', 'max:4096'],
         ]);
 
+        if ($request->hasFile('favicon_file')) {
+            $path = $request->file('favicon_file')->store('site/favicon', 'public');
+            $validated['favicon_url'] = '/storage/' . $path;
+        }
+
         if ($request->hasFile('header_logo_file')) {
             $path = $request->file('header_logo_file')->store('site', 'public');
             ImageOptimizer::optimizePublicPath($path);
@@ -96,6 +105,7 @@ class SiteSettingController extends Controller
             $validated['whatsapp_logo_url'] = '/storage/' . $path;
         }
 
+        unset($validated['favicon_file']);
         unset($validated['header_logo_file']);
         unset($validated['whatsapp_logo_file']);
         unset($validated['header_theme_mega_menu_images']);
@@ -143,6 +153,6 @@ class SiteSettingController extends Controller
         Artisan::call('view:clear');
         Artisan::call('cache:clear');
 
-        return back()->with('status', 'Header and footer settings updated.');
+        return back()->with('status', 'Site identity, header, and footer settings updated.');
     }
 }

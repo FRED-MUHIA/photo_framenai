@@ -674,7 +674,7 @@
 
                 const form = event?.target?.closest('form');
                 const lines = [
-                    'Hello Nai Printers, I would like to place this order:',
+                    'Hello ' . config('app.name') . ', I would like to place this order:',
                     '',
                     `Product: ${this.productName}`,
                     `Quantity: ${this.formatWhole(this.quantity)}`,
