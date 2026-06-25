@@ -217,7 +217,12 @@
                                 @required($group->is_required)
                             >
                         @elseif($group->input_type === 'select')
-                            <select name="selected_options[{{ $group->code }}]" x-model="selectedOptions[@js($group->code)]" @change="refreshQuote" class="w-full rounded-xl border-slate-300">
+                            <select
+                                name="selected_options[{{ $group->code }}]"
+                                x-model="selectedOptions[@js($group->code)]"
+                                @change="selectOption(@js($group->code), $event.target.value)"
+                                class="w-full rounded-xl border-slate-300"
+                            >
                                 @foreach($group->values as $value)
                                     <option value="{{ $value->id }}">
                                         {{ $value->label }}
@@ -237,13 +242,14 @@
                                     class="flex cursor-pointer items-center rounded-lg border px-3 text-center transition {{ $group->input_type === 'image_tabs' ? 'min-h-[64px] justify-start gap-3 py-2' : 'h-[34px] w-[180px] justify-center py-1' }}"
                                     style="{{ $group->input_type === 'image_tabs' ? 'min-height: 64px;' : 'width: 180px; height: 34px; min-height: 34px;' }}"
                                     :class="String(selectedOptions[@js($group->code)] || '') === @js((string) $value->id) ? 'border-[#ff0037] bg-rose-50' : 'border-slate-200 bg-white hover:border-slate-300'"
+                                    @click="selectOption(@js($group->code), @js((string) $value->id))"
                                 >
                                     <input
                                         type="radio"
                                         name="selected_options[{{ $group->code }}]"
                                         value="{{ $value->id }}"
                                         x-model="selectedOptions[@js($group->code)]"
-                                        @change="refreshQuote"
+                                        @change="selectOption(@js($group->code), $event.target.value)"
                                         class="sr-only"
                                     >
                                     @if($group->input_type === 'image_tabs' && $optionImageUrl)
@@ -517,10 +523,25 @@
             isAdding: false,
             selectedArtworkName: '',
             selectedDeliveryDate: @js(old('delivery_date', '')),
+            quoteAbortController: null,
+            quoteRequestId: 0,
             init() {
+                this.normalizeSelectedOptions();
                 this.normalizeQuantity();
                 this.refreshQuote();
                 this.ensureDeliveryDate();
+            },
+            normalizeSelectedOptions() {
+                this.selectedOptions = Object.fromEntries(Object.entries(this.selectedOptions || {})
+                    .filter(([, value]) => value !== null && value !== undefined && String(value) !== '')
+                    .map(([code, value]) => [code, String(value)]));
+            },
+            selectOption(code, value) {
+                this.selectedOptions = {
+                    ...(this.selectedOptions || {}),
+                    [code]: String(value),
+                };
+                this.refreshQuote();
             },
             incrementQuantity() {
                 this.quantity = this.normalizedQuantityValue() + 1;
@@ -570,11 +591,17 @@
             },
             async refreshQuote() {
                 this.normalizeQuantity();
+                this.normalizeSelectedOptions();
                 this.quoteError = '';
+                const requestId = ++this.quoteRequestId;
+
+                this.quoteAbortController?.abort();
+                this.quoteAbortController = new AbortController();
 
                 try {
                     const response = await fetch(this.quoteUrl, {
                         method: 'POST',
+                        signal: this.quoteAbortController.signal,
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
@@ -589,6 +616,10 @@
 
                     const payload = await response.json().catch(() => ({}));
 
+                    if (requestId !== this.quoteRequestId) {
+                        return;
+                    }
+
                     if (! response.ok) {
                         this.quoteError = payload.message || 'Unable to calculate this quantity.';
                         return;
@@ -597,6 +628,14 @@
                     this.quote = payload.quote;
                     this.ensureDeliveryDate();
                 } catch (error) {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+
+                    if (requestId !== this.quoteRequestId) {
+                        return;
+                    }
+
                     console.error(error);
                     this.quoteError = 'Unable to update the quote. Please try again.';
                 }
@@ -674,7 +713,7 @@
 
                 const form = event?.target?.closest('form');
                 const lines = [
-                    'Hello ' . config('app.name') . ', I would like to place this order:',
+                    @js('Hello ' . config('app.name') . ', I would like to place this order:'),
                     '',
                     `Product: ${this.productName}`,
                     `Quantity: ${this.formatWhole(this.quantity)}`,
