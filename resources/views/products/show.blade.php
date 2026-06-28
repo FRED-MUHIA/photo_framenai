@@ -100,13 +100,13 @@
         'image' => $productSchemaImage ? [$productSchemaImage] : [],
         'category' => $product->categories->pluck('name')->join(' / ') ?: $product->category?->name,
         'keywords' => $productKeywords->join(', '),
-        'url' => rtrim(config('app.url'), '/') . route('products.show', $product, false),
+        'url' => rtrim(config('seo.site_url'), '/') . route('products.show', $product, false),
         'offers' => [
             '@type' => 'Offer',
             'priceCurrency' => config('shop.currency', 'KES'),
             'price' => number_format((float) $product->base_price, 2, '.', ''),
             'availability' => 'https://schema.org/InStock',
-            'url' => rtrim(config('app.url'), '/') . route('products.show', $product, false),
+            'url' => rtrim(config('seo.site_url'), '/') . route('products.show', $product, false),
         ],
     ];
 @endphp

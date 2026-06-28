@@ -7,9 +7,9 @@
     @php
         $designMetaTitle = $cmsPage?->meta_title ?: 'Design Services - ' . config('app.name');
         $designMetaDescription = $cmsPage?->meta_description ?: 'Creative professional design and branding portfolio page.';
-        $designCanonicalUrl = rtrim(config('app.url'), '/') . route('pages.design-services', [], false);
+        $designCanonicalUrl = rtrim(config('seo.site_url'), '/') . route('pages.design-services', [], false);
         $designFaviconUrl = \App\Support\PublicAssetUrl::resolve($siteSettings->get('favicon_url'))
-            ?: rtrim(config('app.url'), '/') . '/favicon.svg';
+            ?: rtrim(config('seo.site_url'), '/') . '/favicon.svg';
     @endphp
     <title>{{ $designMetaTitle }}</title>
     <meta name="description" content="{{ $designMetaDescription }}">

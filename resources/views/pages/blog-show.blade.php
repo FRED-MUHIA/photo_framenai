@@ -12,7 +12,7 @@
         '@type' => 'BlogPosting',
         'headline' => $post->title,
         'description' => $post->meta_description ?: $post->excerpt,
-        'url' => rtrim(config('app.url'), '/') . route('pages.blog.show', ['post' => $post->slug], false),
+        'url' => rtrim(config('seo.site_url'), '/') . route('pages.blog.show', ['post' => $post->slug], false),
         'datePublished' => optional($post->published_at ?: $post->created_at)?->toAtomString(),
         'dateModified' => optional($post->updated_at)?->toAtomString(),
         'image' => \App\Support\PublicAssetUrl::resolve($post->cover_image),

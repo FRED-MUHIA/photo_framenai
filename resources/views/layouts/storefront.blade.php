@@ -10,7 +10,7 @@
             ?: config('app.name', 'Nai Printers') . ' | ' . config('app.tagline');
         $metaDescription = trim($__env->yieldContent('meta_description')) ?: config('app.tagline');
         $metaRobots = trim($__env->yieldContent('meta_robots')) ?: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
-        $configuredRoot = rtrim((string) config('app.url'), '/');
+        $configuredRoot = rtrim((string) config('seo.site_url'), '/');
         $requestPath = request()->getPathInfo();
         $defaultCanonicalUrl = $configuredRoot . ($requestPath === '/' ? '/' : $requestPath);
         $canonicalUrl = trim($__env->yieldContent('canonical_url')) ?: $defaultCanonicalUrl;
@@ -54,7 +54,7 @@
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": @json(config('app.name', 'Nai Printers')),
-            "url": "{{ rtrim(config('app.url'), '/') }}/",
+            "url": "{{ rtrim(config('seo.site_url'), '/') }}/",
             "logo": "{{ $faviconUrl }}",
             "sameAs": ["{{ $siteSettings->get('whatsapp_link', config('shop.whatsapp_link')) }}"]
         }

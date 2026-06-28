@@ -3,7 +3,7 @@
 @section('meta_title', 'Print Products - ' . config('app.name'))
 @section('meta_description', 'Browse custom print products from ' . config('app.name') . ', including business cards, flyers, banners, stationery, and branded apparel with delivery across Kenya.')
 @section('meta_robots', ($search !== '' || $categorySlug !== '' || $products->currentPage() > 1) ? 'noindex, follow' : 'index, follow, max-image-preview:large')
-@section('canonical_url', rtrim(config('app.url'), '/') . route('products.index', [], false))
+@section('canonical_url', rtrim(config('seo.site_url'), '/') . route('products.index', [], false))
 
 @section('content')
 <section class="bg-white">

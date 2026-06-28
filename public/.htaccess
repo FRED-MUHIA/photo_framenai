@@ -5,6 +5,15 @@
 
     RewriteEngine On
 
+    # Force every duplicate or parked host to the canonical production domain.
+    RewriteCond %{HTTP_HOST} !^naiprinters\.co\.ke$ [NC]
+    RewriteRule ^ https://naiprinters.co.ke%{REQUEST_URI} [L,R=301,NE]
+
+    # Block the known copied site from hotlinking frontend assets.
+    RewriteCond %{HTTP_REFERER} ^https?://([^/]+\.)?aurixbranding\.co\.ke(/|$) [NC]
+    RewriteCond %{REQUEST_URI} \.(avif|webp|jpe?g|png|gif|svg|ico|css|js|woff2?)$ [NC]
+    RewriteRule ^ - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

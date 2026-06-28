@@ -2,7 +2,7 @@
 
 @section('meta_title', $cmsPage?->meta_title ?: 'Blog & Resources - ' . config('app.name'))
 @section('meta_description', $cmsPage?->meta_description ?: 'Read printing guides, product tips and web-to-print resources.')
-@section('canonical_url', rtrim(config('app.url'), '/') . route('pages.blog', [], false) . ($posts->currentPage() > 1 ? '?page=' . $posts->currentPage() : ''))
+@section('canonical_url', rtrim(config('seo.site_url'), '/') . route('pages.blog', [], false) . ($posts->currentPage() > 1 ? '?page=' . $posts->currentPage() : ''))
 
 @push('head')
     @if($posts->previousPageUrl())

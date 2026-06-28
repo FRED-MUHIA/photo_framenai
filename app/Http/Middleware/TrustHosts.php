@@ -13,8 +13,17 @@ class TrustHosts extends Middleware
      */
     public function hosts(): array
     {
+        if (! app()->environment('production')) {
+            return [
+                $this->allSubdomainsOfApplicationUrl(),
+                'localhost',
+                '127\.0\.0\.1',
+                '\[::1\]',
+            ];
+        }
+
         return [
-            $this->allSubdomainsOfApplicationUrl(),
+            '^naiprinters\.co\.ke$',
         ];
     }
 }

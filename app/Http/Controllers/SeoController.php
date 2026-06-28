@@ -113,7 +113,7 @@ class SeoController extends Controller
 
     private function absoluteRoute(string $route, array $parameters = []): string
     {
-        $root = rtrim((string) config('app.url'), '/');
+        $root = rtrim((string) config('seo.site_url'), '/');
         $path = route($route, $parameters, false);
 
         return $root . '/' . ltrim($path, '/');
