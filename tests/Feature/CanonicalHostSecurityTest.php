@@ -28,4 +28,15 @@ class CanonicalHostSecurityTest extends TestCase
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
         $this->assertStringContainsString("frame-ancestors 'none'", $response->headers->get('Content-Security-Policy'));
     }
+
+    public function test_public_pages_include_browser_canonical_host_guard(): void
+    {
+        config()->set('seo.site_url', 'https://naiprinters.co.ke');
+
+        $response = $this->get('/products');
+
+        $response->assertOk();
+        $response->assertSee('https://naiprinters.co.ke', false);
+        $response->assertSee('window.location.replace', false);
+    }
 }
