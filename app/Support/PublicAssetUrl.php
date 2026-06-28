@@ -4,7 +4,7 @@ namespace App\Support;
 
 class PublicAssetUrl
 {
-    public static function resolve(?string $url): ?string
+    public static function resolve(?string $url, ?int $width = null, ?int $quality = null): ?string
     {
         $url = trim((string) $url);
 
@@ -23,12 +23,12 @@ class PublicAssetUrl
 
             if (self::isPrivateNetworkHost($host)) {
                 return self::isPublicPath($path)
-                    ? self::assetForPublicPath($path) . self::queryString($parts)
+                    ? self::assetForPublicPath($path, $width, $quality) . self::queryString($parts)
                     : null;
             }
 
             if (self::isPublicPath($path) && (str_starts_with('/' . ltrim($path, '/'), '/storage/') || self::isLocalHost($host))) {
-                return self::assetForPublicPath($path) . self::queryString($parts);
+                return self::assetForPublicPath($path, $width, $quality) . self::queryString($parts);
             }
 
             return $url;
@@ -39,7 +39,7 @@ class PublicAssetUrl
         }
 
         if (self::isPublicPath($url)) {
-            return self::assetForPublicPath($url);
+            return self::assetForPublicPath($url, $width, $quality);
         }
 
         return asset(ltrim($url, '/'));
@@ -47,7 +47,7 @@ class PublicAssetUrl
 
     public static function image(?string $url, ?int $width = null, ?int $quality = null): ?string
     {
-        $resolvedUrl = self::resolve($url);
+        $resolvedUrl = self::resolve($url, $width, $quality);
 
         if (! $resolvedUrl || ! preg_match('/^https?:\/\//i', $resolvedUrl)) {
             return $resolvedUrl;
@@ -121,14 +121,14 @@ class PublicAssetUrl
         return isset($parts['query']) ? '?' . $parts['query'] : '';
     }
 
-    private static function assetForPublicPath(string $path): string
+    private static function assetForPublicPath(string $path, ?int $width = null, ?int $quality = null): string
     {
         $normalizedPath = '/' . ltrim($path, '/');
         $assetPath = ltrim($normalizedPath, '/');
 
         if (str_starts_with($normalizedPath, '/storage/')) {
             $relativePath = substr($normalizedPath, strlen('/storage/'));
-            $optimizedPath = ImageOptimizer::optimizedStorageRelativePath($relativePath);
+            $optimizedPath = ImageOptimizer::optimizedStorageRelativePath($relativePath, $width, $quality);
 
             if ($optimizedPath) {
                 $assetPath = 'storage/' . $optimizedPath;

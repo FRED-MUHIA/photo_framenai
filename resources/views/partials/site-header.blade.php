@@ -1236,7 +1236,7 @@
                             <div class="np-overlay-media">
                                 @if($entryImageUrl)
                                     <template x-if="openMenu === @js($menu['key'])">
-                                        <img loading="lazy" decoding="async" src="{{ $entryImageUrl }}" alt="{{ $entry['title'] }}">
+                                        <img loading="eager" decoding="async" fetchpriority="high" width="360" height="140" src="{{ $entryImageUrl }}" alt="{{ $entry['title'] }}">
                                     </template>
                                 @endif
                             </div>

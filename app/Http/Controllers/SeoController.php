@@ -67,8 +67,10 @@ class SeoController extends Controller
             ->unique('loc')
             ->values();
 
-        return response()
-            ->view('seo.sitemap', compact('urls'))
+        $content = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+            . view('seo.sitemap', compact('urls'))->render();
+
+        return response($content)
             ->header('Content-Type', 'application/xml; charset=UTF-8')
             ->header('Cache-Control', 'public, max-age=3600');
     }

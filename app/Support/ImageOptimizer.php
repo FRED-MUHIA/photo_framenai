@@ -10,7 +10,7 @@ class ImageOptimizer
     private const CACHE_DIRECTORY = 'optimized-images';
     private const OPTIMIZABLE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
-    public static function optimizedStorageRelativePath(string $relativePath): ?string
+    public static function optimizedStorageRelativePath(string $relativePath, ?int $maxDimension = null, ?int $quality = null): ?string
     {
         $relativePath = self::normalizeRelativePath($relativePath);
 
@@ -24,10 +24,10 @@ class ImageOptimizer
             return null;
         }
 
-        $targetPath = self::targetPath($relativePath, $sourcePath);
+        $targetPath = self::targetPath($relativePath, $sourcePath, $maxDimension, $quality);
 
         return is_file($targetPath)
-            ? self::targetRelativePath($relativePath, $sourcePath)
+            ? self::targetRelativePath($relativePath, $sourcePath, $maxDimension, $quality)
             : null;
     }
 
@@ -45,7 +45,7 @@ class ImageOptimizer
             return null;
         }
 
-        $targetRelativePath = self::targetRelativePath($relativePath, $sourcePath);
+        $targetRelativePath = self::targetRelativePath($relativePath, $sourcePath, $maxDimension, $quality);
         $targetPath = storage_path('app/public/' . $targetRelativePath);
 
         if (is_file($targetPath)) {
@@ -108,19 +108,27 @@ class ImageOptimizer
         return storage_path('app/public/' . $relativePath);
     }
 
-    private static function targetPath(string $relativePath, string $sourcePath): string
+    private static function targetPath(string $relativePath, string $sourcePath, ?int $maxDimension = null, ?int $quality = null): string
     {
-        return storage_path('app/public/' . self::targetRelativePath($relativePath, $sourcePath));
+        return storage_path('app/public/' . self::targetRelativePath($relativePath, $sourcePath, $maxDimension, $quality));
     }
 
-    private static function targetRelativePath(string $relativePath, string $sourcePath): string
+    private static function targetRelativePath(string $relativePath, string $sourcePath, ?int $maxDimension = null, ?int $quality = null): string
     {
         $directory = trim(str_replace('\\', '/', pathinfo($relativePath, PATHINFO_DIRNAME)), '.');
         $filename = pathinfo($relativePath, PATHINFO_FILENAME);
         $fingerprint = substr(sha1($relativePath . '|' . filesize($sourcePath) . '|' . filemtime($sourcePath)), 0, 12);
         $targetDirectory = self::CACHE_DIRECTORY . ($directory ? '/' . $directory : '');
+        $variant = '';
 
-        return $targetDirectory . '/' . $filename . '-' . $fingerprint . '.webp';
+        $normalizedMaxDimension = max(120, (int) ($maxDimension ?: 1600));
+        $normalizedQuality = min(95, max(40, (int) ($quality ?: 78)));
+
+        if ($normalizedMaxDimension !== 1600 || $normalizedQuality !== 78) {
+            $variant = '-w' . $normalizedMaxDimension . '-q' . $normalizedQuality;
+        }
+
+        return $targetDirectory . '/' . $filename . '-' . $fingerprint . $variant . '.webp';
     }
 
     private static function nodeBinary(): string
