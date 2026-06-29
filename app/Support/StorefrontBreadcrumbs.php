@@ -135,7 +135,6 @@ class StorefrontBreadcrumbs
             'pages.custom-receipts' => 'Custom Branded Receipts, Invoices & Delivery Books',
             'pages.design-services' => 'Design Services',
             'pages.envelopes' => 'Envelopes',
-            'pages.flyers-posters' => 'Flyers & Posters',
             'pages.help' => 'Help Center',
             'pages.token-business' => 'Complementary Slips',
             'profile.edit' => 'Profile',

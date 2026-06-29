@@ -61,62 +61,6 @@ class PageController extends Controller
         return $this->renderManagedPage('help', 'pages.help', compact('faqs'));
     }
 
-    public function flyersPosters()
-    {
-        $productOptions = [
-            'product_formats' => [
-                ['label' => 'Flyers & Leaflets, A8, printed on one side', 'extra' => 0],
-                ['label' => 'Flyers & Leaflets, A6, printed on one side', 'extra' => 550],
-                ['label' => 'Flyers & Leaflets, A5, printed on one side', 'extra' => 950],
-                ['label' => 'Posters, A3, printed on one side', 'extra' => 1800],
-                ['label' => 'Posters, A2, printed on one side', 'extra' => 3200],
-            ],
-            'paper_types' => [
-                ['label' => '170 gsm coated paper', 'badge' => 'FSC', 'extra' => 0],
-                ['label' => '250 gsm silk art card', 'badge' => 'Premium', 'extra' => 750],
-                ['label' => '300 gsm matte art card', 'badge' => 'Rigid', 'extra' => 1200],
-            ],
-            'quantities' => [
-                ['label' => '25', 'extra' => 0],
-                ['label' => '50', 'extra' => 650],
-                ['label' => '100', 'extra' => 1150],
-                ['label' => '250', 'extra' => 2600],
-                ['label' => '500', 'extra' => 4300],
-            ],
-            'paper_finishes' => [
-                ['label' => 'silk coated', 'extra' => 0],
-                ['label' => 'matte coated', 'extra' => 250],
-                ['label' => 'uncoated natural', 'extra' => 350],
-            ],
-            'finishings' => [
-                ['label' => 'single-sided glossy UV varnish', 'note' => '+2 working days', 'extra' => 520],
-                ['label' => 'matte lamination', 'note' => '+2 working days', 'extra' => 780],
-                ['label' => 'no additional finishing', 'note' => '', 'extra' => 0],
-            ],
-            'corner_rounding' => [
-                ['label' => 'no corner rounding', 'extra' => 0],
-                ['label' => 'rounded corners', 'extra' => 450],
-            ],
-            'printing_methods' => [
-                ['label' => 'best value for money', 'extra' => 0],
-                ['label' => 'premium colour match', 'extra' => 900],
-                ['label' => 'express production', 'extra' => 1200],
-            ],
-            'data_checks' => [
-                ['label' => 'without data check', 'extra' => 0],
-                ['label' => 'basic artwork check', 'extra' => 350],
-                ['label' => 'professional artwork check', 'extra' => 900],
-            ],
-            'delivery_options' => [
-                ['label' => 'Thu 7th May', 'extra' => 0],
-                ['label' => 'Wed 6th May', 'extra' => 490],
-                ['label' => 'Tue 5th May', 'extra' => 1390],
-            ],
-        ];
-
-        return $this->renderManagedPage('flyers-posters', 'pages.flyers-posters', compact('productOptions'));
-    }
-
     public function designServices()
     {
         $cmsPage = CmsPage::query()->active()->where('slug', 'design-services')->first();

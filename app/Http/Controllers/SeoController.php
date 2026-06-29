@@ -19,7 +19,6 @@ class SeoController extends Controller
             $this->entry('pages.contact'),
             $this->entry('pages.blog'),
             $this->entry('pages.help'),
-            $this->entry('pages.flyers-posters'),
             $this->entry('pages.design-services'),
             $this->entry('pages.custom-receipts'),
             $this->entry('pages.branded-folders'),

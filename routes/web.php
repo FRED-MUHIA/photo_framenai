@@ -64,7 +64,6 @@ Route::get('/contact', [PageController::class, 'contact'])->name('pages.contact'
 Route::get('/blog', [PageController::class, 'blog'])->name('pages.blog');
 Route::get('/blog/{post:slug}', [PageController::class, 'blogShow'])->name('pages.blog.show');
 Route::get('/help', [PageController::class, 'help'])->name('pages.help');
-Route::get('/flyers-posters', [PageController::class, 'flyersPosters'])->name('pages.flyers-posters');
 Route::get('/design-services', [PageController::class, 'designServices'])->name('pages.design-services');
 Route::get('/design-services/projects/{project}', [PageController::class, 'designProject'])->name('pages.design-projects.show');
 Route::get('/custom-branded-receipts-invoices-delivery-books', [PageController::class, 'customReceipts'])->name('pages.custom-receipts');

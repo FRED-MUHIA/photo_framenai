@@ -139,9 +139,9 @@ class HomepageContentDefaults
                 'bg_color' => '#ffffff',
                 'text_color' => '#111111',
                 'items' => [
-                    ['title' => 'Flyers', 'subtitle' => '', 'content' => '', 'image_url' => 'https://images.unsplash.com/photo-1590128222329-5fbce59afc1f?auto=format&fit=crop&w=1200&q=70', 'link_url' => '/flyers-posters'],
-                    ['title' => 'Folded Leaflets', 'subtitle' => '', 'content' => '', 'image_url' => 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=1200&q=70', 'link_url' => '/flyers-posters'],
-                    ['title' => 'Posters', 'subtitle' => '', 'content' => '', 'image_url' => 'https://images.unsplash.com/photo-1523726491678-bf852e717f6a?auto=format&fit=crop&w=1200&q=70', 'link_url' => '/flyers-posters'],
+                    ['title' => 'Flyers', 'subtitle' => '', 'content' => '', 'image_url' => 'https://images.unsplash.com/photo-1590128222329-5fbce59afc1f?auto=format&fit=crop&w=1200&q=70', 'link_url' => '/products?category=flyers-brochures'],
+                    ['title' => 'Folded Leaflets', 'subtitle' => '', 'content' => '', 'image_url' => 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=1200&q=70', 'link_url' => '/products?category=flyers-brochures'],
+                    ['title' => 'Posters', 'subtitle' => '', 'content' => '', 'image_url' => 'https://images.unsplash.com/photo-1523726491678-bf852e717f6a?auto=format&fit=crop&w=1200&q=70', 'link_url' => '/products?category=flyers-brochures'],
                     ['title' => 'Brochures', 'subtitle' => '', 'content' => '', 'image_url' => 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=70', 'link_url' => '/products'],
                     ['title' => 'New products', 'subtitle' => '', 'content' => '', 'image_url' => 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=70', 'link_url' => '/products'],
                 ],
