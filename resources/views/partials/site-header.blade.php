@@ -761,6 +761,12 @@
         text-decoration: none;
     }
 
+    .np-overlay-main-link {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+    }
+
     .np-overlay-media {
         background: #d6d0c3;
         border-radius: 6px;
@@ -790,6 +796,13 @@
         line-height: 1.35;
         color: #1f1f1f;
         white-space: pre-line;
+    }
+
+    .np-overlay-subtitle-link {
+        color: var(--np-red);
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 2px;
     }
 
     .np-overlay-showall {
@@ -1233,20 +1246,23 @@
                             $entryImageUrl = ! empty($entry['image'])
                                 ? \App\Support\PublicAssetUrl::image($entry['image'], 360, 62)
                                 : '';
+                            $entryUrl = ! empty($entry['url']) ? $entry['url'] : $menu['url'];
                         @endphp
-                        <a href="{{ ! empty($entry['url']) ? $entry['url'] : $menu['url'] }}" class="np-overlay-card">
-                            <div class="np-overlay-media">
-                                @if($entryImageUrl)
-                                    <template x-if="openMenu === @js($menu['key'])">
-                                        <img loading="eager" decoding="async" fetchpriority="high" width="360" height="140" src="{{ $entryImageUrl }}" alt="{{ $entry['title'] }}">
-                                    </template>
-                                @endif
-                            </div>
-                            <div class="np-overlay-title">{{ $entry['title'] }}</div>
+                        <div class="np-overlay-card">
+                            <a href="{{ $entryUrl }}" class="np-overlay-main-link">
+                                <div class="np-overlay-media">
+                                    @if($entryImageUrl)
+                                        <template x-if="openMenu === @js($menu['key'])">
+                                            <img loading="eager" decoding="async" fetchpriority="high" width="360" height="140" src="{{ $entryImageUrl }}" alt="{{ $entry['title'] }}">
+                                        </template>
+                                    @endif
+                                </div>
+                                <div class="np-overlay-title">{{ $entry['title'] }}</div>
+                            </a>
                             @if($entry['subtitle'])
-                                <div class="np-overlay-subtitle">{{ $entry['subtitle'] }}</div>
+                                <div class="np-overlay-subtitle">{!! \App\Support\LinkedSubtitleText::render($entry['subtitle']) !!}</div>
                             @endif
-                        </a>
+                        </div>
                     @endforeach
 
                     <a href="{{ $menu['url'] }}" class="np-overlay-card">

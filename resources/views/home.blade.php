@@ -1221,6 +1221,14 @@
         ?? collect(\App\Support\HomepageContentDefaults::sections())->firstWhere('component', 'home_pet_promo')
         ?? [];
     $petPromoItems = collect(data_get($petPromoSection, 'items', []))->values();
+    $petPromoTitle = trim((string) data_get($petPromoSection, 'title', 'Online printing'));
+    $petPromoTitleParts = preg_split('/\s+/', $petPromoTitle, 2) ?: ['Online', 'printing'];
+    $petPromoTitleAccent = $petPromoTitleParts[0] ?? '';
+    $petPromoTitleRest = $petPromoTitleParts[1] ?? '';
+    $petPromoSubtitle = data_get($petPromoSection, 'subtitle', 'With Nai Print');
+    $petPromoCopy = data_get($petPromoSection, 'content', 'Ideal for business cards, flyers, banners, and branded apparel with nationwide delivery');
+    $petPromoButtonLabel = data_get($petPromoSection, 'button_label', 'Print Now');
+    $petPromoButtonUrl = data_get($petPromoSection, 'button_url', route('products.index'));
     $petPromoDogImage = data_get($petPromoSection, 'image_url', asset('storage/media-library/pet-promo-dog.jpg'));
     $petPromoBackgroundImage = data_get($petPromoSection, 'bg_image_url', '');
     $petPromoBackgroundImageUrl = $displayImage($petPromoBackgroundImage, 1600, 70);
@@ -1369,7 +1377,7 @@
     }
 @endphp
 
-<section class="pet-promo-slide" aria-label="{{ data_get($petPromoSection, 'subtitle', 'High-protein dog recipes promotion') }}">
+<section class="pet-promo-slide" aria-label="{{ $petPromoSubtitle ?: $petPromoTitle }}">
     <div
         class="pet-promo-background"
         style="{{ $petPromoBackgroundStyle }};"
@@ -1382,10 +1390,22 @@
     >
     <div class="pet-promo-content" style="color: {{ $petPromoTextColor }}; --pet-promo-accent: {{ $petPromoAccentColor }};">
         <div class="pet-promo-icons">▼ · ♣ · ▼</div>
-        <h2 class="pet-promo-title"><span class="pet-promo-title-accent">Online</span> printing</h2>
-        <div class="pet-promo-subtitle">With Nai Print</div>
-        <p class="pet-promo-copy">Ideal for business cards, flyers, banners, and branded apparel with nationwide delivery</p>
-        <a href="{{ data_get($petPromoSection, 'button_url', route('products.index')) }}" class="pet-promo-button">{{ data_get($petPromoSection, 'button_label', 'Print Now') }}</a>
+        <h2 class="pet-promo-title">
+            @if($petPromoTitleAccent)
+                <span class="pet-promo-title-accent">{{ $petPromoTitleAccent }}</span>{{ $petPromoTitleRest ? ' ' . $petPromoTitleRest : '' }}
+            @else
+                Online printing
+            @endif
+        </h2>
+        @if($petPromoSubtitle)
+            <div class="pet-promo-subtitle">{!! nl2br(e($petPromoSubtitle)) !!}</div>
+        @endif
+        @if($petPromoCopy)
+            <p class="pet-promo-copy">{!! nl2br(e($petPromoCopy)) !!}</p>
+        @endif
+        @if($petPromoButtonLabel && $petPromoButtonUrl)
+            <a href="{{ $petPromoButtonUrl }}" class="pet-promo-button">{{ $petPromoButtonLabel }}</a>
+        @endif
     </div>
     <div class="pet-promo-products" aria-hidden="true">
         @foreach($petPromoItems->slice(1, 1) as $item)

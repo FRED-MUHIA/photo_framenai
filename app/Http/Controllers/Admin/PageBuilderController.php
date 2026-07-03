@@ -66,7 +66,7 @@ class PageBuilderController extends Controller
         $sections = $this->decodeSections($validated['sections_json'] ?? null);
         $sections = $this->applyUploadedImages($request, $sections);
 
-        CmsPage::query()->create([
+        $page = CmsPage::query()->create([
             'name' => $validated['name'],
             'slug' => $validated['slug'] ?: Str::slug($validated['name']),
             'layout' => $validated['layout'] ?? 'default',
@@ -77,7 +77,7 @@ class PageBuilderController extends Controller
             'is_active' => ! empty($validated['is_active']),
         ]);
 
-        return redirect()->route('admin.page-builder.index')->with('status', 'Page created successfully.');
+        return redirect()->route('admin.page-builder.edit', $page)->with('status', 'Page created successfully.');
     }
 
     public function edit(CmsPage $pageBuilder)
@@ -120,7 +120,7 @@ class PageBuilderController extends Controller
             'is_active' => ! empty($validated['is_active']),
         ]);
 
-        return redirect()->route('admin.page-builder.index')->with('status', 'Page updated successfully.');
+        return redirect()->route('admin.page-builder.edit', $pageBuilder)->with('status', 'Page updated successfully.');
     }
 
     public function destroy(CmsPage $pageBuilder)

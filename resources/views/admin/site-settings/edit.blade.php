@@ -199,7 +199,7 @@
 
                         <div class="space-y-2">
                             <template x-for="(tile, tileIndex) in menu.items" :key="tile.id">
-                                <div class="rounded border border-slate-200 bg-slate-50 p-2">
+                                <div data-tile-editor class="rounded border border-slate-200 bg-slate-50 p-2">
                                     <div class="mb-2 flex items-center justify-between">
                                         <p class="text-[11px] font-bold uppercase text-slate-500">Tile <span x-text="tileIndex + 1"></span></p>
                                         <div class="flex items-center gap-3">
@@ -217,7 +217,10 @@
                                             </template>
                                         </select>
                                         <input type="text" x-model="tile.title" placeholder="Tile title" class="rounded border-slate-300 text-xs">
-                                        <textarea x-model="tile.subtitle" rows="2" placeholder="Subtitle" class="rounded border-slate-300 text-xs resize-y"></textarea>
+                                        <div class="space-y-1">
+                                            <textarea x-model="tile.subtitle" rows="2" placeholder="Subtitle" data-subtitle-input class="w-full rounded border-slate-300 text-xs resize-y"></textarea>
+                                            <button type="button" class="rounded border border-slate-300 bg-white px-2 py-1 text-[11px] font-bold text-slate-700" @click="linkSelectedSubtitle(menuIndex, tileIndex, $el.closest('[data-tile-editor]').querySelector('[data-subtitle-input]'))">Link Selected</button>
+                                        </div>
                                         <input type="text" x-model="tile.url" placeholder="Tile URL (optional)" class="rounded border-slate-300 text-xs">
                                     </div>
                                     <div class="mt-2 grid gap-2 sm:grid-cols-2">
@@ -410,6 +413,34 @@
                 const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
                 if (!file) return;
                 this.menus[menuIndex].items[tileIndex].preview = URL.createObjectURL(file);
+            },
+            linkSelectedSubtitle(menuIndex, tileIndex, input) {
+                if (!input) return;
+
+                const tile = this.menus[menuIndex].items[tileIndex];
+                const start = input.selectionStart ?? 0;
+                const end = input.selectionEnd ?? start;
+                const selectedText = tile.subtitle.slice(start, end);
+
+                if (!selectedText.trim()) {
+                    input.focus();
+                    return;
+                }
+
+                const url = window.prompt('Enter link URL');
+
+                if (!url || !url.trim()) {
+                    input.focus();
+                    return;
+                }
+
+                const linkedText = `[${selectedText}](${url.trim()})`;
+                tile.subtitle = `${tile.subtitle.slice(0, start)}${linkedText}${tile.subtitle.slice(end)}`;
+
+                this.$nextTick(() => {
+                    input.focus();
+                    input.setSelectionRange(start, start + linkedText.length);
+                });
             },
             get json() {
                 return JSON.stringify(this.menus.map((menu, index) => ({
