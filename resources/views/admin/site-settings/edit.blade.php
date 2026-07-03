@@ -217,7 +217,7 @@
                                             </template>
                                         </select>
                                         <input type="text" x-model="tile.title" placeholder="Tile title" class="rounded border-slate-300 text-xs">
-                                        <input type="text" x-model="tile.subtitle" placeholder="Subtitle" class="rounded border-slate-300 text-xs">
+                                        <textarea x-model="tile.subtitle" rows="2" placeholder="Subtitle" class="rounded border-slate-300 text-xs resize-y"></textarea>
                                         <input type="text" x-model="tile.url" placeholder="Tile URL (optional)" class="rounded border-slate-300 text-xs">
                                     </div>
                                     <div class="mt-2 grid gap-2 sm:grid-cols-2">

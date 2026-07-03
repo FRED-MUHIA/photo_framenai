@@ -787,7 +787,9 @@
     .np-overlay-subtitle {
         margin-top: 4px;
         font-size: 15px;
+        line-height: 1.35;
         color: #1f1f1f;
+        white-space: pre-line;
     }
 
     .np-overlay-showall {

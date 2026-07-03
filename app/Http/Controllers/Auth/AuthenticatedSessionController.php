@@ -30,6 +30,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->user()->isAdmin()) {
+            $request->session()->put('admin_last_activity_at', time());
+        }
+
         app(CustomerOrderLinker::class)->linkByEmail($request->user());
 
         return redirect()->intended(RouteServiceProvider::HOME);
@@ -41,6 +45,8 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
+
+        $request->session()->forget('admin_last_activity_at');
 
         $request->session()->invalidate();
 

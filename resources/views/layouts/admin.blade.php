@@ -58,6 +58,79 @@
         </div>
     </div>
 </div>
+<form id="admin-idle-logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
+    @csrf
+</form>
+<script>
+    (() => {
+        const timeoutMs = Math.max(@json((int) config('session.admin_idle_timeout', 60)), 1) * 60 * 1000;
+        const storageKey = 'np_admin_last_activity_at';
+        const logoutForm = document.getElementById('admin-idle-logout-form');
+        let memoryLastActivityAt = Date.now();
+        let timeoutId = null;
+
+        const lastActivityAt = () => {
+            try {
+                return Number(window.localStorage.getItem(storageKey)) || memoryLastActivityAt;
+            } catch (error) {
+                return memoryLastActivityAt;
+            }
+        };
+        const storeActivityAt = (timestamp) => {
+            memoryLastActivityAt = timestamp;
+
+            try {
+                window.localStorage.setItem(storageKey, String(timestamp));
+            } catch (error) {
+                // Keep the in-memory fallback active when browser storage is blocked.
+            }
+        };
+        const submitLogout = () => {
+            if (logoutForm?.requestSubmit) {
+                logoutForm.requestSubmit();
+                return;
+            }
+
+            logoutForm?.submit();
+        };
+        const scheduleLogout = () => {
+            window.clearTimeout(timeoutId);
+
+            const remainingMs = timeoutMs - (Date.now() - lastActivityAt());
+            timeoutId = window.setTimeout(submitLogout, Math.max(remainingMs, 0));
+        };
+        const recordActivity = () => {
+            storeActivityAt(Date.now());
+            scheduleLogout();
+        };
+        const checkIdleState = () => {
+            if ((Date.now() - lastActivityAt()) >= timeoutMs) {
+                submitLogout();
+                return;
+            }
+
+            scheduleLogout();
+        };
+
+        ['click', 'keydown', 'mousemove', 'scroll', 'touchstart'].forEach((eventName) => {
+            window.addEventListener(eventName, recordActivity, { passive: true });
+        });
+        window.addEventListener('focus', checkIdleState);
+        window.addEventListener('pageshow', checkIdleState);
+        window.addEventListener('storage', (event) => {
+            if (event.key === storageKey) {
+                scheduleLogout();
+            }
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (! document.hidden) {
+                checkIdleState();
+            }
+        });
+
+        recordActivity();
+    })();
+</script>
 @stack('scripts')
 </body>
 </html>
