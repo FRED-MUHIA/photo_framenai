@@ -84,7 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.reauth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.reauth', 'admin.refresh_storefront'])->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
 
     Route::resource('categories', AdminCategoryController::class);

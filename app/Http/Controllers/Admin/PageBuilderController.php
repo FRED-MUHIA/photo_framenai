@@ -11,7 +11,6 @@ use App\Support\HomepageContentDefaults;
 use App\Support\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -78,8 +77,6 @@ class PageBuilderController extends Controller
             'is_active' => ! empty($validated['is_active']),
         ]);
 
-        $this->clearStorefrontCaches();
-
         return redirect()->route('admin.page-builder.index')->with('status', 'Page created successfully.');
     }
 
@@ -123,16 +120,12 @@ class PageBuilderController extends Controller
             'is_active' => ! empty($validated['is_active']),
         ]);
 
-        $this->clearStorefrontCaches();
-
         return redirect()->route('admin.page-builder.index')->with('status', 'Page updated successfully.');
     }
 
     public function destroy(CmsPage $pageBuilder)
     {
         $pageBuilder->delete();
-
-        $this->clearStorefrontCaches();
 
         return back()->with('status', 'Page deleted.');
     }
@@ -238,11 +231,5 @@ class PageBuilderController extends Controller
         }
 
         return $sections;
-    }
-
-    private function clearStorefrontCaches(): void
-    {
-        Artisan::call('view:clear');
-        Artisan::call('cache:clear');
     }
 }

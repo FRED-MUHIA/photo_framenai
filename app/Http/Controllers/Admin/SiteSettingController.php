@@ -9,7 +9,6 @@ use App\Support\AllProductsMegaMenu;
 use App\Support\HeaderThemeMegaMenu;
 use App\Support\ImageOptimizer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 
 class SiteSettingController extends Controller
 {
@@ -149,9 +148,6 @@ class SiteSettingController extends Controller
         $validated['header_theme_mega_menu'] = json_encode($themeMenu, JSON_PRETTY_PRINT);
 
         SiteSetting::setValues($validated);
-
-        Artisan::call('view:clear');
-        Artisan::call('cache:clear');
 
         return back()->with('status', 'Site identity, header, and footer settings updated.');
     }

@@ -70,6 +70,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\IsAdmin::class,
         'admin.reauth' => \App\Http\Middleware\RequireAdminLoginOnRefresh::class,
+        'admin.refresh_storefront' => \App\Http\Middleware\RefreshStorefrontAfterAdminChange::class,
         'locale' => \App\Http\Middleware\SetLocale::class,
     ];
 }
