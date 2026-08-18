@@ -87,7 +87,7 @@ class ProductTextFieldCartTest extends TestCase
         $this->assertSame('2026-08-24', $cart[0]['delivery_date']);
     }
 
-    public function test_next_day_delivery_automatically_uses_rush_fee(): void
+    public function test_next_day_delivery_does_not_use_rush_fee(): void
     {
         Carbon::setTestNow('2026-08-18 10:00:00');
         config(['shop.rush_order_fee' => 500]);
@@ -117,10 +117,10 @@ class ProductTextFieldCartTest extends TestCase
         $cart = session('print_cart');
 
         $this->assertSame(90.0, $cart[0]['unit_price']);
-        $this->assertSame(770.0, $cart[0]['line_total']);
+        $this->assertSame(270.0, $cart[0]['line_total']);
         $this->assertSame('2026-08-19', $cart[0]['delivery_date']);
-        $this->assertTrue($cart[0]['rush_order']);
-        $this->assertSame(500.0, $cart[0]['rush_fee']);
+        $this->assertFalse($cart[0]['rush_order']);
+        $this->assertSame(0.0, $cart[0]['rush_fee']);
     }
 
     public function test_rush_order_adds_fee_and_allows_same_day_delivery(): void

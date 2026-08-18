@@ -663,11 +663,11 @@
             },
             handleDeliveryDateChange() {
                 this.ensureDeliveryDate();
-                this.selectedRush = Boolean(this.selectedDeliveryDate && this.selectedDeliveryDate < this.normalMinimumDeliveryDate());
+                this.selectedRush = Boolean(this.selectedDeliveryDate && this.selectedDeliveryDate === this.rushMinimumDeliveryDate());
                 this.refreshQuote();
             },
             shouldUseRush() {
-                return this.selectedRush || Boolean(this.selectedDeliveryDate && this.selectedDeliveryDate < this.normalMinimumDeliveryDate());
+                return this.selectedRush || Boolean(this.selectedDeliveryDate && this.selectedDeliveryDate === this.rushMinimumDeliveryDate());
             },
             deliveryDateLabel() {
                 const date = new Date(`${this.minimumDeliveryDate()}T00:00:00`);

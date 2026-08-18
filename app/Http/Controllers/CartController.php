@@ -208,14 +208,16 @@ class CartController extends Controller
 
     private function resolveDeliveryDate(?string $requestedDate, int $deliveryDays): string
     {
-        $minimumDate = today()->addDays(max(0, $deliveryDays))->toDateString();
+        $defaultDate = today()->addDays(max(0, $deliveryDays))->toDateString();
 
         if (! $requestedDate) {
-            return $minimumDate;
+            return $defaultDate;
         }
 
-        if (Carbon::parse($requestedDate)->lt(Carbon::parse($minimumDate))) {
-            return $minimumDate;
+        $today = today()->toDateString();
+
+        if (Carbon::parse($requestedDate)->lt(Carbon::parse($today))) {
+            return $today;
         }
 
         return $requestedDate;
@@ -231,9 +233,7 @@ class CartController extends Controller
             return false;
         }
 
-        $standardMinimumDate = today()->addDays(max(1, $standardDeliveryDays))->toDateString();
-
-        return Carbon::parse($requestedDate)->lt(Carbon::parse($standardMinimumDate));
+        return Carbon::parse($requestedDate)->isSameDay(today());
     }
 
     private function collectCustomFields(Product $product, array $input): array
