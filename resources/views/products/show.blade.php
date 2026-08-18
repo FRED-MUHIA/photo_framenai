@@ -193,7 +193,7 @@
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="shipping_option" :value="selectedShipping">
-            <input type="hidden" name="rush_order" :value="selectedRush ? 1 : 0">
+            <input type="hidden" name="rush_order" :value="shouldUseRush() ? 1 : 0">
 
             <div class="space-y-6">
                 <div>
@@ -303,7 +303,7 @@
                         type="button"
                         @click="toggleRush"
                         class="mb-3 inline-flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-xs font-extrabold transition"
-                        :class="selectedRush ? 'border-[#ff0037] bg-rose-50 text-[#ff0037]' : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'"
+                        :class="shouldUseRush() ? 'border-[#ff0037] bg-rose-50 text-[#ff0037]' : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'"
                     >
                         <span>Rush same-day delivery</span>
                         <span>+KSh <span x-text="formatWhole(rushFee)"></span></span>
@@ -313,8 +313,8 @@
                         type="date"
                         name="delivery_date"
                         x-model="selectedDeliveryDate"
-                        :min="minimumDeliveryDate()"
-                        @change="ensureDeliveryDate"
+                        :min="rushMinimumDeliveryDate()"
+                        @change="handleDeliveryDateChange"
                         class="h-[44px] w-full rounded-lg border-emerald-200 bg-emerald-50 px-3 text-sm font-bold text-emerald-700"
                     >
                     <p class="mt-2 text-xs font-semibold text-emerald-700">
@@ -571,8 +571,8 @@
                 this.refreshQuote();
             },
             toggleRush() {
-                this.selectedRush = ! this.selectedRush;
-                this.selectedDeliveryDate = this.minimumDeliveryDate();
+                this.selectedRush = ! this.shouldUseRush();
+                this.selectedDeliveryDate = this.selectedRush ? this.rushMinimumDeliveryDate() : this.normalMinimumDeliveryDate();
                 this.refreshQuote(true);
             },
             normalizeQuantity() {
@@ -606,7 +606,7 @@
                             quantity: Number(this.quantity),
                             selected_options: this.selectedOptions,
                             shipping_option: this.selectedShipping,
-                            rush_order: this.selectedRush ? 1 : 0,
+                            rush_order: this.shouldUseRush() ? 1 : 0,
                         }),
                     });
 
@@ -639,16 +639,35 @@
                 }
             },
             minimumDeliveryDate() {
-                const days = this.selectedRush ? 0 : Number(this.quote.delivery_days ?? 4);
+                return this.shouldUseRush() ? this.rushMinimumDeliveryDate() : this.normalMinimumDeliveryDate();
+            },
+            normalMinimumDeliveryDate() {
+                const days = Number(this.quote.standard_delivery_days ?? this.quote.delivery_days ?? 4);
                 const date = new Date();
                 date.setDate(date.getDate() + days);
                 return this.formatDateForInput(date);
             },
+            rushMinimumDeliveryDate() {
+                return this.formatDateForInput(new Date());
+            },
             ensureDeliveryDate() {
-                const minimumDate = this.minimumDeliveryDate();
-                if (! this.selectedDeliveryDate || this.selectedDeliveryDate < minimumDate) {
+                const minimumDate = this.rushMinimumDeliveryDate();
+                if (! this.selectedDeliveryDate) {
+                    this.selectedDeliveryDate = this.normalMinimumDeliveryDate();
+                    return;
+                }
+
+                if (this.selectedDeliveryDate < minimumDate) {
                     this.selectedDeliveryDate = minimumDate;
                 }
+            },
+            handleDeliveryDateChange() {
+                this.ensureDeliveryDate();
+                this.selectedRush = Boolean(this.selectedDeliveryDate && this.selectedDeliveryDate < this.normalMinimumDeliveryDate());
+                this.refreshQuote();
+            },
+            shouldUseRush() {
+                return this.selectedRush || Boolean(this.selectedDeliveryDate && this.selectedDeliveryDate < this.normalMinimumDeliveryDate());
             },
             deliveryDateLabel() {
                 const date = new Date(`${this.minimumDeliveryDate()}T00:00:00`);
@@ -716,7 +735,7 @@
                     `Quantity: ${this.formatWhole(this.quantity)}`,
                 ];
 
-                if (this.selectedRush) {
+                if (this.shouldUseRush()) {
                     lines.push(`Rush same-day: KES ${this.formatMoney(this.rushFee)}`);
                 }
 

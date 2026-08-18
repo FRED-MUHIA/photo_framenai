@@ -63,9 +63,11 @@ class CartController extends Controller
         $customFields = $this->collectCustomFields($product, $validated['custom_fields'] ?? []);
 
         $shippingOption = $validated['shipping_option'] ?? 'standard';
-        $rushOrder = $request->boolean('rush_order');
+        $requestedDeliveryDate = $validated['delivery_date'] ?? null;
+        $standardQuote = $this->pricingService->quote($product, $selections, $quantity, $shippingOption);
+        $rushOrder = $this->shouldApplyRushOrder($requestedDeliveryDate, (int) $standardQuote['standard_delivery_days'], $request->boolean('rush_order'));
         $quote = $this->pricingService->quote($product, $selections, $quantity, $shippingOption, $rushOrder);
-        $deliveryDate = $this->resolveDeliveryDate($validated['delivery_date'] ?? null, (int) $quote['delivery_days']);
+        $deliveryDate = $this->resolveDeliveryDate($requestedDeliveryDate, (int) $quote['delivery_days']);
 
         $artwork = null;
         if ($request->hasFile('artwork')) {
@@ -147,10 +149,17 @@ class CartController extends Controller
             ]);
         }
 
-        $rushOrder = $request->has('rush_order') ? $request->boolean('rush_order') : (bool) ($item['rush_order'] ?? false);
-        $quote = $this->pricingService->quote($product, $item['selected_options'] ?? [], $quantity, $item['shipping_option'] ?? 'standard', $rushOrder);
+        $requestedDeliveryDate = $validated['delivery_date'] ?? ($item['delivery_date'] ?? null);
+        $shippingOption = $item['shipping_option'] ?? 'standard';
+        $standardQuote = $this->pricingService->quote($product, $item['selected_options'] ?? [], $quantity, $shippingOption);
+        $rushOrder = $this->shouldApplyRushOrder(
+            $requestedDeliveryDate,
+            (int) $standardQuote['standard_delivery_days'],
+            $request->has('rush_order') ? $request->boolean('rush_order') : (bool) ($item['rush_order'] ?? false)
+        );
+        $quote = $this->pricingService->quote($product, $item['selected_options'] ?? [], $quantity, $shippingOption, $rushOrder);
         $deliveryDate = $this->resolveDeliveryDate(
-            $validated['delivery_date'] ?? ($item['delivery_date'] ?? null),
+            $requestedDeliveryDate,
             (int) $quote['delivery_days']
         );
 
@@ -210,6 +219,21 @@ class CartController extends Controller
         }
 
         return $requestedDate;
+    }
+
+    private function shouldApplyRushOrder(?string $requestedDate, int $standardDeliveryDays, bool $requestedRushOrder): bool
+    {
+        if ($requestedRushOrder) {
+            return true;
+        }
+
+        if (! $requestedDate) {
+            return false;
+        }
+
+        $standardMinimumDate = today()->addDays(max(1, $standardDeliveryDays))->toDateString();
+
+        return Carbon::parse($requestedDate)->lt(Carbon::parse($standardMinimumDate));
     }
 
     private function collectCustomFields(Product $product, array $input): array

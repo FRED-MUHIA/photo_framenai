@@ -45,13 +45,15 @@ class PricingService
         $deliveryDays = (int) (($quantityPrice?->delivery_days ?? $product->base_delivery_days) + $optionDeliveryModifier);
 
         $shippingDays = (int) data_get(config('shop.shipping_options'), $shippingOption . '.days', 3);
-        $deliveryDays = $rushOrder ? 0 : max(1, $deliveryDays + $shippingDays);
+        $standardDeliveryDays = max(1, $deliveryDays + $shippingDays);
+        $deliveryDays = $rushOrder ? 0 : $standardDeliveryDays;
 
         return [
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'line_total' => $subtotal,
             'delivery_days' => $deliveryDays,
+            'standard_delivery_days' => $standardDeliveryDays,
             'rush_order' => $rushOrder,
             'rush_fee' => $rushFee,
             'selected_values' => $selectedValues->values()->map(fn (ProductOptionValue $value) => [
