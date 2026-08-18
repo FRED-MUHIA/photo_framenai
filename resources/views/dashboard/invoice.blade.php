@@ -64,7 +64,12 @@
             <tbody>
                 @foreach($order->items as $item)
                     <tr class="border-b border-slate-100">
-                        <td class="py-2">{{ $item->product_name }}</td>
+                        <td class="py-2">
+                            {{ $item->product_name }}
+                            @if(data_get($item->configuration, 'rush_order'))
+                                <div class="text-xs font-extrabold text-rose-700">Rush same-day: {{ $order->currency }} {{ number_format((float) data_get($item->configuration, 'rush_fee', config('shop.rush_order_fee', 500)), 2) }}</div>
+                            @endif
+                        </td>
                         <td class="py-2">{{ $item->quantity }}</td>
                         <td class="py-2">{{ $order->currency }} {{ number_format($item->unit_price, 2) }}</td>
                         <td class="py-2">

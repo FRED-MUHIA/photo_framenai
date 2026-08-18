@@ -63,6 +63,21 @@ class PricingServiceTest extends TestCase
         $this->assertNull($quote['quantity_pricing']);
     }
 
+    public function test_rush_order_adds_fixed_fee_and_same_day_delivery(): void
+    {
+        config(['shop.rush_order_fee' => 500]);
+
+        $product = $this->createProduct(['base_price' => 90]);
+
+        $quote = app(PricingService::class)->quote($product, [], 3, 'standard', true);
+
+        $this->assertSame(270.0, $quote['unit_price'] * $quote['quantity']);
+        $this->assertSame(770.0, $quote['line_total']);
+        $this->assertSame(500.0, $quote['rush_fee']);
+        $this->assertTrue($quote['rush_order']);
+        $this->assertSame(0, $quote['delivery_days']);
+    }
+
     private function createProduct(array $overrides = []): Product
     {
         $category = Category::query()->create([

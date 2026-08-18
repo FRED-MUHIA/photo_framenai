@@ -87,4 +87,42 @@ class ProductTextFieldCartTest extends TestCase
         $this->assertSame(270.0, $cart[0]['line_total']);
         $this->assertSame('2026-08-24', $cart[0]['delivery_date']);
     }
+
+    public function test_rush_order_adds_fee_and_allows_same_day_delivery(): void
+    {
+        Carbon::setTestNow('2026-08-18 10:00:00');
+        config(['shop.rush_order_fee' => 500]);
+
+        $category = Category::query()->create([
+            'name' => 'Flyers',
+            'slug' => 'same-day-flyers',
+            'is_active' => true,
+        ]);
+
+        $product = Product::query()->create([
+            'category_id' => $category->id,
+            'name' => 'Same Day Flyers',
+            'slug' => 'same-day-flyers',
+            'base_price' => 90,
+            'min_quantity' => 1,
+            'base_delivery_days' => 3,
+            'is_active' => true,
+        ]);
+
+        $this->post(route('cart.store'), [
+            'product_id' => $product->id,
+            'quantity' => 3,
+            'rush_order' => '1',
+            'delivery_date' => '2026-08-18',
+        ])->assertRedirect(route('cart.index'));
+
+        $cart = session('print_cart');
+
+        $this->assertSame(90.0, $cart[0]['unit_price']);
+        $this->assertSame(770.0, $cart[0]['line_total']);
+        $this->assertSame(0, $cart[0]['delivery_days']);
+        $this->assertSame('2026-08-18', $cart[0]['delivery_date']);
+        $this->assertTrue($cart[0]['rush_order']);
+        $this->assertSame(500.0, $cart[0]['rush_fee']);
+    }
 }

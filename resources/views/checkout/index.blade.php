@@ -81,6 +81,11 @@
                                 @endforeach
                             </div>
                         @endif
+                        @if(! empty($item['rush_order']))
+                            <div class="mt-1 text-xs font-extrabold text-rose-600">
+                                Rush same-day: {{ config('shop.currency_symbol') }} {{ number_format((float) ($item['rush_fee'] ?? config('shop.rush_order_fee', 500)), 2) }}
+                            </div>
+                        @endif
                     </div>
                 @endforeach
                 <div class="flex justify-between"><span>Subtotal</span><span>{{ config('shop.currency_symbol') }} {{ number_format($totals['subtotal'], 2) }}</span></div>

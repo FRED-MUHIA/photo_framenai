@@ -21,6 +21,7 @@ class QuoteController extends Controller
             'selected_options' => ['nullable', 'array'],
             'selected_options.*' => ['nullable', 'integer'],
             'shipping_option' => ['nullable', 'in:not_necessary,standard,express,pickup'],
+            'rush_order' => ['nullable', 'boolean'],
         ]);
 
         $product = Product::query()->active()->with(['optionGroups.values', 'quantityPrices'])->findOrFail($validated['product_id']);
@@ -38,6 +39,7 @@ class QuoteController extends Controller
             array_filter($validated['selected_options'] ?? []),
             $quantity,
             $validated['shipping_option'] ?? 'standard',
+            $request->boolean('rush_order'),
         );
 
         return response()->json([

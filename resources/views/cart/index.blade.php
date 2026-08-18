@@ -32,10 +32,19 @@
                                 @if(!empty($item['artwork_name']))
                                     <p class="mt-2 text-xs font-semibold text-teal-700">Artwork: {{ $item['artwork_name'] }}</p>
                                 @endif
+                                @if(!empty($item['rush_order']))
+                                    <p class="mt-2 text-xs font-extrabold text-rose-600">Rush same-day: {{ config('shop.currency_symbol') }} {{ number_format((float) ($item['rush_fee'] ?? config('shop.rush_order_fee', 500)), 2) }}</p>
+                                @endif
                             </div>
                             <div class="text-right">
                                 <p class="text-lg font-extrabold">{{ config('shop.currency_symbol') }} {{ number_format($item['line_total'], 2) }}</p>
-                                <p class="text-xs text-slate-500">Delivery ~ {{ $item['delivery_days'] }} days</p>
+                                <p class="text-xs text-slate-500">
+                                    @if(!empty($item['rush_order']))
+                                        Same-day delivery
+                                    @else
+                                        Delivery ~ {{ $item['delivery_days'] }} days
+                                    @endif
+                                </p>
                                 @if(!empty($item['delivery_date']))
                                     <p class="mt-1 text-xs font-semibold text-emerald-700">Requested: {{ \Illuminate\Support\Carbon::parse($item['delivery_date'])->toFormattedDateString() }}</p>
                                 @endif
@@ -46,9 +55,10 @@
                                 @csrf
                                 @method('PATCH')
                                 @php
-                                    $minimumDeliveryDate = now()->addDays(max(1, (int) ($item['delivery_days'] ?? 1)))->toDateString();
+                                    $minimumDeliveryDate = now()->addDays(max(0, (int) ($item['delivery_days'] ?? 1)))->toDateString();
                                     $selectedDeliveryDate = $item['delivery_date'] ?? $minimumDeliveryDate;
                                 @endphp
+                                <input type="hidden" name="rush_order" value="0">
                                 <input
                                     type="number"
                                     name="quantity"
@@ -65,6 +75,10 @@
                                     value="{{ $selectedDeliveryDate }}"
                                     class="w-40 rounded-lg border-slate-300 text-sm"
                                 >
+                                <label class="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-semibold text-slate-700">
+                                    <input type="checkbox" name="rush_order" value="1" @checked(!empty($item['rush_order']))>
+                                    Rush +{{ config('shop.currency_symbol') }} {{ number_format((float) config('shop.rush_order_fee', 500), 0) }}
+                                </label>
                                 <button class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold">Update</button>
                             </form>
                             <form method="POST" action="{{ route('cart.destroy', $index) }}">

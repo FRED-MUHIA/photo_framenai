@@ -38,6 +38,7 @@ class CartController extends Controller
             'custom_fields' => ['nullable', 'array'],
             'custom_fields.*' => ['nullable', 'string', 'max:500'],
             'shipping_option' => ['nullable', 'in:not_necessary,standard,express,pickup'],
+            'rush_order' => ['nullable', 'boolean'],
             'artwork_id' => ['nullable', 'exists:artworks,id'],
             'delivery_date' => ['nullable', 'date_format:Y-m-d'],
             'artwork' => [
@@ -62,7 +63,8 @@ class CartController extends Controller
         $customFields = $this->collectCustomFields($product, $validated['custom_fields'] ?? []);
 
         $shippingOption = $validated['shipping_option'] ?? 'standard';
-        $quote = $this->pricingService->quote($product, $selections, $quantity, $shippingOption);
+        $rushOrder = $request->boolean('rush_order');
+        $quote = $this->pricingService->quote($product, $selections, $quantity, $shippingOption, $rushOrder);
         $deliveryDate = $this->resolveDeliveryDate($validated['delivery_date'] ?? null, (int) $quote['delivery_days']);
 
         $artwork = null;
@@ -110,6 +112,8 @@ class CartController extends Controller
             'line_total' => $quote['line_total'],
             'delivery_days' => $quote['delivery_days'],
             'delivery_date' => $deliveryDate,
+            'rush_order' => $rushOrder,
+            'rush_fee' => $quote['rush_fee'],
             'shipping_option' => $shippingOption,
             'artwork_id' => $artwork?->id,
             'artwork_name' => $artwork?->original_name,
@@ -123,6 +127,7 @@ class CartController extends Controller
         $validated = $request->validate([
             'quantity' => ['required', 'integer', 'min:1'],
             'delivery_date' => ['nullable', 'date_format:Y-m-d'],
+            'rush_order' => ['nullable', 'boolean'],
         ]);
 
         $items = $this->cartService->all();
@@ -142,7 +147,8 @@ class CartController extends Controller
             ]);
         }
 
-        $quote = $this->pricingService->quote($product, $item['selected_options'] ?? [], $quantity);
+        $rushOrder = $request->has('rush_order') ? $request->boolean('rush_order') : (bool) ($item['rush_order'] ?? false);
+        $quote = $this->pricingService->quote($product, $item['selected_options'] ?? [], $quantity, $item['shipping_option'] ?? 'standard', $rushOrder);
         $deliveryDate = $this->resolveDeliveryDate(
             $validated['delivery_date'] ?? ($item['delivery_date'] ?? null),
             (int) $quote['delivery_days']
@@ -155,6 +161,8 @@ class CartController extends Controller
             'line_total' => $quote['line_total'],
             'delivery_days' => $quote['delivery_days'],
             'delivery_date' => $deliveryDate,
+            'rush_order' => $rushOrder,
+            'rush_fee' => $quote['rush_fee'],
         ]);
 
         return back()->with('status', 'Cart updated.');
@@ -191,7 +199,7 @@ class CartController extends Controller
 
     private function resolveDeliveryDate(?string $requestedDate, int $deliveryDays): string
     {
-        $minimumDate = today()->addDays(max(1, $deliveryDays))->toDateString();
+        $minimumDate = today()->addDays(max(0, $deliveryDays))->toDateString();
 
         if (! $requestedDate) {
             return $minimumDate;

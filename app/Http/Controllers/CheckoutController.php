@@ -100,6 +100,8 @@ class CheckoutController extends Controller
                         'selected_values' => $item['selected_values'] ?? [],
                         'custom_fields' => $item['custom_fields'] ?? [],
                         'delivery_date' => $item['delivery_date'] ?? null,
+                        'rush_order' => (bool) ($item['rush_order'] ?? false),
+                        'rush_fee' => (float) ($item['rush_fee'] ?? 0),
                     ],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],

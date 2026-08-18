@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class PricingService
 {
-    public function quote(Product $product, array $selectedOptionIds, int $quantity, string $shippingOption = 'standard'): array
+    public function quote(Product $product, array $selectedOptionIds, int $quantity, string $shippingOption = 'standard', bool $rushOrder = false): array
     {
         $quantity = max(1, $quantity);
 
@@ -36,19 +36,24 @@ class PricingService
         $optionModifierPerUnit = (float) $selectedValues->sum(fn (ProductOptionValue $value) => (float) $value->price_modifier);
         $optionTotal = $optionModifierPerUnit * $quantity;
 
-        $subtotal = round($baseTotal + $optionTotal, 2);
-        $unitPrice = round($subtotal / max($quantity, 1), 2);
+        $productSubtotal = round($baseTotal + $optionTotal, 2);
+        $rushFee = $rushOrder ? (float) config('shop.rush_order_fee', 500) : 0.0;
+        $subtotal = round($productSubtotal + $rushFee, 2);
+        $unitPrice = round($productSubtotal / max($quantity, 1), 2);
 
         $optionDeliveryModifier = (int) $selectedValues->sum('delivery_modifier');
         $deliveryDays = (int) (($quantityPrice?->delivery_days ?? $product->base_delivery_days) + $optionDeliveryModifier);
 
         $shippingDays = (int) data_get(config('shop.shipping_options'), $shippingOption . '.days', 3);
+        $deliveryDays = $rushOrder ? 0 : max(1, $deliveryDays + $shippingDays);
 
         return [
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'line_total' => $subtotal,
-            'delivery_days' => max(1, $deliveryDays + $shippingDays),
+            'delivery_days' => $deliveryDays,
+            'rush_order' => $rushOrder,
+            'rush_fee' => $rushFee,
             'selected_values' => $selectedValues->values()->map(fn (ProductOptionValue $value) => [
                 'id' => $value->id,
                 'label' => $value->label,

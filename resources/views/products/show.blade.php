@@ -193,6 +193,7 @@
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="shipping_option" :value="selectedShipping">
+            <input type="hidden" name="rush_order" :value="selectedRush ? 1 : 0">
 
             <div class="space-y-6">
                 <div>
@@ -298,6 +299,15 @@
 
                 <div>
                     <label for="delivery-date" class="mb-2 block text-[13px] font-bold text-slate-900">Select Delivery Date</label>
+                    <button
+                        type="button"
+                        @click="toggleRush"
+                        class="mb-3 inline-flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-xs font-extrabold transition"
+                        :class="selectedRush ? 'border-[#ff0037] bg-rose-50 text-[#ff0037]' : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'"
+                    >
+                        <span>Rush same-day delivery</span>
+                        <span>+KSh <span x-text="formatWhole(rushFee)"></span></span>
+                    </button>
                     <input
                         id="delivery-date"
                         type="date"
@@ -361,6 +371,12 @@
                         <span>1 x <span x-text="quantity"></span></span>
                         <span>KES <span x-text="formatMoney(quote.line_total)"></span></span>
                     </div>
+                    <template x-if="Number(quote.rush_fee || 0) > 0">
+                        <div class="mt-3 flex justify-between text-xs text-slate-600">
+                            <span>Rush same-day</span>
+                            <span>KES <span x-text="formatMoney(quote.rush_fee)"></span></span>
+                        </div>
+                    </template>
                     <div class="mt-3 flex justify-between text-xs text-slate-600">
                         <span>Total</span>
                         <span class="text-xl font-extrabold text-[#ff0037]">KES <span x-text="formatMoney(quote.line_total)"></span></span>
@@ -518,6 +534,8 @@
             selectedOptions: @json($defaultSelections),
             optionLookup: @json($optionLookup),
             selectedShipping: 'standard',
+            selectedRush: false,
+            rushFee: {{ (float) config('shop.rush_order_fee', 500) }},
             usdRate: {{ $usdRate ?: 126 }},
             quote: @json($defaultQuote),
             quoteError: '',
@@ -552,6 +570,11 @@
                 this.quantity = Math.max(this.minQuantity, nextQuantity);
                 this.refreshQuote();
             },
+            toggleRush() {
+                this.selectedRush = ! this.selectedRush;
+                this.selectedDeliveryDate = this.minimumDeliveryDate();
+                this.refreshQuote(true);
+            },
             normalizeQuantity() {
                 const quantity = parseInt(this.quantity, 10);
                 this.quantity = Number.isFinite(quantity) ? Math.max(this.minQuantity, quantity) : this.minQuantity;
@@ -561,7 +584,7 @@
 
                 return Number.isFinite(quantity) ? Math.max(this.minQuantity, quantity) : this.minQuantity;
             },
-            async refreshQuote() {
+            async refreshQuote(adjustDeliveryDate = false) {
                 this.normalizeQuantity();
                 this.normalizeSelectedOptions();
                 this.quoteError = '';
@@ -583,6 +606,7 @@
                             quantity: Number(this.quantity),
                             selected_options: this.selectedOptions,
                             shipping_option: this.selectedShipping,
+                            rush_order: this.selectedRush ? 1 : 0,
                         }),
                     });
 
@@ -598,6 +622,9 @@
                     }
 
                     this.quote = payload.quote;
+                    if (adjustDeliveryDate) {
+                        this.ensureDeliveryDate();
+                    }
                 } catch (error) {
                     if (error.name === 'AbortError') {
                         return;
@@ -612,7 +639,7 @@
                 }
             },
             minimumDeliveryDate() {
-                const days = Number(this.quote.delivery_days || 4);
+                const days = this.selectedRush ? 0 : Number(this.quote.delivery_days ?? 4);
                 const date = new Date();
                 date.setDate(date.getDate() + days);
                 return this.formatDateForInput(date);
@@ -688,6 +715,10 @@
                     `Product: ${this.productName}`,
                     `Quantity: ${this.formatWhole(this.quantity)}`,
                 ];
+
+                if (this.selectedRush) {
+                    lines.push(`Rush same-day: KES ${this.formatMoney(this.rushFee)}`);
+                }
 
                 if (this.selectedDeliveryDate) {
                     lines.push(`Delivery date: ${this.selectedDeliveryDate}`);

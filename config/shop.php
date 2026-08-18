@@ -3,6 +3,7 @@
 return [
     'currency' => 'KES',
     'currency_symbol' => 'KSh',
+    'rush_order_fee' => 500,
     'shipping_options' => [
         'not_necessary' => [
             'label' => 'Not necessary',
