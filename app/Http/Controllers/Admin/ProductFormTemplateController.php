@@ -140,7 +140,7 @@ class ProductFormTemplateController extends Controller
                 }
 
                 $path = $file->store('product-option-images', 'public');
-                ImageOptimizer::optimizePublicPath($path);
+                ImageOptimizer::optimizeCommonPublicVariants($path);
                 $groups[$groupIndex]['values'][$valueIndex]['image_url'] = '/storage/' . $path;
             }
         }

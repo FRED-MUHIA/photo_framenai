@@ -179,7 +179,7 @@ class PageBuilderController extends Controller
     private function storePageBuilderImage(UploadedFile $file): string
     {
         $path = $file->store('media-library', 'public');
-        ImageOptimizer::optimizePublicPath($path);
+        ImageOptimizer::optimizeCommonPublicVariants($path);
 
         $mediaItem = MediaItem::query()->create([
             'type' => 'upload',

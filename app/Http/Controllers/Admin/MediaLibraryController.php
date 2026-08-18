@@ -31,7 +31,7 @@ class MediaLibraryController extends Controller
 
         foreach ((array) $request->file('files', []) as $file) {
             $path = $file->store('media-library', 'public');
-            ImageOptimizer::optimizePublicPath($path);
+            ImageOptimizer::optimizeCommonPublicVariants($path);
 
             MediaItem::query()->create([
                 'type' => 'upload',

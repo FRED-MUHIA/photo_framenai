@@ -8,7 +8,21 @@ use Throwable;
 class ImageOptimizer
 {
     private const CACHE_DIRECTORY = 'optimized-images';
+    private const DEFAULT_MAX_DIMENSION = 1600;
+    private const DEFAULT_QUALITY = 78;
     private const OPTIMIZABLE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+    private const COMMON_VARIANTS = [
+        [180, 60],
+        [360, 62],
+        [420, 64],
+        [520, 64],
+        [560, 64],
+        [640, 66],
+        [700, 70],
+        [1100, 70],
+        [1200, 80],
+        [1600, 78],
+    ];
 
     public static function optimizedStorageRelativePath(string $relativePath, ?int $maxDimension = null, ?int $quality = null): ?string
     {
@@ -26,8 +40,14 @@ class ImageOptimizer
 
         $targetPath = self::targetPath($relativePath, $sourcePath, $maxDimension, $quality);
 
-        return is_file($targetPath)
-            ? self::targetRelativePath($relativePath, $sourcePath, $maxDimension, $quality)
+        if (is_file($targetPath)) {
+            return self::targetRelativePath($relativePath, $sourcePath, $maxDimension, $quality);
+        }
+
+        $defaultTargetPath = self::targetPath($relativePath, $sourcePath);
+
+        return is_file($defaultTargetPath)
+            ? self::targetRelativePath($relativePath, $sourcePath)
             : null;
     }
 
@@ -84,6 +104,26 @@ class ImageOptimizer
         return $targetRelativePath;
     }
 
+    public static function optimizeCommonPublicVariants(string $relativePath, ?array $extraVariants = null): array
+    {
+        $variants = self::uniqueVariants([
+            ...($extraVariants ?? []),
+            ...self::COMMON_VARIANTS,
+        ]);
+
+        $optimizedPaths = [];
+
+        foreach ($variants as [$maxDimension, $quality]) {
+            $optimizedPath = self::optimizePublicPath($relativePath, $maxDimension, $quality);
+
+            if ($optimizedPath) {
+                $optimizedPaths[] = $optimizedPath;
+            }
+        }
+
+        return array_values(array_unique($optimizedPaths));
+    }
+
     private static function normalizeRelativePath(string $relativePath): string
     {
         $relativePath = str_replace('\\', '/', $relativePath);
@@ -121,14 +161,29 @@ class ImageOptimizer
         $targetDirectory = self::CACHE_DIRECTORY . ($directory ? '/' . $directory : '');
         $variant = '';
 
-        $normalizedMaxDimension = max(120, (int) ($maxDimension ?: 1600));
-        $normalizedQuality = min(95, max(40, (int) ($quality ?: 78)));
+        $normalizedMaxDimension = max(120, (int) ($maxDimension ?: self::DEFAULT_MAX_DIMENSION));
+        $normalizedQuality = min(95, max(40, (int) ($quality ?: self::DEFAULT_QUALITY)));
 
-        if ($normalizedMaxDimension !== 1600 || $normalizedQuality !== 78) {
+        if ($normalizedMaxDimension !== self::DEFAULT_MAX_DIMENSION || $normalizedQuality !== self::DEFAULT_QUALITY) {
             $variant = '-w' . $normalizedMaxDimension . '-q' . $normalizedQuality;
         }
 
         return $targetDirectory . '/' . $filename . '-' . $fingerprint . $variant . '.webp';
+    }
+
+    private static function uniqueVariants(array $variants): array
+    {
+        $unique = [];
+
+        foreach ($variants as $variant) {
+            $maxDimension = max(120, (int) ($variant[0] ?? self::DEFAULT_MAX_DIMENSION));
+            $quality = min(95, max(40, (int) ($variant[1] ?? self::DEFAULT_QUALITY)));
+            $key = $maxDimension . ':' . $quality;
+
+            $unique[$key] = [$maxDimension, $quality];
+        }
+
+        return array_values($unique);
     }
 
     private static function nodeBinary(): string

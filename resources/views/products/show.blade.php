@@ -304,7 +304,6 @@
                         :min="minimumDeliveryDate()"
                         @change="ensureDeliveryDate"
                         class="h-[44px] w-full rounded-lg border-emerald-200 bg-emerald-50 px-3 text-sm font-bold text-emerald-700"
-                        required
                     >
                     <p class="mt-2 text-xs font-semibold text-emerald-700">
                         Earliest available: <span x-text="deliveryDateLabel()"></span>
@@ -626,7 +625,6 @@
                     }
 
                     this.quote = payload.quote;
-                    this.ensureDeliveryDate();
                 } catch (error) {
                     if (error.name === 'AbortError') {
                         return;
@@ -704,7 +702,6 @@
             },
             openWhatsAppOrder(event) {
                 this.normalizeQuantity();
-                this.ensureDeliveryDate();
 
                 if (this.quoteError) {
                     window.alert(this.quoteError);
@@ -717,8 +714,11 @@
                     '',
                     `Product: ${this.productName}`,
                     `Quantity: ${this.formatWhole(this.quantity)}`,
-                    `Delivery date: ${this.selectedDeliveryDate}`,
                 ];
+
+                if (this.selectedDeliveryDate) {
+                    lines.push(`Delivery date: ${this.selectedDeliveryDate}`);
+                }
 
                 const optionLines = this.selectedOptionLines();
                 if (optionLines.length) {

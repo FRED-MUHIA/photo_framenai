@@ -10,7 +10,7 @@ use SplFileInfo;
 
 class OptimizePublicImages extends Command
 {
-    protected $signature = 'images:optimize-public {--max-dimension=1600} {--quality=78}';
+    protected $signature = 'images:optimize-public {--max-dimension=1600} {--quality=78} {--single : Only generate the requested max dimension and quality.}';
 
     protected $description = 'Create optimized WebP sidecars for images in storage/app/public.';
 
@@ -47,14 +47,20 @@ class OptimizePublicImages extends Command
 
             $processed++;
 
-            if (ImageOptimizer::optimizePublicPath($relativePath, $maxDimension, $quality)) {
-                $optimized++;
+            if ($this->option('single')) {
+                $optimizedPaths = array_filter([ImageOptimizer::optimizePublicPath($relativePath, $maxDimension, $quality)]);
+            } else {
+                $optimizedPaths = ImageOptimizer::optimizeCommonPublicVariants($relativePath, [[$maxDimension, $quality]]);
+            }
+
+            if ($optimizedPaths !== []) {
+                $optimized += count($optimizedPaths);
             } else {
                 $skipped++;
             }
         }
 
-        $this->info("Processed {$processed} file(s). Optimized {$optimized}. Skipped {$skipped}.");
+        $this->info("Processed {$processed} file(s). Optimized {$optimized} variant(s). Skipped {$skipped} file(s).");
 
         return self::SUCCESS;
     }

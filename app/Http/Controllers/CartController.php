@@ -198,9 +198,7 @@ class CartController extends Controller
         }
 
         if (Carbon::parse($requestedDate)->lt(Carbon::parse($minimumDate))) {
-            throw ValidationException::withMessages([
-                'delivery_date' => 'Please choose a delivery date on or after ' . Carbon::parse($minimumDate)->toFormattedDateString() . '.',
-            ]);
+            return $minimumDate;
         }
 
         return $requestedDate;

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductOptionGroup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class ProductTextFieldCartTest extends TestCase
@@ -51,5 +52,39 @@ class ProductTextFieldCartTest extends TestCase
 
         $this->assertSame('Banner Text', $cart[0]['custom_fields'][0]['label']);
         $this->assertSame('Grand Opening', $cart[0]['custom_fields'][0]['value']);
+    }
+
+    public function test_delivery_date_does_not_block_cart_price_calculation(): void
+    {
+        Carbon::setTestNow('2026-08-18 10:00:00');
+
+        $category = Category::query()->create([
+            'name' => 'Flyers',
+            'slug' => 'flyers',
+            'is_active' => true,
+        ]);
+
+        $product = Product::query()->create([
+            'category_id' => $category->id,
+            'name' => 'A5 Flyers',
+            'slug' => 'a5-flyers',
+            'base_price' => 90,
+            'min_quantity' => 1,
+            'base_delivery_days' => 3,
+            'is_active' => true,
+        ]);
+
+        $this->post(route('cart.store'), [
+            'product_id' => $product->id,
+            'quantity' => 3,
+            'delivery_date' => '2026-08-18',
+        ])->assertRedirect(route('cart.index'));
+
+        $cart = session('print_cart');
+
+        $this->assertSame(3, $cart[0]['quantity']);
+        $this->assertSame(90.0, $cart[0]['unit_price']);
+        $this->assertSame(270.0, $cart[0]['line_total']);
+        $this->assertSame('2026-08-24', $cart[0]['delivery_date']);
     }
 }

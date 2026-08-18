@@ -94,13 +94,13 @@ class SiteSettingController extends Controller
 
         if ($request->hasFile('header_logo_file')) {
             $path = $request->file('header_logo_file')->store('site', 'public');
-            ImageOptimizer::optimizePublicPath($path);
+            ImageOptimizer::optimizeCommonPublicVariants($path);
             $validated['header_logo_url'] = '/storage/' . $path;
         }
 
         if ($request->hasFile('whatsapp_logo_file')) {
             $path = $request->file('whatsapp_logo_file')->store('site', 'public');
-            ImageOptimizer::optimizePublicPath($path);
+            ImageOptimizer::optimizeCommonPublicVariants($path);
             $validated['whatsapp_logo_url'] = '/storage/' . $path;
         }
 
@@ -139,7 +139,7 @@ class SiteSettingController extends Controller
                 }
 
                 $path = $file->store('site/mega-menu', 'public');
-                ImageOptimizer::optimizePublicPath($path);
+                ImageOptimizer::optimizeCommonPublicVariants($path);
                 $themeMenuPayload[$menuIndex]['items'][$tileIndex]['image'] = '/storage/' . $path;
             }
         }

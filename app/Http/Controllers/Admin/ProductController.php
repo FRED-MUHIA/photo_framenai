@@ -282,7 +282,7 @@ class ProductController extends Controller
     private function storeProductImage(Request $request, string $field): string
     {
         $path = $request->file($field)->store('product-thumbnails', 'public');
-        ImageOptimizer::optimizePublicPath($path);
+        ImageOptimizer::optimizeCommonPublicVariants($path);
 
         return '/storage/' . $path;
     }

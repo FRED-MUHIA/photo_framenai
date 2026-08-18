@@ -64,7 +64,6 @@
                                     min="{{ $minimumDeliveryDate }}"
                                     value="{{ $selectedDeliveryDate }}"
                                     class="w-40 rounded-lg border-slate-300 text-sm"
-                                    required
                                 >
                                 <button class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold">Update</button>
                             </form>
