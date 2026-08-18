@@ -268,7 +268,7 @@
                 <div>
                     <label class="mb-3 block text-[13px] font-bold text-slate-900">Order Quantity</label>
                     <div class="flex items-center gap-2">
-                        <button type="button" @click="decrementQuantity" class="h-[46px] w-[46px] rounded-lg border border-slate-200 text-xl font-normal text-slate-500">-</button>
+                        <button type="button" @click.prevent="adjustQuantity(-1)" class="h-[46px] w-[46px] rounded-lg border border-slate-200 text-xl font-normal text-slate-500">-</button>
                         <input
                             type="number"
                             name="quantity"
@@ -278,11 +278,13 @@
                             list="product-quantity-options"
                             x-model.number="quantity"
                             @input.debounce.350ms="refreshQuote"
+                            @keydown.arrow-up.prevent="adjustQuantity(1)"
+                            @keydown.arrow-down.prevent="adjustQuantity(-1)"
                             @blur="normalizeQuantity"
                             class="product-quantity-input h-[46px] w-[116px] rounded-lg border-slate-300 px-4 text-center text-xl font-extrabold leading-none text-slate-950"
                             required
                         >
-                        <button type="button" @click="incrementQuantity" class="h-[46px] w-[46px] rounded-lg border border-slate-200 text-xl font-normal text-slate-950">+</button>
+                        <button type="button" @click.prevent="adjustQuantity(1)" class="h-[46px] w-[46px] rounded-lg border border-slate-200 text-xl font-normal text-slate-950">+</button>
                     </div>
                     @if($quantitySuggestions->isNotEmpty())
                         <datalist id="product-quantity-options">
@@ -542,12 +544,12 @@
                 };
                 this.refreshQuote();
             },
-            incrementQuantity() {
-                this.quantity = this.normalizedQuantityValue() + 1;
-                this.refreshQuote();
-            },
-            decrementQuantity() {
-                this.quantity = Math.max(this.minQuantity, this.normalizedQuantityValue() - 1);
+            adjustQuantity(delta) {
+                const step = Number(delta);
+                const current = this.normalizedQuantityValue();
+                const nextQuantity = current + (Number.isFinite(step) ? step : 0);
+
+                this.quantity = Math.max(this.minQuantity, nextQuantity);
                 this.refreshQuote();
             },
             normalizeQuantity() {
@@ -558,35 +560,6 @@
                 const quantity = parseInt(this.quantity, 10);
 
                 return Number.isFinite(quantity) ? Math.max(this.minQuantity, quantity) : this.minQuantity;
-            },
-            sortedQuantityOptions() {
-                return [...new Set((this.quantityOptions || [])
-                    .map((quantity) => parseInt(quantity, 10))
-                    .filter((quantity) => Number.isFinite(quantity) && quantity >= this.minQuantity))]
-                    .sort((first, second) => first - second);
-            },
-            fallbackQuantityStep() {
-                const options = this.sortedQuantityOptions();
-
-                if (options.length >= 2) {
-                    return Math.max(1, options[1] - options[0]);
-                }
-
-                return Math.max(1, this.minQuantity);
-            },
-            nextQuantity(direction) {
-                const current = this.normalizedQuantityValue();
-                const options = this.sortedQuantityOptions();
-
-                if (options.length) {
-                    if (direction > 0) {
-                        return options.find((quantity) => quantity > current) || current + this.fallbackQuantityStep();
-                    }
-
-                    return [...options].reverse().find((quantity) => quantity < current) || this.minQuantity;
-                }
-
-                return Math.max(this.minQuantity, current + (direction * this.fallbackQuantityStep()));
             },
             async refreshQuote() {
                 this.normalizeQuantity();
