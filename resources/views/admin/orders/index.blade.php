@@ -3,8 +3,8 @@
 @section('heading', 'Orders')
 
 @section('content')
-<form method="GET" class="mb-4 flex items-center gap-2">
-    <select name="status" class="rounded-xl border-slate-300 text-sm">
+<form method="GET" class="mb-4 flex flex-wrap items-center gap-2">
+    <select name="status" class="min-w-0 flex-1 rounded-xl border-slate-300 text-sm sm:flex-none">
         <option value="">All statuses</option>
         @foreach(['pending','processing','printing','shipped','completed','cancelled'] as $s)
             <option value="{{ $s }}" @selected($status === $s)>{{ ucfirst($s) }}</option>
@@ -12,8 +12,9 @@
     </select>
     <button class="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white">Filter</button>
 </form>
-<div class="rounded-xl bg-white p-5 shadow-sm">
-    <table class="w-full text-left text-sm">
+<div class="rounded-xl bg-white p-4 shadow-sm sm:p-5">
+    <div class="overflow-x-auto">
+    <table class="min-w-[44rem] w-full text-left text-sm">
         <thead><tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500"><th class="py-2">Order</th><th>Customer</th><th>Status</th><th>Total</th><th></th></tr></thead>
         <tbody>
             @foreach($orders as $order)
@@ -36,6 +37,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
     <div class="mt-4">{{ $orders->links() }}</div>
 </div>
 @endsection

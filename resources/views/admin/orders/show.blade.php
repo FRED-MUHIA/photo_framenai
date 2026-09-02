@@ -8,7 +8,7 @@
         <h2 class="text-lg font-bold">{{ $order->order_number }}</h2>
         <p class="text-sm text-slate-500">{{ $order->customer_name }} | {{ $order->customer_email }}</p>
         <div class="mt-5 overflow-x-auto">
-            <table class="w-full text-left text-sm">
+            <table class="min-w-[48rem] w-full text-left text-sm">
                 <thead><tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500"><th class="py-2">Product</th><th>Qty</th><th>Unit</th><th>Total</th><th>Delivery Date</th><th>Artwork</th></tr></thead>
                 <tbody>
                     @foreach($order->items as $item)

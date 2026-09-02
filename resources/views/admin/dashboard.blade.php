@@ -14,7 +14,7 @@
 <div class="mt-6 rounded-xl bg-white p-5 shadow-sm">
     <h2 class="text-lg font-bold">Recent Orders</h2>
     <div class="mt-3 overflow-x-auto">
-        <table class="w-full text-left text-sm">
+        <table class="min-w-[40rem] w-full text-left text-sm">
             <thead><tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500"><th class="py-2">Order</th><th>Status</th><th>Total</th><th>Date</th><th></th></tr></thead>
             <tbody>
                 @forelse($recentOrders as $order)

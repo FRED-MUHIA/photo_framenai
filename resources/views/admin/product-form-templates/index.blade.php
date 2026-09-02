@@ -6,7 +6,7 @@
 <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
     <p class="text-sm text-slate-600">Create reusable calculator forms for print services, then attach them to products.</p>
     @if(empty($missingMigration))
-        <a href="{{ route('admin.product-form-templates.create') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">Create Form</a>
+        <a href="{{ route('admin.product-form-templates.create') }}" class="w-full rounded-xl bg-slate-900 px-4 py-2 text-center text-sm font-bold text-white sm:w-auto">Create Form</a>
     @endif
 </div>
 
@@ -16,8 +16,8 @@
     </div>
 @endif
 
-<div class="overflow-hidden rounded-xl bg-white shadow-sm">
-    <table class="w-full text-left text-sm">
+<div class="overflow-x-auto rounded-xl bg-white shadow-sm">
+    <table class="min-w-[42rem] w-full text-left text-sm">
         <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
             <tr>
                 <th class="px-4 py-3">Name</th>

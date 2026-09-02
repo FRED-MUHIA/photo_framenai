@@ -4,11 +4,12 @@
 
 @section('content')
 <div class="mb-4 flex justify-end">
-    <a href="{{ route('admin.blog-posts.create') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">New Blog Post</a>
+    <a href="{{ route('admin.blog-posts.create') }}" class="w-full rounded-xl bg-slate-900 px-4 py-2 text-center text-sm font-bold text-white sm:w-auto">New Blog Post</a>
 </div>
 
-<div class="rounded-xl bg-white p-5 shadow-sm">
-    <table class="w-full text-left text-sm">
+<div class="rounded-xl bg-white p-4 shadow-sm sm:p-5">
+    <div class="overflow-x-auto">
+    <table class="min-w-[44rem] w-full text-left text-sm">
         <thead>
             <tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500">
                 <th class="py-2">Title</th>
@@ -39,6 +40,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
     <div class="mt-4">{{ $posts->links() }}</div>
 </div>
 @endsection

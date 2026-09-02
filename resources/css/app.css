@@ -113,6 +113,10 @@
 }
 
 @layer components {
+    [x-cloak] {
+        display: none !important;
+    }
+
     .rich-text-editor {
         overflow-wrap: anywhere;
     }

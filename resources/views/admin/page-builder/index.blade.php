@@ -4,11 +4,12 @@
 
 @section('content')
 <div class="mb-4 flex justify-end">
-    <a href="{{ route('admin.page-builder.create') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">Create Page</a>
+    <a href="{{ route('admin.page-builder.create') }}" class="w-full rounded-xl bg-slate-900 px-4 py-2 text-center text-sm font-bold text-white sm:w-auto">Create Page</a>
 </div>
 
-<div class="rounded-xl bg-white p-5 shadow-sm">
-    <table class="w-full text-left text-sm">
+<div class="rounded-xl bg-white p-4 shadow-sm sm:p-5">
+    <div class="overflow-x-auto">
+    <table class="min-w-[44rem] w-full text-left text-sm">
         <thead>
             <tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500">
                 <th class="py-2">Page</th>
@@ -41,6 +42,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
     <div class="mt-4">{{ $pages->links() }}</div>
 </div>
 @endsection

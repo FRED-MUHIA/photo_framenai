@@ -4,10 +4,11 @@
 
 @section('content')
 <div class="mb-4 flex justify-end">
-    <a href="{{ route('admin.products.create') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">Add Product</a>
+    <a href="{{ route('admin.products.create') }}" class="w-full rounded-xl bg-slate-900 px-4 py-2 text-center text-sm font-bold text-white sm:w-auto">Add Product</a>
 </div>
-<div class="rounded-xl bg-white p-5 shadow-sm">
-    <table class="w-full text-left text-sm">
+<div class="rounded-xl bg-white p-4 shadow-sm sm:p-5">
+    <div class="overflow-x-auto">
+    <table class="min-w-[52rem] w-full text-left text-sm">
         <thead><tr class="border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500"><th class="py-2">Name</th><th>Categories</th><th>Tags</th><th>Base Price</th><th>Status</th><th></th></tr></thead>
         <tbody>
             @foreach($products as $product)
@@ -43,6 +44,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
     <div class="mt-4">{{ $products->links() }}</div>
 </div>
 @endsection
