@@ -1174,6 +1174,33 @@
             min-width: 168px;
         }
     }
+    .pet-promo-slide:has(.promo-gallery) .pet-promo-content { width: 34%; margin-left: 28%; margin-right: 38%; }
+    .promo-gallery { position: absolute; top: 24px; bottom: 24px; right: 2%; z-index: 4; width: 35%; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; overflow: hidden; border-radius: 18px; }
+    .promo-column { min-width: 0; overflow: hidden; }
+    .promo-track { animation: promo-up 36s linear infinite; }
+    .promo-track.is-down { animation-direction: reverse; }
+    .promo-group { display: grid; gap: 18px; padding-bottom: 18px; }
+    .promo-tile { position: relative; display: block; aspect-ratio: 1; overflow: hidden; border-radius: 16px; background: #edd4c5; color: white; text-decoration: none; }
+    .promo-tile img { width: 100%; height: 100%; object-fit: cover; }
+    .promo-tile > span { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; gap: 5px; padding: 16px 10px; background: linear-gradient(transparent 35%,rgba(0,0,0,.78)); font-size: clamp(14px,1.35vw,22px); font-weight: 700; line-height: 1.2; text-align: center; }
+    .promo-tile:focus-visible { outline: 3px solid white; outline-offset: -4px; }
+    .promo-gallery:is(:hover,:focus-within,.is-touching) .promo-track { animation-play-state: paused; }
+    @keyframes promo-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+    @media(max-width:900px) {
+        .pet-promo-slide:has(.promo-gallery) .pet-promo-content { width: 54%; margin-left: 0; margin-right: 46%; padding-inline: 20px; }
+        .promo-gallery { width: 43%; gap: 12px; }
+        .pet-promo-slide:has(.promo-gallery) .pet-promo-dog { opacity: .2; }
+    }
+    @media(max-width:640px) {
+        .pet-promo-slide:has(.promo-gallery) .pet-promo-content { width: 100%; margin: 0; padding-bottom: 28px; }
+        .promo-gallery { position: relative; top: auto; right: auto; bottom: auto; width: calc(100% - 32px); height: 340px; margin: 0 16px 24px; }
+        .promo-tile > span { font-size: 16px; }
+    }
+    @media(prefers-reduced-motion:reduce) {
+        .promo-track { animation: none; }
+        .promo-column { overflow-y: auto; }
+        .promo-group[aria-hidden] { display: none; }
+    }
 </style>
 @endpush
 
@@ -1407,25 +1434,31 @@
             <a href="{{ $petPromoButtonUrl }}" class="pet-promo-button">{{ $petPromoButtonLabel }}</a>
         @endif
     </div>
-    <div class="pet-promo-products" aria-hidden="true">
-        @foreach($petPromoItems->slice(1, 1) as $item)
+    @if($sliderProducts->isNotEmpty())
+    <div class="promo-gallery" aria-label="Explore products">
+        @foreach([0, 1] as $column)
             @php
-                $itemImage = data_get($item, 'image_url', '');
-                $itemImageUrl = $displayImage($itemImage, 420, 64);
+                $items = $sliderProducts->filter(fn ($product, $index) => $index % 2 === $column)->values();
+                if ($items->isEmpty()) $items = $sliderProducts->values();
+                while ($items->count() < 4) $items = $items->concat($items)->values();
             @endphp
-            <div class="pet-promo-bag {{ $itemImageUrl ? 'has-image' : '' }}" style="background-color: {{ data_get($item, 'bg_color', '#f0c51e') }}; color: {{ data_get($item, 'text_color', '#173447') }};">
-                @if($itemImageUrl)
-                    <img loading="eager" fetchpriority="high" decoding="async" src="{{ $itemImageUrl }}" alt="" class="pet-promo-bag-image">
-                @else
-                    <span class="pet-promo-badge"></span>
-                    <span class="pet-promo-logo">{{ data_get($item, 'subtitle', 'BIXBI') }}</span>
-                    <span class="pet-promo-bag-title">{{ data_get($item, 'title', 'HIP & JOINT') }}</span>
-                    <span class="pet-promo-flavor">{{ data_get($item, 'content', '') }}</span>
-                    <span class="pet-promo-window"></span>
-                @endif
+            <div class="promo-column">
+                <div class="promo-track {{ $column ? 'is-down' : '' }}">
+                    @foreach([false, true] as $duplicate)
+                        <div class="promo-group" @if($duplicate) aria-hidden="true" inert @endif>
+                            @foreach($items as $product)
+                                <a class="promo-tile" href="{{ route('products.show', $product) }}" @if($duplicate) tabindex="-1" @endif>
+                                    <img src="{{ $displayImage($product->thumbnail, 480, 70) }}" alt="" decoding="async">
+                                    <span>{{ $product->name }} <b aria-hidden="true">▷</b></span>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
             </div>
         @endforeach
     </div>
+    @endif
 </section>
 
 <section class="home-wrap py-6">
@@ -1657,6 +1690,13 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.promo-gallery').forEach((gallery) => {
+            gallery.addEventListener('pointerdown', () => gallery.classList.add('is-touching'));
+            const resume = () => gallery.classList.remove('is-touching');
+            window.addEventListener('pointerup', resume);
+            window.addEventListener('pointercancel', resume);
+            window.addEventListener('blur', resume);
+        });
         const dogImage = document.querySelector('.pet-promo-dog');
 
         if (dogImage) {

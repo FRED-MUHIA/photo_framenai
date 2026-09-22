@@ -37,12 +37,16 @@ class HomeController extends Controller
             ->take(12)
             ->get();
 
+        $sliderProducts = Product::query()->active()
+            ->whereNotNull('thumbnail')->where('thumbnail', '!=', '')
+            ->inRandomOrder()->take(8)->get();
+
         $latestBlogPosts = BlogPost::query()
             ->published()
             ->latest('published_at')
             ->take(3)
             ->get(['title', 'slug', 'excerpt', 'published_at']);
 
-        return view('home', compact('categories', 'featuredProducts', 'topPickProducts', 'latestBlogPosts', 'homeSections', 'cmsHome'));
+        return view('home', compact('categories', 'featuredProducts', 'topPickProducts', 'sliderProducts', 'latestBlogPosts', 'homeSections', 'cmsHome'));
     }
 }
