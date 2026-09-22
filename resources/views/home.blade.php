@@ -1182,7 +1182,7 @@
     .promo-group { display: grid; gap: 18px; padding-bottom: 18px; }
     .promo-tile { position: relative; display: block; aspect-ratio: 1; overflow: hidden; border-radius: 16px; background: #edd4c5; color: white; text-decoration: none; }
     .promo-tile img { width: 100%; height: 100%; object-fit: cover; }
-    .promo-tile > span { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; gap: 5px; padding: 16px 10px; background: linear-gradient(transparent 35%,rgba(0,0,0,.78)); font-size: clamp(12px,1vw,16px); font-weight: 700; line-height: 1.3; text-align: center; }
+    .promo-tile > span { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; gap: 5px; padding: 16px 10px; background: linear-gradient(transparent 55%,rgba(0,0,0,.12) 72%,rgba(0,0,0,.48)); text-shadow: 0 1px 3px rgba(0,0,0,.9); font-size: clamp(12px,1vw,16px); font-weight: 700; line-height: 1.3; text-align: center; }
     .promo-tile:focus-visible { outline: 3px solid white; outline-offset: -4px; }
     .promo-gallery:is(:hover,:focus-within,.is-touching) .promo-track { animation-play-state: paused; }
     @keyframes promo-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
