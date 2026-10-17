@@ -15,12 +15,17 @@ class ImageOptimizer
         [180, 60],
         [360, 62],
         [420, 64],
+        [480, 70],
         [520, 64],
+        [520, 66],
         [560, 64],
         [640, 66],
         [700, 70],
+        [900, 70],
         [1100, 70],
         [1200, 80],
+        [1200, 66],
+        [1600, 70],
         [1600, 78],
     ];
 
@@ -53,6 +58,8 @@ class ImageOptimizer
 
     public static function optimizePublicPath(string $relativePath, int $maxDimension = 1600, int $quality = 78): ?string
     {
+        $maxDimension = max(120, $maxDimension);
+        $quality = min(95, max(40, $quality));
         $relativePath = self::normalizeRelativePath($relativePath);
 
         if (! self::isOptimizable($relativePath)) {
@@ -90,18 +97,91 @@ class ImageOptimizer
             $process->setTimeout(60);
             $process->run();
         } catch (Throwable) {
-            @unlink($targetPath);
-
-            return null;
+            return self::optimizeWithGd($sourcePath, $targetPath, $maxDimension, $quality)
+                ? $targetRelativePath : null;
         }
 
         if (! $process->isSuccessful() || ! is_file($targetPath)) {
-            @unlink($targetPath);
-
-            return null;
+            return self::optimizeWithGd($sourcePath, $targetPath, $maxDimension, $quality)
+                ? $targetRelativePath : null;
         }
 
         return $targetRelativePath;
+    }
+
+    private static function optimizeWithGd(string $sourcePath, string $targetPath, int $maxDimension, int $quality): bool
+    {
+        if (! function_exists('imagewebp')) {
+            return false;
+        }
+
+        $size = @getimagesize($sourcePath);
+        // Bound decoding memory on shared hosting; leave large originals untouched.
+        if (! $size || $size[0] * $size[1] > 12000000) {
+            return false;
+        }
+        $memoryLimit = trim((string) ini_get('memory_limit'));
+        $unit = strtolower(substr($memoryLimit, -1));
+        $limitBytes = (int) $memoryLimit * match ($unit) {
+            'g' => 1024 ** 3,
+            'm' => 1024 ** 2,
+            'k' => 1024,
+            default => 1,
+        };
+        if ($limitBytes > 0 && memory_get_usage(true) + $size[0] * $size[1] * 12 + 8388608 > $limitBytes) {
+            return false;
+        }
+        $source = $resized = null;
+        $temporary = null;
+
+        try {
+            $source = match ($size[2]) {
+                IMAGETYPE_JPEG => @imagecreatefromjpeg($sourcePath),
+                IMAGETYPE_PNG => @imagecreatefrompng($sourcePath),
+                IMAGETYPE_WEBP => @imagecreatefromwebp($sourcePath),
+                default => false,
+            };
+            if (! $source) {
+                return false;
+            }
+            if ($size[2] === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
+                $exif = @exif_read_data($sourcePath);
+                // Keep orientation-sensitive photographs on the Sharp path.
+                if (($exif['Orientation'] ?? 1) != 1) {
+                    return false;
+                }
+            }
+            $scale = min(1, $maxDimension / max($size[0], $size[1]));
+            $width = max(1, (int) round($size[0] * $scale));
+            $height = max(1, (int) round($size[1] * $scale));
+            $resized = imagecreatetruecolor($width, $height);
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            imagecopyresampled($resized, $source, 0, 0, 0, 0, $width, $height, $size[0], $size[1]);
+            if (! is_dir(dirname($targetPath)) && ! @mkdir(dirname($targetPath), 0755, true) && ! is_dir(dirname($targetPath))) {
+                return false;
+            }
+            $temporary = tempnam(dirname($targetPath), 'webp-');
+            if (! $temporary || ! imagewebp($resized, $temporary, $quality)
+                || filesize($temporary) === 0 || filesize($temporary) >= filesize($sourcePath)) {
+                return false;
+            }
+            chmod($temporary, 0644);
+
+            return rename($temporary, $targetPath);
+        } catch (Throwable) {
+            return false;
+        } finally {
+            if ($source) {
+                imagedestroy($source);
+            }
+            if ($resized) {
+                imagedestroy($resized);
+            }
+            if ($temporary && is_file($temporary)) {
+                @unlink($temporary);
+            }
+        }
     }
 
     public static function optimizeCommonPublicVariants(string $relativePath, ?array $extraVariants = null): array

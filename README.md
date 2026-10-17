@@ -136,5 +136,25 @@ php artisan serve
 - Use Redis queue and workers for upload processing
 - Add policy classes for stricter ownership checks
 - Add feature tests for cart/checkout/admin workflows
-- Add image optimization/CDN for media performance
+- Optionally add a CDN for media delivery
+
+## Production image optimization
+
+After deploying code and uploading the original images, run on the server:
+
+```sh
+php artisan storage:link
+php artisan images:optimize-public
+php artisan view:clear
+```
+
+This generates cached WebP sizes used by the storefront without changing originals.
+Run optimization on the destination server: cached filenames include the original
+file's modification time, which may change during transfer. New admin uploads
+generate variants automatically. Node.js with `npm ci --omit=dev` provides Sharp;
+PHP GD with WebP support is the fallback when Node.js is unavailable. Large or
+orientation-sensitive images require Sharp. Image conversion never runs during
+storefront page requests. Ensure `public/storage` serves files directly and
+`storage/app/public` is writable by PHP. Apache cache headers are already configured
+in `public/.htaccess`; equivalent cache configuration is needed when using Nginx.
 # Nai-Printaz
