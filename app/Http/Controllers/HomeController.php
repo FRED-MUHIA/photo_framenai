@@ -29,13 +29,19 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
-        $topPickProducts = Product::query()
+        $topPickProducts = Category::query()
             ->active()
-            ->with(['category', 'categories'])
-            ->orderByDesc('is_featured')
-            ->latest()
-            ->take(12)
-            ->get();
+            ->with(['products' => function ($query) {
+                $query->active()->with(['category', 'categories'])->inRandomOrder()->take(4);
+            }, 'linkedProducts' => function ($query) {
+                $query->active()->with(['category', 'categories'])->inRandomOrder()->take(4);
+            }])
+            ->get()
+            ->flatMap(fn (Category $category) => $category->products->concat($category->linkedProducts))
+            ->unique('id')
+            ->shuffle()
+            ->take(16)
+            ->values();
 
         $sliderProducts = Product::query()->active()
             ->whereNotNull('thumbnail')->where('thumbnail', '!=', '')

@@ -1559,27 +1559,6 @@
         </div>
     </section>
 
-    <section class="mt-10 bg-white px-4 py-5">
-        <h2 class="section-title mb-4">{{ data_get($productTilesSection, 'title', 'Discover our huge variety of products') }}</h2>
-        <div class="thumb-grid-4">
-            @foreach($productTiles as $tile)
-                @php
-                    $imageLoading = $loop->first ? 'eager' : 'lazy';
-                    $imagePriority = $loop->first ? 'high' : 'auto';
-                @endphp
-                <a href="{{ data_get($tile, 'url', route('products.index')) }}" class="product-showcase-card">
-                    <div class="product-showcase-media">
-                        <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $displayImage($tile['image'], 560, 64) }}" alt="{{ $tile['name'] }}">
-                    </div>
-                    <h3 class="product-showcase-title">{{ $tile['name'] }}</h3>
-                    @if(! empty($tile['description']))
-                        <p class="product-showcase-description">{{ strip_tags($tile['description']) }}</p>
-                    @endif
-                </a>
-            @endforeach
-        </div>
-    </section>
-
     </section>
 
 <section class="top-picks-section" style="background: {{ data_get($topPicksSection, 'bg_color', '#ffffff') }}; color: {{ data_get($topPicksSection, 'text_color', '#001f3f') }};">
@@ -1623,6 +1602,27 @@
                 <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
             </button>
         </div>
+    </div>
+</section>
+
+<section class="home-wrap mt-10 bg-white px-4 py-5">
+    <h2 class="section-title mb-4">{{ data_get($productTilesSection, 'title', 'Discover our huge variety of products') }}</h2>
+    <div class="thumb-grid-4">
+        @foreach($productTiles as $tile)
+            @php
+                $imageLoading = $loop->first ? 'eager' : 'lazy';
+                $imagePriority = $loop->first ? 'high' : 'auto';
+            @endphp
+            <a href="{{ data_get($tile, 'url', route('products.index')) }}" class="product-showcase-card">
+                <div class="product-showcase-media">
+                    <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $displayImage($tile['image'], 560, 64) }}" alt="{{ $tile['name'] }}">
+                </div>
+                <h3 class="product-showcase-title">{{ $tile['name'] }}</h3>
+                @if(! empty($tile['description']))
+                    <p class="product-showcase-description">{{ strip_tags($tile['description']) }}</p>
+                @endif
+            </a>
+        @endforeach
     </div>
 </section>
 
