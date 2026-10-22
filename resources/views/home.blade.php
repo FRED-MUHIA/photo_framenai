@@ -515,10 +515,13 @@
     }
 
     .top-picks-row {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        display: flex;
         gap: 18px;
-        overflow: visible;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
     }
 
     .top-picks-row::-webkit-scrollbar {
@@ -528,6 +531,7 @@
     .top-pick-card {
         display: flex;
         flex-direction: column;
+        flex: 0 0 calc((100% - 54px) / 4);
         min-width: 0;
         min-height: 0;
         overflow: hidden;
@@ -537,6 +541,7 @@
         color: #111;
         text-decoration: none;
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+        scroll-snap-align: start;
     }
 
     .top-pick-media {
@@ -927,7 +932,7 @@
         .icon-grid-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .thumb-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .thumb-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .top-picks-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .top-pick-card { flex-basis: calc((100% - 36px) / 3); }
         .top-pick-footer {
             align-items: stretch;
             flex-direction: column;
@@ -1057,9 +1062,10 @@
         }
 
         .top-picks-row {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 12px;
         }
+
+        .top-pick-card { flex-basis: calc((100% - 12px) / 2); }
 
         .top-pick-card {
             border-radius: 14px;
@@ -1728,7 +1734,7 @@
 
             const scrollByCard = (direction) => {
                 const card = track.querySelector('.top-pick-card');
-                const gap = 20;
+                const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
                 const distance = card ? card.getBoundingClientRect().width + gap : track.clientWidth;
 
                 track.scrollBy({
@@ -1741,10 +1747,15 @@
             next.addEventListener('click', () => scrollByCard(1));
 
             let autoplayTimer;
+            let autoplayPaused = false;
             const stopAutoplay = () => window.clearInterval(autoplayTimer);
             const startAutoplay = () => {
                 stopAutoplay();
                 autoplayTimer = window.setInterval(() => {
+                    if (autoplayPaused || track.scrollWidth <= track.clientWidth + 2) {
+                        return;
+                    }
+
                     const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
 
                     if (atEnd) {
@@ -1756,10 +1767,10 @@
                 }, 3500);
             };
 
-            slider.addEventListener('mouseenter', stopAutoplay);
-            slider.addEventListener('mouseleave', startAutoplay);
-            slider.addEventListener('focusin', stopAutoplay);
-            slider.addEventListener('focusout', startAutoplay);
+            slider.addEventListener('mouseenter', () => { autoplayPaused = true; });
+            slider.addEventListener('mouseleave', () => { autoplayPaused = false; });
+            slider.addEventListener('focusin', () => { autoplayPaused = true; });
+            slider.addEventListener('focusout', () => { autoplayPaused = false; });
             startAutoplay();
         });
     });
