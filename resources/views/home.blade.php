@@ -1739,6 +1739,28 @@
 
             previous.addEventListener('click', () => scrollByCard(-1));
             next.addEventListener('click', () => scrollByCard(1));
+
+            let autoplayTimer;
+            const stopAutoplay = () => window.clearInterval(autoplayTimer);
+            const startAutoplay = () => {
+                stopAutoplay();
+                autoplayTimer = window.setInterval(() => {
+                    const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+
+                    if (atEnd) {
+                        track.scrollTo({ left: 0, behavior: 'smooth' });
+                        return;
+                    }
+
+                    scrollByCard(1);
+                }, 3500);
+            };
+
+            slider.addEventListener('mouseenter', stopAutoplay);
+            slider.addEventListener('mouseleave', startAutoplay);
+            slider.addEventListener('focusin', stopAutoplay);
+            slider.addEventListener('focusout', startAutoplay);
+            startAutoplay();
         });
     });
 </script>
