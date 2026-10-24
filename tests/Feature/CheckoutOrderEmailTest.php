@@ -43,8 +43,8 @@ class CheckoutOrderEmailTest extends TestCase
             $mail->build();
 
             return $mail->hasTo('customer@example.com')
-                && $mail->hasFrom('info@naiprinters.co.ke')
-                && $mail->hasReplyTo('info@naiprinters.co.ke')
+                && $mail->hasFrom('info@photoframes.co.ke')
+                && $mail->hasReplyTo('info@photoframes.co.ke')
                 && empty($mail->attachments)
                 && empty($mail->rawAttachments)
                 && empty($mail->diskAttachments);
@@ -53,9 +53,9 @@ class CheckoutOrderEmailTest extends TestCase
         Mail::assertSent(NewOrderPlacedMail::class, function ($mail) {
             $mail->build();
 
-            return $mail->hasTo('info@naiprinters.co.ke')
-                && $mail->hasFrom('info@naiprinters.co.ke')
-                && $mail->hasReplyTo('info@naiprinters.co.ke');
+            return $mail->hasTo('info@photoframes.co.ke')
+                && $mail->hasFrom('info@photoframes.co.ke')
+                && $mail->hasReplyTo('info@photoframes.co.ke');
         });
     }
 
@@ -85,7 +85,7 @@ class CheckoutOrderEmailTest extends TestCase
 
         $mail->build();
 
-        $this->assertTrue($mail->hasFrom('info@naiprinters.co.ke'));
-        $this->assertTrue($mail->hasReplyTo('info@naiprinters.co.ke'));
+        $this->assertTrue($mail->hasFrom('info@photoframes.co.ke'));
+        $this->assertTrue($mail->hasReplyTo('info@photoframes.co.ke'));
     }
 }

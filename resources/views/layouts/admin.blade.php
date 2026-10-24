@@ -35,7 +35,7 @@
     <div class="flex min-h-screen">
         <aside class="hidden w-64 border-r border-slate-200 bg-white p-6 lg:block">
             <a href="{{ route('admin.dashboard') }}" class="mb-8 inline-flex items-center gap-2 text-lg font-extrabold">
-                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white">NP</span>
+                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white">PF</span>
                 Admin
             </a>
             <nav class="space-y-1 text-sm font-semibold text-slate-700">

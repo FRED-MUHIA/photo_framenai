@@ -18,7 +18,7 @@
         'image' => \App\Support\PublicAssetUrl::resolve($post->cover_image),
         'publisher' => [
             '@type' => 'Organization',
-            'name' => config('app.name', 'Nai Printers'),
+            'name' => config('app.name', 'Photo Frames'),
         ],
     ];
 @endphp

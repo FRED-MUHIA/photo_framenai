@@ -19,7 +19,7 @@ class BusinessStationeryRequestEmailTest extends TestCase
         $this->post(route('pages.business-stationery-request'), [
             'page_title' => 'Custom Receipts',
             'page_slug' => 'custom-receipts',
-            'request_url' => 'https://naiprinters.co.ke/custom-receipts',
+            'request_url' => 'https://photoframes.co.ke/custom-receipts',
             'full_name' => 'Test Client',
             'email' => 'client@example.com',
             'phone' => '0700000000',
@@ -29,8 +29,8 @@ class BusinessStationeryRequestEmailTest extends TestCase
         Mail::assertSent(BusinessStationeryRequestMail::class, function ($mail) {
             $mail->build();
 
-            return $mail->hasTo('info@naiprinters.co.ke')
-                && $mail->hasFrom('info@naiprinters.co.ke')
+            return $mail->hasTo('info@photoframes.co.ke')
+                && $mail->hasFrom('info@photoframes.co.ke')
                 && $mail->hasReplyTo('client@example.com');
         });
 
@@ -38,8 +38,8 @@ class BusinessStationeryRequestEmailTest extends TestCase
             $mail->build();
 
             return $mail->hasTo('client@example.com')
-                && $mail->hasFrom('info@naiprinters.co.ke')
-                && $mail->hasReplyTo('info@naiprinters.co.ke');
+                && $mail->hasFrom('info@photoframes.co.ke')
+                && $mail->hasReplyTo('info@photoframes.co.ke');
         });
     }
 

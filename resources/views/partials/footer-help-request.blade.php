@@ -1,6 +1,6 @@
 @php
     $requestRouteName = optional(request()->route())->getName() ?: 'current-page';
-    $requestTitle = trim($__env->yieldContent('meta_title')) ?: config('app.name', 'Nai Printers');
+    $requestTitle = trim($__env->yieldContent('meta_title')) ?: config('app.name', 'Photo Frames');
     $solutionOptions = [
         'Shop board / logo signage',
         'Office or wall branding',

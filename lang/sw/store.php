@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'brand' => 'Nai Printers',
+    'brand' => 'Photo Frames',
     'print_now' => 'Chapisha Sasa',
     'products' => 'Bidhaa',
     'help' => 'Msaada',

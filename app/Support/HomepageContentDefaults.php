@@ -10,7 +10,7 @@ class HomepageContentDefaults
             [
                 'component' => 'home_pet_promo',
                 'title' => 'Online printing',
-                'subtitle' => 'With Nai Print',
+                'subtitle' => 'With Photo Frames',
                 'content' => 'Ideal for business cards, flyers, banners, and branded apparel with nationwide delivery',
                 'image_url' => '/storage/media-library/pet-promo-dog.jpg',
                 'button_label' => 'Print Now',

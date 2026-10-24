@@ -1,8 +1,8 @@
-# photo_framenai
+# Photo Frames
 
-Nai Printers - Web-to-Print eCommerce (Laravel + Blade + Tailwind + Alpine)
+Photo Frames - Web-to-Print eCommerce (Laravel + Blade + Tailwind + Alpine)
 
-Nai Printers is a complete online printing platform inspired by onlineprinters-style workflows. It supports product configuration, live pricing, artwork uploads, cart/checkout, customer dashboard, and admin operations.
+Photo Frames is a complete online printing platform inspired by onlineprinters-style workflows. It supports product configuration, live pricing, artwork uploads, cart/checkout, customer dashboard, and admin operations.
 
 ## Core Features
 
@@ -102,7 +102,7 @@ php artisan serve
 ## Seeded Accounts
 
 - Admin user:
-  - Email: `admin@naiprinters.test`
+  - Email: `admin@photoframes.co.ke`
   - Password: `password`
 
 ## Important Routes
@@ -157,4 +157,4 @@ orientation-sensitive images require Sharp. Image conversion never runs during
 storefront page requests. Ensure `public/storage` serves files directly and
 `storage/app/public` is writable by PHP. Apache cache headers are already configured
 in `public/.htaccess`; equivalent cache configuration is needed when using Nginx.
-# Nai-Printaz
+# Photo Frames

@@ -47,7 +47,7 @@ class BusinessStationeryRequestController extends Controller
         }
 
         try {
-            Mail::to('info@naiprinters.co.ke')->send(new BusinessStationeryRequestMail(
+            Mail::to('info@photoframes.co.ke')->send(new BusinessStationeryRequestMail(
                 pageTitle: $validated['page_title'],
                 pageSlug: $validated['page_slug'],
                 requestUrl: $validated['request_url'] ?? $request->fullUrl(),

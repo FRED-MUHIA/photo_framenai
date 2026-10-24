@@ -98,8 +98,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'info@naiprinters.co.ke'),
-        'name' => env('MAIL_FROM_NAME', 'Nai Printers'),
+        'address' => env('MAIL_FROM_ADDRESS', 'info@photoframes.co.ke'),
+        'name' => env('MAIL_FROM_NAME', 'Photo Frames'),
     ],
 
     /*

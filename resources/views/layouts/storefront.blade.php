@@ -7,7 +7,7 @@
     @php
         $storefrontBreadcrumbs = \App\Support\StorefrontBreadcrumbs::forCurrentRequest(request());
         $metaTitle = trim($__env->yieldContent('meta_title'))
-            ?: config('app.name', 'Nai Printers') . ' | ' . config('app.tagline');
+            ?: config('app.name', 'Photo Frames') . ' | ' . config('app.tagline');
         $metaDescription = trim($__env->yieldContent('meta_description')) ?: config('app.tagline');
         $metaRobots = trim($__env->yieldContent('meta_robots')) ?: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
         $configuredRoot = rtrim((string) config('seo.site_url'), '/');
@@ -26,7 +26,7 @@
         <meta name="keywords" content="{{ trim($__env->yieldContent('meta_keywords')) }}">
     @endif
     <link rel="canonical" href="{{ $canonicalUrl }}">
-    <meta property="og:site_name" content="{{ config('app.name', 'Nai Printers') }}">
+    <meta property="og:site_name" content="{{ config('app.name', 'Photo Frames') }}">
     <meta property="og:type" content="{{ $metaType }}">
     <meta property="og:title" content="{{ $metaTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
@@ -54,7 +54,7 @@
         {
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": @json(config('app.name', 'Nai Printers')),
+            "name": @json(config('app.name', 'Photo Frames')),
             "url": "{{ rtrim(config('seo.site_url'), '/') }}/",
             "logo": "{{ $faviconUrl }}",
             "sameAs": ["{{ $siteSettings->get('whatsapp_link', config('shop.whatsapp_link')) }}"]

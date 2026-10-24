@@ -12,13 +12,13 @@ class EnsureAdminUser extends Command
         {--email= : Admin email address}
         {--username= : Admin username}
         {--password= : Admin password}
-        {--name=Nai Printers Admin : Admin display name}';
+        {--name=Photo Frames Admin : Admin display name}';
 
     protected $description = 'Create or update the admin login account.';
 
     public function handle(): int
     {
-        $email = (string) ($this->option('email') ?: env('ADMIN_EMAIL', 'admin@naiprinters.co.ke'));
+        $email = (string) ($this->option('email') ?: env('ADMIN_EMAIL', 'admin@photoframes.co.ke'));
         $username = (string) ($this->option('username') ?: env('ADMIN_USERNAME', 'Govoh'));
         $password = (string) ($this->option('password') ?: env('ADMIN_PASSWORD', 'robba8688@Fred'));
         $name = (string) $this->option('name');

@@ -23,7 +23,7 @@ class TrustHosts extends Middleware
         }
 
         return [
-            '^naiprinters\.co\.ke$',
+            '^photoframes\.co\.ke$',
         ];
     }
 }

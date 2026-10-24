@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('meta_title', ($cmsHome?->meta_title ?: config('app.name', 'Nai Printers')) . ' | ' . config('app.tagline'))
+@section('meta_title', ($cmsHome?->meta_title ?: config('app.name', 'Photo Frames')) . ' | ' . config('app.tagline'))
 @section('meta_description', $cmsHome?->meta_description ?: config('app.tagline'))
 
 @push('head')
@@ -1258,7 +1258,7 @@
     $petPromoTitleParts = preg_split('/\s+/', $petPromoTitle, 2) ?: ['Online', 'printing'];
     $petPromoTitleAccent = $petPromoTitleParts[0] ?? '';
     $petPromoTitleRest = $petPromoTitleParts[1] ?? '';
-    $petPromoSubtitle = data_get($petPromoSection, 'subtitle', 'With Nai Print');
+    $petPromoSubtitle = data_get($petPromoSection, 'subtitle', 'With Photo Frames');
     $petPromoCopy = data_get($petPromoSection, 'content', 'Ideal for business cards, flyers, banners, and branded apparel with nationwide delivery');
     $petPromoButtonLabel = data_get($petPromoSection, 'button_label', 'Print Now');
     $petPromoButtonUrl = data_get($petPromoSection, 'button_url', route('products.index'));

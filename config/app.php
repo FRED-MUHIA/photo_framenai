@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Nai Printers'),
+    'name' => env('APP_NAME', 'Photo Frames'),
 
     'tagline' => env(
         'APP_TAGLINE',
-        'Online Printers Kenya, Ideal for business cards, flyers, banners, and branded apparel with nationwide delivery'
+        'Photo frames and personalized prints in Kenya, with nationwide delivery'
     ),
 
     /*

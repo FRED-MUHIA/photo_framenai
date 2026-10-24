@@ -16,7 +16,7 @@ class ContactContentDefaults
             [
                 'component' => 'contact_channels',
                 'title' => 'Direct Channels',
-                'content' => "Email: hello@naiprinters.test\nPhone: +254 700 000 000",
+                'content' => "Email: hello@photoframes.co.ke\nPhone: +254 700 000 000",
                 'button_label' => 'Chat on WhatsApp',
                 'button_url' => config('shop.whatsapp_link', '#'),
                 'items' => [],

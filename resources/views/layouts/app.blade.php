@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Nai Printers') }}</title>
+    <title>{{ config('app.name', 'Photo Frames') }}</title>
     <meta name="robots" content="noindex, nofollow, noarchive">
     <link rel="icon" href="{{ \App\Support\PublicAssetUrl::resolve($siteSettings->get('favicon_url')) ?: asset('favicon.svg') }}" sizes="any">
 

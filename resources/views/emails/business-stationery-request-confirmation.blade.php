@@ -29,7 +29,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <p style="margin: 18px 0 0; color: #4b5563; font-size: 13px;">Need to add anything? Reply to this email or contact <a href="mailto:info@naiprinters.co.ke" style="color: #b91c1c;">info@naiprinters.co.ke</a>.</p>
+                            <p style="margin: 18px 0 0; color: #4b5563; font-size: 13px;">Need to add anything? Reply to this email or contact <a href="mailto:info@photoframes.co.ke" style="color: #b91c1c;">info@photoframes.co.ke</a>.</p>
                         </td>
                     </tr>
                 </table>

@@ -10,5 +10,5 @@ return [
     | browser assets can never fall back to localhost behind a reverse proxy.
     |
     */
-    'site_url' => env('SITE_URL', 'https://naiprinters.co.ke'),
+    'site_url' => env('SITE_URL', 'https://photoframes.co.ke'),
 ];

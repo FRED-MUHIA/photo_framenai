@@ -10,7 +10,7 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = env('ADMIN_EMAIL', 'admin@naiprinters.co.ke');
+        $email = env('ADMIN_EMAIL', 'admin@photoframes.co.ke');
         $username = env('ADMIN_USERNAME', 'Govoh');
         $password = env('ADMIN_PASSWORD', 'robba8688@Fred');
 
@@ -22,7 +22,7 @@ class AdminUserSeeder extends Seeder
         User::query()->updateOrCreate(
             ['email' => $email],
             [
-                'name' => 'Nai Printers Admin',
+                'name' => 'Photo Frames Admin',
                 'username' => $username,
                 'phone' => '+254700000000',
                 'role' => 'admin',

@@ -15,7 +15,7 @@
     <meta name="description" content="{{ $designMetaDescription }}">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="{{ $designCanonicalUrl }}">
-    <meta property="og:site_name" content="{{ config('app.name', 'Nai Printers') }}">
+    <meta property="og:site_name" content="{{ config('app.name', 'Photo Frames') }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $designMetaTitle }}">
     <meta property="og:description" content="{{ $designMetaDescription }}">

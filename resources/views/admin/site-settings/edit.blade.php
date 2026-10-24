@@ -30,7 +30,7 @@
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
             <div>
                 <label for="site_name" class="mb-2 block text-sm font-bold">Site Name</label>
-                <input id="site_name" type="text" name="site_name" value="{{ old('site_name', $settings->get('site_name', config('app.name', 'Nai Printers'))) }}" class="w-full rounded-xl border-slate-300" placeholder="Nai Printers">
+                <input id="site_name" type="text" name="site_name" value="{{ old('site_name', $settings->get('site_name', config('app.name', 'Photo Frames'))) }}" class="w-full rounded-xl border-slate-300" placeholder="Photo Frames">
             </div>
             <div>
                 <label for="site_tagline" class="mb-2 block text-sm font-bold">Tagline / Default SEO Description</label>
@@ -244,7 +244,7 @@
     <section>
         <h2 class="text-lg font-bold">Footer</h2>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
-            <input type="text" name="footer_brand_name" value="{{ old('footer_brand_name', $settings->get('footer_brand_name', config('app.name', 'Nai Printers'))) }}" class="rounded-xl border-slate-300" placeholder="Footer brand">
+            <input type="text" name="footer_brand_name" value="{{ old('footer_brand_name', $settings->get('footer_brand_name', config('app.name', 'Photo Frames'))) }}" class="rounded-xl border-slate-300" placeholder="Footer brand">
             <input type="text" name="footer_copyright_text" value="{{ old('footer_copyright_text', $settings->get('footer_copyright_text', 'All rights reserved.')) }}" class="rounded-xl border-slate-300" placeholder="Copyright text">
             <textarea name="footer_about_text" rows="3" class="rounded-xl border-slate-300 sm:col-span-2" placeholder="Footer about text">{{ old('footer_about_text', $settings->get('footer_about_text', config('app.tagline'))) }}</textarea>
         </div>

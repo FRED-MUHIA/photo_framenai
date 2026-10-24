@@ -1,5 +1,5 @@
 @php
-    $footerBrand = $siteSettings->get('footer_brand_name', config('app.name', 'Nai Printers'));
+    $footerBrand = $siteSettings->get('footer_brand_name', config('app.name', 'Photo Frames'));
     $footerAbout = $siteSettings->get('footer_about_text', config('app.tagline'));
     $footerCopyright = $siteSettings->get('footer_copyright_text', 'All rights reserved.');
     $whatsappLabel = $siteSettings->get('whatsapp_label', 'WhatsApp');
@@ -283,11 +283,11 @@
             @if($chatLogoUrl)
                 <img loading="lazy" decoding="async" src="{{ $chatLogoUrl }}" alt="">
             @else
-                NAI<br>PRINTS
+                PHOTO<br>FRAMES
             @endif
         </span>
         <div>
-            <p class="np-whatsapp-name">Nai Prints</p>
+            <p class="np-whatsapp-name">Photo Frames</p>
             <p class="np-whatsapp-message">Hi, how can we help?</p>
         </div>
         <button type="button" class="np-whatsapp-close" aria-label="Close WhatsApp message" data-whatsapp-close>
