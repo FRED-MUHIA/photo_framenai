@@ -87,6 +87,14 @@ APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://photoframes.co.ke
 SITE_URL=https://photoframes.co.ke
+MAIL_MAILER=smtp
+MAIL_HOST=mail.photoframes.co.ke
+MAIL_PORT=465
+MAIL_USERNAME=info@photoframes.co.ke
+MAIL_PASSWORD=your_mailbox_password
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS=info@photoframes.co.ke
+MAIL_FROM_NAME="Photo Frames"
 
 php artisan config:clear
 php artisan config:cache
@@ -98,6 +106,10 @@ local `root` account on the live server. If the site reports access denied,
 correct these `.env` values and clear/rebuild Laravel's config cache. Run the
 migrations after confirming the credentials so required tables such as
 `cms_pages` exist.
+
+Set the SMTP values in the live `.env` as well so password reset emails can be
+sent. Keep the mailbox password private and clear/rebuild the config cache after
+changing it.
 
 4. Build assets and serve
 
