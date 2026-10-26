@@ -17,6 +17,7 @@ use App\Http\Controllers\BusinessStationeryRequestController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\FrameCustomizerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
@@ -42,6 +43,10 @@ Route::get('/', HomeController::class)->name('home');
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/customize-frame', [FrameCustomizerController::class, 'index'])->name('frames.customize');
+Route::get('/customize-frame/cart/{lineKey}/edit', [FrameCustomizerController::class, 'edit'])->name('frames.customize.edit');
+Route::get('/customize-frame/cart/{lineKey}/photo', [FrameCustomizerController::class, 'existingPhoto'])->name('frames.customize.photo');
+Route::post('/customize-frame/cart', [FrameCustomizerController::class, 'addToCart'])->middleware('throttle:12,1')->name('frames.customize.add');
 
 Route::get('/upload-artwork', [ArtworkController::class, 'create'])->name('artwork.create');
 Route::post('/upload-artwork', [ArtworkController::class, 'store'])->name('artwork.store');
@@ -88,6 +93,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.reau
     Route::get('/', AdminDashboardController::class)->name('dashboard');
 
     Route::resource('categories', AdminCategoryController::class);
+    Route::resource('frames', \App\Http\Controllers\Admin\FrameController::class)->except('show');
     Route::resource('product-form-templates', AdminProductFormTemplateController::class)
         ->except('show')
         ->parameters(['product-form-templates' => 'productFormTemplate']);
@@ -107,6 +113,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'admin.reau
 
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/custom-frame-files/{orderItem}/{type}', [AdminOrderController::class, 'downloadCustomizationFile'])->whereNumber('orderItem')->whereIn('type', ['original', 'preview'])->name('orders.custom-frame-files.download');
+    Route::get('/orders/{order}/custom-frame-files/{orderItem}/{type}/view', [AdminOrderController::class, 'viewCustomizationFile'])->whereNumber('orderItem')->whereIn('type', ['original', 'preview'])->name('orders.custom-frame-files.view');
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
     Route::delete('/orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
 

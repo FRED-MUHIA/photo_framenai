@@ -4,6 +4,34 @@ namespace App\Support;
 
 class HomepageContentDefaults
 {
+    /** Content blocks used by the current Photo Frames storefront homepage. */
+    public static function storefrontSections(): array
+    {
+        return [
+            ['component' => 'storefront_hero', 'title' => 'Frame Your Favorite Moments', 'subtitle' => 'Bring your walls to life', 'content' => 'Turn photos, art, and memories into beautifully framed pieces. With a considered finish and a personal touch, made to feel right at home.', 'button_label' => 'Start Framing', 'button_url' => '/customize-frame', 'items' => [
+                ['title' => 'Family photographs in black frames above a warm wooden console with a ceramic vase', 'image_url' => '/images/frames/hero.webp'],
+                ['title' => 'Natural wood picture frames displaying art and photography', 'image_url' => '/images/frames/best-sellers.webp'],
+                ['title' => 'Landscape canvas print styled above a bench', 'image_url' => '/images/frames/custom-printing.webp'],
+            ]],
+            ['component' => 'storefront_featured', 'title' => 'Explore frames and prints', 'items' => [
+                ['title' => 'Custom Printing', 'subtitle' => 'Shop Print Products', 'image_url' => '/images/frames/custom-printing.webp', 'link_url' => '/customize-frame'],
+                ['title' => 'Find Your Favorite', 'subtitle' => 'Shop Picture Frames', 'image_url' => '/images/frames/best-sellers.webp', 'link_url' => '/products'],
+            ]],
+            ['component' => 'storefront_intro', 'title' => 'Thoughtfully Framed. Unmistakably Yours.', 'subtitle' => 'A beautiful home starts with you', 'content' => 'A little art. A favorite photograph. A moment you never want to forget. Find a frame that brings your story to life, in a style that feels like you.', 'button_label' => 'Shop All Picture Frames', 'button_url' => '/products'],
+            ['component' => 'storefront_categories', 'title' => 'Frame Types', 'button_label' => 'Shop All Types', 'button_url' => '/products'],
+            ['component' => 'storefront_colors', 'title' => 'Frame Colors', 'button_label' => 'Shop All Colors', 'button_url' => '/products', 'items' => [
+                ['title' => 'Black', 'image_url' => '/images/frames/color-black.webp', 'link_url' => 'black'], ['title' => 'Gold', 'image_url' => '/images/frames/color-gold.webp', 'link_url' => 'gold'], ['title' => 'Brown', 'image_url' => '/images/frames/color-brown.webp', 'link_url' => 'brown'], ['title' => 'White', 'image_url' => '/images/frames/color-white.webp', 'link_url' => 'white'], ['title' => 'Black & Gold', 'image_url' => '/images/frames/color-black-gold.webp', 'link_url' => 'black gold'], ['title' => 'Natural', 'image_url' => '/images/frames/color-natural.webp', 'link_url' => 'natural'],
+            ]],
+            ['component' => 'storefront_products', 'title' => 'Popular Products', 'button_label' => 'Shop All Products', 'button_url' => '/products'],
+            ['component' => 'storefront_prints', 'title' => 'Make It Personal. Make It a Print.', 'subtitle' => 'Your images, a whole new perspective', 'content' => 'Give your favorite images a place beyond your camera roll.', 'items' => [
+                ['title' => 'Canvas Prints', 'image_url' => '/images/frames/print-canvas.webp', 'link_url' => 'canvas'], ['title' => 'Paper Prints', 'image_url' => '/images/frames/print-paper.webp', 'link_url' => 'paper'], ['title' => 'Metal Prints', 'image_url' => '/images/frames/print-metal.webp', 'link_url' => 'metal'], ['title' => 'Acrylic Prints', 'image_url' => '/images/frames/print-acrylic.webp', 'link_url' => 'acrylic'], ['title' => 'Wood Prints', 'image_url' => '/images/frames/print-wood.webp', 'link_url' => 'wood'],
+            ]],
+            ['component' => 'storefront_values', 'title' => 'Why Photo Frames?', 'content' => 'For the little moments and the big milestones. Find a frame that makes them yours.', 'items' => [
+                ['title' => 'Made for|Your Memories', 'content' => '♡'], ['title' => 'A Style for|Every Space', 'content' => '◇'], ['title' => 'Your Photos,|Beautifully Printed', 'content' => '▧'], ['title' => 'Thoughtful|Finishing Touches', 'content' => '✧'], ['title' => 'Delivered|Across Kenya', 'content' => '⌂'], ['title' => 'A Little Help,|Whenever You Need', 'content' => '☏'],
+            ]],
+        ];
+    }
+
     public static function sections(): array
     {
         return [

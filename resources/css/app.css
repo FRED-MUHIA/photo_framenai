@@ -197,3 +197,502 @@
         line-height: var(--np-leading-copy);
     }
 }
+
+/* Shared visual language for every customer-facing storefront page. */
+@layer components {
+    body:has(.pf-header),
+    body:has(.pf-header) main,
+    body:has(.pf-header) .min-h-screen {
+        --pf-brand-red: #b10f1e;
+        --pf-brand-black: #151313;
+        --pf-surface: #f8f7f3;
+        --pf-surface-muted: #eae7e1;
+        color: var(--pf-brand-black);
+    }
+
+    body:has(.pf-header) {
+        background: var(--pf-surface) !important;
+    }
+
+    body:has(.pf-header) main {
+        background-color: var(--pf-surface);
+    }
+
+    body:has(.pf-header) main h1,
+    body:has(.pf-header) main h2,
+    body:has(.pf-header) main h3 {
+        color: var(--pf-brand-black);
+    }
+
+    body:has(.pf-header) main a:not([class*="bg-"]):not(.pf-button) {
+        text-decoration-color: color-mix(in srgb, var(--pf-brand-red) 35%, transparent);
+    }
+
+    body:has(.pf-header) main a:not([class*="bg-"]):not(.pf-button):hover {
+        color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) button[class*="bg-slate-900"],
+    body:has(.pf-header) a[class*="bg-slate-900"],
+    body:has(.pf-header) button[class*="bg-gray-900"],
+    body:has(.pf-header) a[class*="bg-gray-900"] {
+        background-color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) button[class*="bg-slate-900"]:hover,
+    body:has(.pf-header) a[class*="bg-slate-900"]:hover,
+    body:has(.pf-header) button[class*="bg-gray-900"]:hover,
+    body:has(.pf-header) a[class*="bg-gray-900"]:hover {
+        background-color: #8f0c18;
+    }
+
+    body:has(.pf-header) .pf-header {
+        background: #fff;
+        color: var(--pf-brand-black);
+    }
+
+    body:has(.pf-header) .pf-logo-mark {
+        border-color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) .pf-logo-mark::after {
+        border-color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) .pf-header-actions,
+    body:has(.pf-header) .pf-header-actions a:hover,
+    body:has(.pf-header) .pf-nav a:hover {
+        color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) .pf-nav {
+        border-color: #e5e3dc;
+        background: #fff;
+    }
+
+    body:has(.pf-header) .pf-announcement {
+        background: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) main input:focus,
+    body:has(.pf-header) main select:focus,
+    body:has(.pf-header) main textarea:focus {
+        border-color: var(--pf-brand-red);
+        --tw-ring-color: rgb(177 15 30 / 0.25);
+    }
+
+    body:has(.pf-header) main ::selection {
+        background: var(--pf-brand-red);
+        color: #fff;
+    }
+
+    body:has(.pf-header) main .rich-text-content a,
+    body:has(.pf-header) main .rich-text-editor a {
+        color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) .product-index-page,
+    body:has(.pf-header) section:has(.product-detail-shell) {
+        background: var(--pf-surface);
+        color: var(--pf-brand-black);
+        font-family: var(--pf-font-sans, Inter, ui-sans-serif, system-ui, sans-serif);
+    }
+
+    body:has(.pf-header) .product-index-page h1,
+    body:has(.pf-header) section:has(.product-detail-shell) h1,
+    body:has(.pf-header) section:has(.product-detail-shell) h2,
+    body:has(.pf-header) .product-related-section h3 {
+        font-family: var(--pf-serif, 'Cormorant Garamond', Georgia, serif) !important;
+        font-weight: 600;
+        letter-spacing: -0.025em;
+    }
+
+    body:has(.pf-header) .product-index-page > div {
+        padding-top: clamp(1.75rem, 4vw, 3.25rem);
+        padding-bottom: clamp(2rem, 4vw, 3.5rem);
+    }
+
+    body:has(.pf-header) .product-index-page h1 {
+        font-size: clamp(2.4rem, 4vw, 3.5rem);
+        line-height: 1;
+    }
+
+    body:has(.pf-header) .product-index-page form input,
+    body:has(.pf-header) .product-index-page form select,
+    body:has(.pf-header) section:has(.product-detail-shell) input:not([type="radio"]):not([type="checkbox"]),
+    body:has(.pf-header) section:has(.product-detail-shell) select,
+    body:has(.pf-header) section:has(.product-detail-shell) textarea {
+        border-color: #d8d3ca;
+        border-radius: 0.35rem;
+        background-color: #fff;
+        color: var(--pf-brand-black);
+        font: inherit;
+    }
+
+    body:has(.pf-header) .product-index-page form button,
+    body:has(.pf-header) section:has(.product-detail-shell) form button[type="submit"] {
+        border-radius: 0.2rem;
+        background: var(--pf-brand-red);
+        color: #fff;
+        transition: background-color 160ms ease, transform 160ms ease;
+    }
+
+    body:has(.pf-header) .product-index-page form button:hover,
+    body:has(.pf-header) section:has(.product-detail-shell) form button[type="submit"]:hover {
+        background: #8f0c18;
+    }
+
+    body:has(.pf-header) .product-index-page a[class*="rounded-full"] {
+        border-color: #d8d3ca;
+        font-weight: 500;
+    }
+
+    body:has(.pf-header) .product-index-page a[class*="bg-slate-900"] {
+        border-color: var(--pf-brand-red);
+        background: var(--pf-brand-red);
+        color: #fff;
+    }
+
+    body:has(.pf-header) .product-index-page a[class*="rounded-full"]:not([class*="bg-slate-900"]):hover {
+        border-color: var(--pf-brand-red);
+        color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) .product-index-page > div > div.rounded-xl {
+        border-color: #e2ddd4;
+        background: #f0eee8;
+    }
+
+    body:has(.pf-header) .product-index-page > div > div.rounded-xl h2 {
+        font-family: var(--pf-serif, 'Cormorant Garamond', Georgia, serif);
+        font-size: 1.65rem;
+        font-weight: 600;
+    }
+
+    body:has(.pf-header) .product-index-page > div > div.grid > a,
+    body:has(.pf-header) .product-related-section a.block {
+        overflow: hidden;
+        border-color: #e2ddd4;
+        border-radius: 0.35rem;
+        background: #fff;
+        box-shadow: 0 5px 20px rgb(21 19 19 / 0.04);
+    }
+
+    body:has(.pf-header) .product-index-page > div > div.grid > a:hover,
+    body:has(.pf-header) .product-related-section a.block:hover {
+        border-color: rgb(177 15 30 / 0.45);
+        box-shadow: 0 12px 28px rgb(21 19 19 / 0.09);
+    }
+
+    body:has(.pf-header) .product-index-page .aspect-square,
+    body:has(.pf-header) .product-related-section .aspect-square {
+        border-radius: 0.2rem;
+        background: #f0eee8;
+    }
+
+    body:has(.pf-header) .product-image-fallback {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        min-height: 10rem;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: linear-gradient(145deg, #f2f0eb, #e7e3da);
+        color: var(--pf-brand-black);
+        text-align: center;
+    }
+
+    body:has(.pf-header) .product-image-fallback span {
+        display: grid;
+        width: 3rem;
+        height: 3rem;
+        place-items: center;
+        border: 1px solid var(--pf-brand-red);
+        border-radius: 50%;
+        color: var(--pf-brand-red);
+        font-family: var(--pf-serif, Georgia, serif);
+        font-size: 1.25rem;
+    }
+
+    body:has(.pf-header) .product-image-fallback strong {
+        max-width: 15rem;
+        font-family: var(--pf-serif, Georgia, serif);
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    body:has(.pf-header) .product-index-page [class*="text-teal-"],
+    body:has(.pf-header) .product-index-page [class*="bg-teal-"] {
+        color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) .product-index-page [class*="bg-teal-"] {
+        background: #f8e9e9;
+    }
+
+    body:has(.pf-header) section:has(.product-detail-shell) .product-detail-shell {
+        gap: clamp(1.5rem, 3vw, 3rem);
+        padding-top: clamp(1.5rem, 3vw, 2.75rem);
+        padding-bottom: clamp(2rem, 4vw, 3.5rem);
+    }
+
+    body:has(.pf-header) section:has(.product-detail-shell) .product-detail-image-column > div:first-child {
+        border-radius: 0.35rem;
+        background: #f0eee8;
+    }
+
+    body:has(.pf-header) .product-gallery-main > img {
+        transition: opacity 180ms ease;
+    }
+
+    body:has(.pf-header) .product-gallery-arrow {
+        position: absolute;
+        top: 50%;
+        display: grid;
+        width: 2.75rem;
+        height: 2.75rem;
+        place-items: center;
+        transform: translateY(-50%);
+        border: 1px solid rgb(21 19 19 / 0.12);
+        border-radius: 50%;
+        background: rgb(255 255 255 / 0.92);
+        color: var(--pf-brand-black);
+        box-shadow: 0 3px 12px rgb(21 19 19 / 0.12);
+        transition: background-color 160ms ease, color 160ms ease;
+    }
+
+    body:has(.pf-header) .product-gallery-arrow:hover {
+        background: var(--pf-brand-red);
+        color: #fff;
+    }
+
+    body:has(.pf-header) .product-gallery-arrow span {
+        margin-top: -0.2rem;
+        font-family: Arial, sans-serif;
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    body:has(.pf-header) .product-gallery-previous {
+        left: 1rem;
+    }
+
+    body:has(.pf-header) .product-gallery-next {
+        right: 1rem;
+    }
+
+    body:has(.pf-header) .product-gallery-count {
+        position: absolute;
+        right: 1rem;
+        bottom: 1rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        background: rgb(21 19 19 / 0.72);
+        color: #fff;
+        font-size: 0.75rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    body:has(.pf-header) .product-detail-image-column > div.mt-4 button {
+        transition: border-color 160ms ease, transform 160ms ease;
+    }
+
+    body:has(.pf-header) .product-detail-image-column > div.mt-4 button:hover {
+        transform: translateY(-2px);
+    }
+
+    body:has(.pf-header) section:has(.product-detail-shell) .product-detail-form-column {
+        color: var(--pf-brand-black);
+    }
+
+    body:has(.pf-header) section:has(.product-detail-shell) .product-detail-form-column [class*="text-\[28px\]"] {
+        font-family: var(--pf-serif, 'Cormorant Garamond', Georgia, serif);
+        font-size: clamp(2rem, 3vw, 2.8rem);
+        font-weight: 600;
+    }
+
+    body:has(.pf-header) section:has(.product-detail-shell) [class*="text-\[#ff0037\]"],
+    body:has(.pf-header) section:has(.product-detail-shell) [class*="text-rose-500"] {
+        color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) section:has(.product-detail-shell) [class*="border-\[#ff0037\]"] {
+        border-color: var(--pf-brand-red);
+    }
+
+    body:has(.pf-header) section:has(.product-detail-shell) [class*="bg-rose-50"] {
+        background: #f8e9e9;
+    }
+
+    body:has(.pf-header) section:has(.product-detail-shell) .product-detail-description,
+    body:has(.pf-header) section:has(.product-detail-shell) .product-related-section {
+        color: var(--pf-brand-black);
+    }
+
+    /* Match the storefront's Inter body type and refined homepage heading scale. */
+    body:has(.pf-header) .product-index-page,
+    body:has(.pf-header) .product-index-page *,
+    body:has(.pf-header) section:has(.product-detail-shell),
+    body:has(.pf-header) section:has(.product-detail-shell) * {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body:has(.pf-header) .product-index-page h1,
+    body:has(.pf-header) .product-index-page h2,
+    body:has(.pf-header) section:has(.product-detail-shell) h1,
+    body:has(.pf-header) section:has(.product-detail-shell) h2,
+    body:has(.pf-header) section:has(.product-detail-shell) h3 {
+        font-family: 'Cormorant Garamond', Georgia, serif !important;
+        font-weight: 500 !important;
+        letter-spacing: -0.035em;
+    }
+
+    body:has(.pf-header) .product-index-page h1 {
+        font-size: clamp(1.9rem, 3.2vw, 2.6rem);
+        line-height: 1.05;
+    }
+
+    body:has(.pf-header) .product-index-page > div > div.grid > a h2 {
+        font-size: clamp(1.25rem, 1.5vw, 1.55rem);
+        line-height: 1.15;
+    }
+
+    body:has(.pf-header) .product-index-page a[class*="rounded-full"] {
+        font-size: 0.82rem;
+        font-weight: 500;
+    }
+
+    body:has(.pf-header) .product-index-page > div > div.rounded-xl > p,
+    body:has(.pf-header) .product-index-page > div > div.grid > a > p {
+        font-size: 0.84rem;
+    }
+
+    /* The Photo Frames visual system uses square corners throughout. */
+    body:has(.pf-header) .product-index-page input,
+    body:has(.pf-header) .product-index-page select,
+    body:has(.pf-header) .product-index-page button,
+    body:has(.pf-header) .product-index-page a,
+    body:has(.pf-header) .product-index-page > div > div.rounded-xl,
+    body:has(.pf-header) .product-index-page > div > div.grid > a,
+    body:has(.pf-header) .product-index-page .aspect-square,
+    body:has(.pf-header) .product-image-fallback {
+        border-radius: 0 !important;
+    }
+
+    body:has(.pf-header) .product-image-fallback[hidden] {
+        display: none !important;
+    }
+
+    body:has(.pf-header) .product-index-page a[class*="rounded-full"] {
+        border-radius: 0 !important;
+    }
+}
+
+/* Final storefront typography overrides. These stay outside Tailwind layers so utility classes cannot reset the brand type scale. */
+body:has(.pf-header) main {
+    color: #151313;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 14px;
+    line-height: 1.6;
+}
+body:has(.pf-header) main:not(:has(.pf-home)) h1,
+body:has(.pf-header) main:not(:has(.pf-home)) h2,
+body:has(.pf-header) main:not(:has(.pf-home)) h3,
+body:has(.pf-header) main:not(:has(.pf-home)) h4 {
+    color: #151313;
+    font-family: "Cormorant Garamond", Georgia, serif !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+}
+body:has(.pf-header) main:not(:has(.pf-home)) h1 { font-size: clamp(2.2rem, 3.6vw, 3.2rem) !important; }
+body:has(.pf-header) main:not(:has(.pf-home)) h2 { font-size: clamp(1.65rem, 2.5vw, 2.2rem) !important; }
+body:has(.pf-header) main:not(:has(.pf-home)) h3 { font-size: clamp(1.25rem, 1.8vw, 1.55rem) !important; }
+body:has(.pf-header) main p,
+body:has(.pf-header) main label,
+body:has(.pf-header) main legend,
+body:has(.pf-header) main input,
+body:has(.pf-header) main select,
+body:has(.pf-header) main textarea,
+body:has(.pf-header) main button {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+body:has(.pf-header) main .product-detail-form-column h1 {
+    margin: 0;
+    font-size: clamp(2rem, 3vw, 2.8rem) !important;
+    line-height: 1.05;
+}
+body:has(.pf-header) main .product-detail-form-column fieldset legend,
+body:has(.pf-header) main .product-detail-form-column label,
+body:has(.pf-header) main .product-detail-form-column .font-bold {
+    font-size: 0.9rem;
+}
+body:has(.pf-header) main .product-detail-form-column .rich-text-content,
+body:has(.pf-header) main .product-detail-description,
+body:has(.pf-header) main .product-index-page p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+body:has(.pf-header) main .product-detail-shell,
+body:has(.pf-header) main .product-detail-shell * {
+    border-radius: 0 !important;
+}
+body:has(.pf-header) main .product-detail-form-column [class*="text-\[#ff0037\]"],
+body:has(.pf-header) main .product-detail-form-column [class*="text-rose-"] {
+    color: #b10f1e !important;
+}
+body:has(.pf-header) main .product-detail-form-column [class*="bg-emerald-50"] {
+    background-color: #f8e9e9 !important;
+}
+body:has(.pf-header) main .product-detail-form-column [class*="text-emerald-"] {
+    color: #b10f1e !important;
+}
+/* Carry the square-corner red/black storefront theme through cart, checkout, and custom pages. */
+body:has(.pf-header) main [class*="rounded"] {
+    border-radius: 0 !important;
+}
+body:has(.pf-header) main [class*="text-teal-"],
+body:has(.pf-header) main [class*="text-emerald-"],
+body:has(.pf-header) main [class*="text-green-"] {
+    color: #b10f1e !important;
+}
+body:has(.pf-header) main [class*="bg-teal-50"],
+body:has(.pf-header) main [class*="bg-emerald-50"],
+body:has(.pf-header) main [class*="bg-green-50"] {
+    background-color: #f8e9e9 !important;
+}
+body:has(.pf-header) main [class*="border-teal-"],
+body:has(.pf-header) main [class*="border-emerald-"],
+body:has(.pf-header) main [class*="border-green-"] {
+    border-color: #e7b9be !important;
+}
+body:has(.pf-header) main button[class*="bg-teal-"],
+body:has(.pf-header) main a[class*="bg-teal-"],
+body:has(.pf-header) main button[class*="bg-emerald-"],
+body:has(.pf-header) main a[class*="bg-emerald-"],
+body:has(.pf-header) main button[class*="bg-green-"],
+body:has(.pf-header) main a[class*="bg-green-"] {
+    background-color: #111 !important;
+}
+body:has(.pf-header) main button[class*="bg-teal-"]:hover,
+body:has(.pf-header) main a[class*="bg-teal-"]:hover,
+body:has(.pf-header) main button[class*="bg-emerald-"]:hover,
+body:has(.pf-header) main a[class*="bg-emerald-"]:hover,
+body:has(.pf-header) main button[class*="bg-green-"]:hover,
+body:has(.pf-header) main a[class*="bg-green-"]:hover,
+body:has(.pf-header) main button[class*="hover:bg-teal-"]:hover,
+body:has(.pf-header) main a[class*="hover:bg-teal-"]:hover,
+body:has(.pf-header) main button[class*="hover:bg-emerald-"]:hover,
+body:has(.pf-header) main a[class*="hover:bg-emerald-"]:hover,
+body:has(.pf-header) main button[class*="hover:bg-green-"]:hover,
+body:has(.pf-header) main a[class*="hover:bg-green-"]:hover {
+    background-color: #8f0c18 !important;
+}
+@media (max-width: 640px) {
+    body:has(.pf-header) main { font-size: 13px; }
+    body:has(.pf-header) main:not(:has(.pf-home)) h1 { font-size: clamp(1.9rem, 8vw, 2.5rem) !important; }
+    body:has(.pf-header) main:not(:has(.pf-home)) h2 { font-size: clamp(1.55rem, 6vw, 1.9rem) !important; }
+}

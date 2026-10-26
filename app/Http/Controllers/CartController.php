@@ -139,6 +139,26 @@ class CartController extends Controller
             return back()->withErrors(['cart' => 'Cart item not found.']);
         }
 
+        if (! empty($item['frame_customization'])) {
+            $quantity = (int) $validated['quantity'];
+            $configuration = $item['frame_customization'];
+            $unitPrice = (float) data_get($configuration, 'price_breakdown.unit_price', $item['unit_price']);
+            $lineTotal = round($unitPrice * $quantity, 2);
+            data_set($configuration, 'price_breakdown.quantity', $quantity);
+            data_set($configuration, 'price_breakdown.total', $lineTotal);
+            $requested = $validated['delivery_date'] ?? ($item['delivery_date'] ?? null);
+            $deliveryDate = $this->resolveDeliveryDate($requested, (int) ($item['delivery_days'] ?? 7));
+            $this->cartService->update($index, [
+                'quantity' => $quantity,
+                'unit_price' => $unitPrice,
+                'line_total' => $lineTotal,
+                'delivery_date' => $deliveryDate,
+                'frame_customization' => $configuration,
+            ]);
+
+            return back()->with('status', 'Custom frame cart item updated.');
+        }
+
         $product = Product::query()->active()->with(['optionGroups.values', 'quantityPrices'])->findOrFail($item['product_id']);
         $quantity = (int) $validated['quantity'];
         $minQuantity = max(1, (int) $product->min_quantity);

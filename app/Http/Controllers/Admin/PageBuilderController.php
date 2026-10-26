@@ -230,6 +230,14 @@ class PageBuilderController extends Controller
             $sections[] = $defaults->get('home_top_picks');
         }
 
+        $storefrontDefaults = collect(HomepageContentDefaults::storefrontSections())->keyBy('component');
+        $components = collect($sections)->pluck('component');
+        foreach ($storefrontDefaults as $component => $section) {
+            if (! $components->contains($component)) {
+                $sections[] = $section;
+            }
+        }
+
         return $sections;
     }
 }

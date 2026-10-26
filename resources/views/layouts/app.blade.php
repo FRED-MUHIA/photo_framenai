@@ -10,15 +10,16 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     @include('partials.canonical-host-guard')
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=37">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
 <body style="background:#f4f4f4; color:#111;">
     <div class="min-h-screen">
-        @include('partials.site-header')
+        @include('partials.frames-header')
 
         @include('partials.flash')
 
@@ -34,7 +35,7 @@
             {{ $slot }}
         </main>
 
-        @include('partials.site-footer')
+        @include('partials.frames-footer')
     </div>
     @stack('scripts')
 </body>

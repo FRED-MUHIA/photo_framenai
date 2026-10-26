@@ -12,6 +12,14 @@
     if (! is_array($initialThemeMegaMenu)) {
         $initialThemeMegaMenu = [];
     }
+    $initialHeaderNav = json_decode(old('header_nav_json', $headerNavJson), true);
+    if (! is_array($initialHeaderNav)) {
+        $initialHeaderNav = [];
+    }
+    $initialFooterColumns = json_decode(old('footer_columns_json', $footerColumnsJson), true);
+    if (! is_array($initialFooterColumns)) {
+        $initialFooterColumns = [];
+    }
     $headerLogoValue = old('header_logo_url', $settings->get('header_logo_url'));
     $headerLogoPreview = \App\Support\PublicAssetUrl::resolve($headerLogoValue);
     $whatsappLogoValue = old('whatsapp_logo_url', $settings->get('whatsapp_logo_url'));
@@ -52,8 +60,18 @@
 
     <section>
         <h2 class="text-lg font-bold">Header</h2>
+        <p class="mt-1 text-xs text-slate-500">These values control the public storefront header and main navigation menu.</p>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
             <input type="text" name="header_live_chat_label" value="{{ old('header_live_chat_label', $settings->get('header_live_chat_label', 'Live Chat')) }}" class="rounded-xl border-slate-300" placeholder="Live chat label">
+            <input type="text" name="header_brand_label" value="{{ old('header_brand_label', $settings->get('header_brand_label', $settings->get('site_name', 'Photo Frames'))) }}" class="rounded-xl border-slate-300" placeholder="Header brand label">
+            <input type="text" name="header_phone" value="{{ old('header_phone', $settings->get('header_phone', '+254 745 730 906')) }}" class="rounded-xl border-slate-300" placeholder="Phone shown in header">
+            <input type="email" name="header_email" value="{{ old('header_email', $settings->get('header_email', 'orders@photostore.co.ke')) }}" class="rounded-xl border-slate-300" placeholder="Email shown in header">
+            <input type="text" name="header_location" value="{{ old('header_location', $settings->get('header_location', 'Nairobi, Kenya')) }}" class="rounded-xl border-slate-300" placeholder="Location shown in header">
+            <input type="text" name="header_announcement" value="{{ old('header_announcement', $settings->get('header_announcement', 'Your memories. Beautifully framed.')) }}" class="rounded-xl border-slate-300" placeholder="Header announcement">
+            <input type="text" name="header_announcement_detail" value="{{ old('header_announcement_detail', $settings->get('header_announcement_detail', 'Made for your space, delivered across Kenya.')) }}" class="rounded-xl border-slate-300" placeholder="Header announcement detail">
+            <input type="text" name="header_track_order_label" value="{{ old('header_track_order_label', $settings->get('header_track_order_label', 'Track order')) }}" class="rounded-xl border-slate-300" placeholder="Track order label">
+            <input type="text" name="header_home_link_label" value="{{ old('header_home_link_label', $settings->get('header_home_link_label', '← Back to homepage')) }}" class="rounded-xl border-slate-300" placeholder="Compact page back link">
+            <input type="text" name="header_search_placeholder" value="{{ old('header_search_placeholder', $settings->get('header_search_placeholder', 'Search frames by color, material, style…')) }}" class="rounded-xl border-slate-300 sm:col-span-2" placeholder="Search placeholder">
             <div class="sm:col-span-2">
                 <label class="mb-2 block text-sm font-bold">Header Logo</label>
                 @if($headerLogoPreview)
@@ -69,6 +87,44 @@
             <input type="text" name="header_shipping_text" value="{{ old('header_shipping_text', $settings->get('header_shipping_text', 'Free standard shipping')) }}" class="rounded-xl border-slate-300" placeholder="Shipping text">
             <input type="text" name="header_experience_text" value="{{ old('header_experience_text', $settings->get('header_experience_text', '40 years of experience')) }}" class="rounded-xl border-slate-300" placeholder="Experience text">
             <input type="text" name="header_production_text" value="{{ old('header_production_text', $settings->get('header_production_text', 'Our own production')) }}" class="rounded-xl border-slate-300 sm:col-span-2" placeholder="Production text">
+        </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 p-4">
+        <div x-data="storefrontNavigationBuilder(@js($initialHeaderNav))">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div><h2 class="text-lg font-bold">Storefront Navigation Menu</h2><p class="mt-1 text-xs text-slate-500">Add, remove, and rename links. Add child links to show a dropdown. Use site paths such as /products or full URLs.</p></div>
+                <button type="button" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white" @click="addItem()">Add menu link</button>
+            </div>
+            <div class="mt-3 space-y-3">
+                <template x-for="(item, index) in items" :key="item.id">
+                    <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                        <div class="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+                            <input type="text" x-model="item.label" placeholder="Menu label" class="rounded-lg border-slate-300 text-sm">
+                            <input type="text" x-model="item.url" placeholder="Link URL, e.g. /products" class="rounded-lg border-slate-300 text-sm">
+                            <button type="button" class="text-xs font-bold text-rose-700" @click="removeItem(index)">Remove</button>
+                        </div>
+                        <div class="mt-2 border-l-2 border-slate-200 pl-3">
+                            <div class="mb-2 flex items-center justify-between"><span class="text-xs font-bold text-slate-600">Dropdown links</span><button type="button" class="text-xs font-bold text-slate-700" @click="addChild(index)">Add dropdown link</button></div>
+                            <template x-for="(child, childIndex) in item.items" :key="child.id">
+                                <div class="mb-2 rounded-lg border border-slate-200 bg-white p-2">
+                                    <div class="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+                                        <input type="text" x-model="child.label" placeholder="Dropdown label" class="rounded-lg border-slate-300 text-xs">
+                                        <input type="text" x-model="child.url" placeholder="Link URL" class="rounded-lg border-slate-300 text-xs">
+                                        <button type="button" class="text-xs font-bold text-rose-700" @click="removeChild(index, childIndex)">Remove</button>
+                                    </div>
+                                    <div class="mt-2 flex flex-wrap items-center gap-2">
+                                        <input type="text" x-model="child.image" placeholder="Image URL (optional)" class="min-w-48 flex-1 rounded-lg border-slate-300 text-xs">
+                                        <input type="file" accept="image/*" :name="`header_nav_images[${index}][${childIndex}]`" class="max-w-full rounded border border-slate-300 px-2 py-1 text-xs" @change="previewChildImage(index, childIndex, $event)">
+                                        <template x-if="child.preview || child.image"><img :src="child.preview || child.image" :alt="child.label || 'Dropdown image preview'" class="h-12 w-16 rounded object-cover"></template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <input type="hidden" name="header_nav_json" :value="json">
         </div>
     </section>
 
@@ -243,10 +299,41 @@
 
     <section>
         <h2 class="text-lg font-bold">Footer</h2>
+        <p class="mt-1 text-xs text-slate-500">Edit the footer text, contact area, and link columns shown across the storefront.</p>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
             <input type="text" name="footer_brand_name" value="{{ old('footer_brand_name', $settings->get('footer_brand_name', config('app.name', 'Photo Frames'))) }}" class="rounded-xl border-slate-300" placeholder="Footer brand">
             <input type="text" name="footer_copyright_text" value="{{ old('footer_copyright_text', $settings->get('footer_copyright_text', 'All rights reserved.')) }}" class="rounded-xl border-slate-300" placeholder="Copyright text">
             <textarea name="footer_about_text" rows="3" class="rounded-xl border-slate-300 sm:col-span-2" placeholder="Footer about text">{{ old('footer_about_text', $settings->get('footer_about_text', config('app.tagline'))) }}</textarea>
+            <input type="text" name="footer_contact_heading" value="{{ old('footer_contact_heading', $settings->get('footer_contact_heading', 'A little framing advice?')) }}" class="rounded-xl border-slate-300" placeholder="Contact section heading">
+            <input type="text" name="footer_contact_button" value="{{ old('footer_contact_button', $settings->get('footer_contact_button', 'Talk to us')) }}" class="rounded-xl border-slate-300" placeholder="Contact button label">
+            <textarea name="footer_contact_text" rows="2" class="rounded-xl border-slate-300 sm:col-span-2" placeholder="Contact section text">{{ old('footer_contact_text', $settings->get('footer_contact_text', 'From choosing a finish to finding the right size, let’s make something you’ll love.')) }}</textarea>
+            <input type="email" name="footer_contact_email" value="{{ old('footer_contact_email', $settings->get('footer_contact_email', 'info@photoframes.co.ke')) }}" class="rounded-xl border-slate-300" placeholder="Footer contact email">
+            <input type="text" name="footer_location_text" value="{{ old('footer_location_text', $settings->get('footer_location_text', 'Nairobi, Kenya · Nationwide delivery')) }}" class="rounded-xl border-slate-300" placeholder="Footer location">
+            <input type="text" name="footer_bottom_tagline" value="{{ old('footer_bottom_tagline', $settings->get('footer_bottom_tagline', 'Made for the moments that matter.')) }}" class="rounded-xl border-slate-300" placeholder="Footer bottom tagline">
+            <input type="text" name="footer_back_to_top_label" value="{{ old('footer_back_to_top_label', $settings->get('footer_back_to_top_label', 'Back to top ↑')) }}" class="rounded-xl border-slate-300" placeholder="Back to top link">
+            <input type="text" name="footer_powered_by_label" value="{{ old('footer_powered_by_label', $settings->get('footer_powered_by_label', 'Powered by Nai Prints')) }}" class="rounded-xl border-slate-300" placeholder="Powered by label">
+            <input type="text" name="footer_powered_by_url" value="{{ old('footer_powered_by_url', $settings->get('footer_powered_by_url', '')) }}" class="rounded-xl border-slate-300" placeholder="Powered by link URL (optional)">
+            <div class="sm:col-span-2">
+                <label class="mb-1 block text-sm font-bold">Footer Link Columns</label>
+                <p class="mb-2 text-xs text-slate-500">Edit the column headings and links displayed in the footer.</p>
+                <div x-data="storefrontFooterBuilder(@js($initialFooterColumns))" class="rounded-xl border border-slate-200 p-3">
+                    <div class="mb-3 flex justify-end"><button type="button" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white" @click="addColumn()">Add footer column</button></div>
+                    <div class="space-y-3">
+                        <template x-for="(column, columnIndex) in columns" :key="column.id">
+                            <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                                <div class="mb-2 grid gap-2 sm:grid-cols-[1fr_auto]"><input type="text" x-model="column.heading" placeholder="Column heading" class="rounded-lg border-slate-300 text-sm"><button type="button" class="text-xs font-bold text-rose-700" @click="removeColumn(columnIndex)">Remove column</button></div>
+                                <div class="space-y-2">
+                                    <template x-for="(link, linkIndex) in column.links" :key="link.id">
+                                        <div class="grid gap-2 sm:grid-cols-[1fr_1fr_auto]"><input type="text" x-model="link.label" placeholder="Link label" class="rounded-lg border-slate-300 text-xs"><input type="text" x-model="link.url" placeholder="Link URL" class="rounded-lg border-slate-300 text-xs"><button type="button" class="text-xs font-bold text-rose-700" @click="removeLink(columnIndex, linkIndex)">Remove</button></div>
+                                    </template>
+                                </div>
+                                <button type="button" class="mt-2 text-xs font-bold text-slate-700" @click="addLink(columnIndex)">Add link</button>
+                            </div>
+                        </template>
+                    </div>
+                    <input type="hidden" name="footer_columns_json" :value="json">
+                </div>
+            </div>
         </div>
     </section>
 
@@ -454,6 +541,56 @@
                         image: tile.image,
                         url: tile.url
                     }))
+                })));
+            }
+        };
+    }
+
+    function storefrontNavigationBuilder(initialItems) {
+        let nextId = 1;
+        const normalize = (item = {}) => ({
+            id: nextId++,
+            label: item.label || '',
+            url: item.url || '/',
+            items: Array.isArray(item.items) ? item.items.map(child => ({ id: nextId++, label: child.label || '', url: child.url || '/', image: child.image || '', preview: '' })) : []
+        });
+        return {
+            items: Array.isArray(initialItems) ? initialItems.map(normalize) : [],
+            addItem() { this.items.push(normalize({ label: 'New link', url: '/' })); },
+            removeItem(index) { this.items.splice(index, 1); },
+            addChild(index) { this.items[index].items.push({ id: nextId++, label: '', url: '/' }); },
+            removeChild(index, childIndex) { this.items[index].items.splice(childIndex, 1); },
+            previewChildImage(index, childIndex, event) {
+                const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
+                if (file) this.items[index].items[childIndex].preview = URL.createObjectURL(file);
+            },
+            get json() {
+                return JSON.stringify(this.items.map(item => ({
+                    label: item.label,
+                    url: item.url,
+                    items: item.items.map(child => ({ label: child.label, url: child.url, image: child.image }))
+                })));
+            }
+        };
+    }
+
+    function storefrontFooterBuilder(initialColumns) {
+        let nextId = 1;
+        const normalize = (column = {}) => ({
+            id: nextId++,
+            heading: column.heading || '',
+            links: Array.isArray(column.links) ? column.links.map(link => ({ id: nextId++, label: link.label || '', url: link.url || '/' })) : []
+        });
+        return {
+            columns: Array.isArray(initialColumns) ? initialColumns.map(normalize) : [],
+            addColumn() { this.columns.push(normalize({ heading: 'New column' })); },
+            removeColumn(index) { this.columns.splice(index, 1); },
+            addLink(index) { this.columns[index].links.push({ id: nextId++, label: '', url: '/' }); },
+            removeLink(index, linkIndex) { this.columns[index].links.splice(linkIndex, 1); },
+            get json() {
+                return JSON.stringify(this.columns.map(column => ({
+                    heading: column.heading,
+                    links: column.links.map(link => ({ label: link.label, url: link.url }))
                 })));
             }
         };

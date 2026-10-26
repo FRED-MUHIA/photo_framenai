@@ -11,9 +11,10 @@
     <textarea name="description" placeholder="Description" class="w-full rounded-xl border-slate-300">{{ old('description', $category->description) }}</textarea>
     <div class="grid gap-4 sm:grid-cols-3">
         <input type="text" name="icon" value="{{ old('icon', $category->icon) }}" placeholder="Icon" class="rounded-xl border-slate-300">
-        <input type="text" name="image" value="{{ old('image', $category->image) }}" placeholder="Image URL" class="rounded-xl border-slate-300">
+        <label class="text-sm font-semibold">Homepage image URL<input type="text" name="image" value="{{ old('image', $category->image) }}" placeholder="https://… or image path" class="mt-1 w-full rounded-xl border-slate-300 font-normal"></label>
         <input type="number" name="sort_order" value="{{ old('sort_order', $category->sort_order) }}" min="0" placeholder="Sort Order" class="rounded-xl border-slate-300">
     </div>
+    <p class="text-xs text-slate-500">Active categories with active products appear in the homepage Frame Types section. If no image URL is set, the first active product image is used.</p>
     <label class="inline-flex items-center gap-2 text-sm"><input type="hidden" name="is_active" value="0"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $category->is_active))> Active</label>
     <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white">Update Category</button>
 </form>

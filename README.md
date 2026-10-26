@@ -83,14 +83,21 @@ DB_PORT=3306
 DB_DATABASE=cpaneluser_database
 DB_USERNAME=cpaneluser_dbuser
 DB_PASSWORD=your_database_password
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://photoframes.co.ke
+SITE_URL=https://photoframes.co.ke
 
 php artisan config:clear
-php artisan migrate --seed
+php artisan config:cache
+php artisan migrate --force
 ```
 
-If you see a `forge@localhost` error, Laravel is still missing the live MySQL
-credentials or is using a stale cached config. Recheck `.env`, then run
-`php artisan config:clear`.
+Use the database name, username, and password shown in cPanel; do not use the
+local `root` account on the live server. If the site reports access denied,
+correct these `.env` values and clear/rebuild Laravel's config cache. Run the
+migrations after confirming the credentials so required tables such as
+`cms_pages` exist.
 
 4. Build assets and serve
 

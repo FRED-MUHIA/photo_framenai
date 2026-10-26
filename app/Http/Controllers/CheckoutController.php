@@ -7,6 +7,7 @@ use App\Mail\InvoiceReadyMail;
 use App\Mail\NewOrderPlacedMail;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Frame;
 use App\Services\CartService;
 use App\Services\PaymentService;
 use Illuminate\Support\Carbon;
@@ -89,6 +90,20 @@ class CheckoutController extends Controller
             ]);
 
             foreach ($items as $item) {
+                $frameCustomization = $item['frame_customization'] ?? null;
+                if ($frameCustomization) {
+                    $frame = Frame::query()->whereKey($frameCustomization['frame_id'] ?? null)->lockForUpdate()->first();
+                    if ($frame?->inventory !== null) {
+                        if ($frame->inventory < (int) $item['quantity']) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                'cart' => 'There is no longer enough stock to complete this custom frame order. Please edit its quantity or contact us.',
+                            ]);
+                        }
+                        $frame->decrement('inventory', (int) $item['quantity']);
+                        $frameCustomization['inventory_reserved'] = true;
+                        $frameCustomization['inventory_reserved_quantity'] = (int) $item['quantity'];
+                    }
+                }
                 $orderItem = OrderItem::query()->create([
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
@@ -99,6 +114,7 @@ class CheckoutController extends Controller
                         'selected_options' => $item['selected_options'] ?? [],
                         'selected_values' => $item['selected_values'] ?? [],
                         'custom_fields' => $item['custom_fields'] ?? [],
+                        'frame_customization' => $frameCustomization,
                         'delivery_date' => $item['delivery_date'] ?? null,
                         'rush_order' => (bool) ($item['rush_order'] ?? false),
                         'rush_fee' => (float) ($item['rush_fee'] ?? 0),

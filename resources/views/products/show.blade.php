@@ -164,10 +164,15 @@
 
 <section class="bg-white" x-data="productConfigurator()" x-init="init()">
     <div class="product-detail-shell">
-        <div class="product-detail-image-column" x-data="{ activeImage: @js($mainProductImage) }">
-            <div class="overflow-hidden rounded-[10px] bg-[#eeeeee]">
+        <div class="product-detail-image-column" x-data="{ images: @js($productGalleryImages->all()), activeIndex: 0, get activeImage() { return this.images[this.activeIndex] }, next() { this.activeIndex = (this.activeIndex + 1) % this.images.length }, previous() { this.activeIndex = (this.activeIndex - 1 + this.images.length) % this.images.length } }">
+            <div class="product-gallery-main relative overflow-hidden rounded-[10px] bg-[#eeeeee]">
                 @if($mainProductImage)
                     <img loading="eager" fetchpriority="high" decoding="async" :src="activeImage" src="{{ $mainProductImage }}" alt="{{ $product->name }}" class="aspect-square w-full object-contain p-10 lg:p-12">
+                    @if($productGalleryImages->count() > 1)
+                        <button type="button" class="product-gallery-arrow product-gallery-previous" aria-label="Previous product image" @click="previous()"><span aria-hidden="true">‹</span></button>
+                        <button type="button" class="product-gallery-arrow product-gallery-next" aria-label="Next product image" @click="next()"><span aria-hidden="true">›</span></button>
+                        <span class="product-gallery-count" aria-live="polite"><span x-text="activeIndex + 1"></span> / {{ $productGalleryImages->count() }}</span>
+                    @endif
                 @else
                     <div class="flex aspect-square items-center justify-center p-8 text-sm font-semibold text-slate-500">{{ $product->name }}</div>
                 @endif
@@ -179,8 +184,8 @@
                         <button
                             type="button"
                             class="overflow-hidden rounded-lg border bg-[#f5f5f5]"
-                            :class="activeImage === @js($imageUrl) ? 'border-[#ff0037]' : 'border-slate-200 hover:border-slate-300'"
-                            @click="activeImage = @js($imageUrl)"
+                            :class="activeIndex === {{ $loop->index }} ? 'border-[#ff0037]' : 'border-slate-200 hover:border-slate-300'"
+                            @click="activeIndex = {{ $loop->index }}"
                         >
                             <img loading="lazy" decoding="async" src="{{ $imageUrl }}" alt="{{ $product->name }} image {{ $loop->iteration }}" class="aspect-square w-full object-contain p-3">
                         </button>
@@ -394,8 +399,9 @@
                 <button
                     type="button"
                     @click="openWhatsAppOrder($event)"
-                    class="inline-flex w-full items-center justify-center rounded-xl bg-emerald-500 py-3 text-sm font-extrabold text-white hover:bg-emerald-600"
+                    class="pf-whatsapp-order-button"
                 >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.7a8.5 8.5 0 0 1-12.6 7.4L3 20l.9-4.7a8.5 8.5 0 1 1 16.6-3.6Z"/><path d="M8.2 7.8c.2-.5.5-.5.8-.5h.5c.2 0 .4.1.5.4l.8 1.8c.1.3.1.5-.1.7l-.6.7c-.2.2-.2.4 0 .7.5.9 1.2 1.6 2.1 2.1.3.2.5.2.7 0l.8-.9c.2-.2.4-.2.7-.1l1.8.9c.3.1.4.3.4.5 0 .4-.2 1.2-.7 1.6-.5.5-1.2.7-2 .6-1-.1-2.3-.7-3.7-1.9-1.7-1.4-2.8-3.1-3.1-4.3-.3-1.1.1-1.9.5-2.3.2-.2.4-.3.6-.3Z"/></svg>
                     WhatsApp Order
                 </button>
 

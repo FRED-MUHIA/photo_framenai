@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Artwork;
+use App\Models\Frame;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -34,6 +36,33 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
+    public function downloadCustomizationFile(Order $order, int $orderItem, string $type)
+    {
+        abort_unless(in_array($type, ['original', 'preview'], true), 404);
+        $item = $order->items()->findOrFail($orderItem);
+        $path = data_get($item->configuration, 'frame_customization.' . ($type === 'original' ? 'original_image_path' : 'preview_path'));
+        abort_unless($path && Storage::disk('local')->exists($path), 404);
+
+        return Storage::disk('local')->download($path, $type === 'original'
+            ? (data_get($item->configuration, 'frame_customization.original_image_name') ?: 'customer-photo')
+            : 'framed-preview.png');
+    }
+
+    public function viewCustomizationFile(Order $order, int $orderItem, string $type)
+    {
+        abort_unless(in_array($type, ['original', 'preview'], true), 404);
+        $item = $order->items()->findOrFail($orderItem);
+        $customization = data_get($item->configuration, 'frame_customization');
+        $path = data_get($customization, $type === 'original' ? 'original_image_path' : 'preview_path');
+        abort_unless($path && Storage::disk('local')->exists($path), 404);
+
+        return response()->file(Storage::disk('local')->path($path), [
+            'Content-Type' => $type === 'original' ? (data_get($customization, 'original_image_mime') ?: 'application/octet-stream') : 'image/png',
+            'Cache-Control' => 'private, no-store, max-age=0',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
     public function updateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
@@ -44,10 +73,17 @@ class OrderController extends Controller
         $newPaymentStatus = $validated['payment_status'] ?? $order->payment_status;
         $changes = $this->statusChanges($order, $validated['status'], $newPaymentStatus);
 
-        $order->update([
-            'status' => $validated['status'],
-            'payment_status' => $newPaymentStatus,
-        ]);
+        DB::transaction(function () use ($order, $validated, $newPaymentStatus) {
+            if ($order->status !== 'cancelled' && $validated['status'] === 'cancelled') {
+                $this->releaseFrameInventory($order);
+            } elseif ($order->status === 'cancelled' && $validated['status'] !== 'cancelled') {
+                $this->reserveFrameInventory($order);
+            }
+            $order->update([
+                'status' => $validated['status'],
+                'payment_status' => $newPaymentStatus,
+            ]);
+        });
 
         $notificationResult = ['customer_sent' => false, 'customer_failed' => false];
 
@@ -71,6 +107,7 @@ class OrderController extends Controller
         $orderNumber = $order->order_number;
 
         DB::transaction(function () use ($order) {
+            $this->releaseFrameInventory($order);
             $itemIds = $order->items()->pluck('id');
 
             if ($itemIds->isNotEmpty()) {
@@ -86,6 +123,47 @@ class OrderController extends Controller
         return redirect()
             ->route('admin.orders.index')
             ->with('status', "Order {$orderNumber} deleted.");
+    }
+
+    private function releaseFrameInventory(Order $order): void
+    {
+        foreach ($order->items as $item) {
+            $configuration = $item->configuration ?? [];
+            $customization = data_get($configuration, 'frame_customization');
+            if (! is_array($customization) || empty($customization['inventory_reserved'])) continue;
+
+            $frame = Frame::query()->whereKey($customization['frame_id'] ?? null)->lockForUpdate()->first();
+            if ($frame && $frame->inventory !== null) {
+                $frame->increment('inventory', (int) ($customization['inventory_reserved_quantity'] ?? $item->quantity));
+            }
+            $customization['inventory_reserved'] = false;
+            data_set($configuration, 'frame_customization', $customization);
+            $item->configuration = $configuration;
+            $item->save();
+        }
+    }
+
+    private function reserveFrameInventory(Order $order): void
+    {
+        foreach ($order->items as $item) {
+            $configuration = $item->configuration ?? [];
+            $customization = data_get($configuration, 'frame_customization');
+            if (! is_array($customization) || ! empty($customization['inventory_reserved'])) continue;
+
+            $frame = Frame::query()->whereKey($customization['frame_id'] ?? null)->lockForUpdate()->first();
+            if (! $frame || $frame->inventory === null) continue;
+            if ($frame->inventory < (int) $item->quantity) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => 'The frame no longer has enough stock to reopen this cancelled order.',
+                ]);
+            }
+            $frame->decrement('inventory', (int) $item->quantity);
+            $customization['inventory_reserved'] = true;
+            $customization['inventory_reserved_quantity'] = (int) $item->quantity;
+            data_set($configuration, 'frame_customization', $customization);
+            $item->configuration = $configuration;
+            $item->save();
+        }
     }
 
     private function statusChanges(Order $order, string $newStatus, string $newPaymentStatus): array

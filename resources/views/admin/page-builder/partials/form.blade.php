@@ -59,6 +59,14 @@
                 </div>
                 <div class="grid gap-2 sm:grid-cols-2">
                     <select x-model="section.component" class="rounded-lg border-slate-300 text-sm">
+                        <option value="storefront_hero">Homepage: Hero and rotating images</option>
+                        <option value="storefront_featured">Homepage: Featured cards</option>
+                        <option value="storefront_intro">Homepage: Intro banner</option>
+                        <option value="storefront_categories">Homepage: Frame types heading</option>
+                        <option value="storefront_colors">Homepage: Frame colors slider</option>
+                        <option value="storefront_products">Homepage: Popular products heading</option>
+                        <option value="storefront_prints">Homepage: Custom prints section</option>
+                        <option value="storefront_values">Homepage: Why Photo Frames</option>
                         <option value="home_pet_promo">Home: Pet Promo Hero</option>
                         <option value="home_hero_main">Home: Hero Main</option>
                         <option value="home_hero_newsletter">Home: Hero Newsletter</option>

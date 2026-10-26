@@ -19,6 +19,7 @@
     $adminNavigation = [
         ['label' => 'Overview', 'route' => 'admin.dashboard', 'active' => request()->routeIs('admin.dashboard')],
         ['label' => 'Products', 'route' => 'admin.products.index', 'active' => request()->routeIs('admin.products.*')],
+        ['label' => 'Frame Catalogue', 'route' => 'admin.frames.index', 'active' => request()->routeIs('admin.frames.*')],
         ['label' => 'Product Forms', 'route' => 'admin.product-form-templates.index', 'active' => request()->routeIs('admin.product-form-templates.*')],
         ['label' => 'Categories', 'route' => 'admin.categories.index', 'active' => request()->routeIs('admin.categories.*')],
         ['label' => 'Orders', 'route' => 'admin.orders.index', 'active' => request()->routeIs('admin.orders.*')],

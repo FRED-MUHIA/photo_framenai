@@ -15,6 +15,25 @@
                         <tr class="border-b border-slate-100">
                             <td class="py-2">
                                 {{ $item->product_name }}
+                                @if(data_get($item->configuration, 'frame_customization'))
+                                    @php
+                                        $frameCustomization = data_get($item->configuration, 'frame_customization');
+                                    @endphp
+                                    <div class="mt-2 space-y-1 text-xs text-slate-600">
+                                        <p><strong>Frame:</strong> {{ data_get($frameCustomization, 'frame_name') }} · {{ ucfirst(data_get($frameCustomization, 'orientation')) }} · {{ data_get($frameCustomization, 'size_name') }} ({{ data_get($frameCustomization, 'width_cm') }} × {{ data_get($frameCustomization, 'height_cm') }} cm)</p>
+                                        <p><strong>Profile:</strong> {{ data_get($frameCustomization, 'frame_width_cm') }} cm · <strong>Rotation:</strong> frame {{ data_get($frameCustomization, 'frame_rotation') }}°, photo {{ data_get($frameCustomization, 'image_rotation') }}°</p>
+                                        @if(data_get($frameCustomization, 'mat_color'))<p><strong>Mount colour:</strong> {{ data_get($frameCustomization, 'mat_color') }}</p>@endif
+                                        @if(data_get($frameCustomization, 'accessories'))<p><strong>Extras:</strong> {{ collect(data_get($frameCustomization, 'accessories'))->pluck('name')->join(', ') ?: 'None' }}</p>@endif
+                                        <p><strong>Original:</strong> {{ data_get($frameCustomization, 'original_image_name') }}</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            <a class="font-bold text-rose-700" target="_blank" rel="noopener" href="{{ route('admin.orders.custom-frame-files.view', [$order, $item->id, 'original']) }}">View original photo</a>
+                                            <a class="font-bold text-rose-700" href="{{ route('admin.orders.custom-frame-files.download', [$order, $item->id, 'original']) }}">Download original photo</a>
+                                            @if(data_get($frameCustomization, 'preview_path'))<a class="font-bold text-rose-700" target="_blank" rel="noopener" href="{{ route('admin.orders.custom-frame-files.view', [$order, $item->id, 'preview']) }}">View framed preview</a><a class="font-bold text-rose-700" href="{{ route('admin.orders.custom-frame-files.download', [$order, $item->id, 'preview']) }}">Download preview</a>@endif
+                                        </div>
+                                        @if(data_get($frameCustomization, 'preview_path'))<img class="mt-2 max-h-48 max-w-48 border border-slate-200 object-contain" src="{{ route('admin.orders.custom-frame-files.view', [$order, $item->id, 'preview']) }}" alt="Framed photo preview">@endif
+                                        <p><strong>Price:</strong> {{ $order->currency }} {{ number_format((float) data_get($frameCustomization, 'price_breakdown.unit_price', $item->unit_price), 2) }} each · {{ $item->quantity }} item(s) · {{ $order->currency }} {{ number_format((float) data_get($frameCustomization, 'price_breakdown.total', $item->line_total), 2) }} total</p>
+                                    </div>
+                                @endif
                                 @if(data_get($item->configuration, 'rush_order'))
                                     <div class="text-xs font-extrabold text-rose-700">Rush same-day: {{ $order->currency }} {{ number_format((float) data_get($item->configuration, 'rush_fee', config('shop.rush_order_fee', 500)), 2) }}</div>
                                 @endif

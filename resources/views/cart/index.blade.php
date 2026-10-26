@@ -5,7 +5,10 @@
 
 @section('content')
 <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-    <h1 class="np-type-page-title">Shopping Cart</h1>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <h1 class="np-type-page-title">Shopping Cart</h1>
+        <a href="{{ route('frames.customize') }}" class="inline-flex items-center justify-center bg-rose-700 px-4 py-2 text-sm font-bold text-white hover:bg-rose-800">Add another framed artwork</a>
+    </div>
 
     @if(empty($items))
         <div class="mt-8 rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
@@ -20,6 +23,16 @@
                         <div class="flex flex-wrap items-start justify-between gap-4">
                             <div>
                                 <h2 class="text-lg font-bold">{{ $item['product_name'] }}</h2>
+                                @if(!empty($item['frame_customization']))
+                                    @php
+                                        $frameSpec = $item['frame_customization'];
+                                    @endphp
+                                    <div class="mt-2 grid gap-1 text-xs text-slate-600">
+                                        <p>{{ data_get($frameSpec, 'orientation') }} · {{ data_get($frameSpec, 'size_name') }} ({{ data_get($frameSpec, 'width_cm') }} × {{ data_get($frameSpec, 'height_cm') }} cm)</p>
+                                        <p>Frame profile {{ data_get($frameSpec, 'frame_width_cm') }} cm · Photo: {{ data_get($frameSpec, 'original_image_name') }}</p>
+                                        @if(!empty($frameSpec['accessories']))<p>Extras: {{ collect($frameSpec['accessories'])->pluck('name')->join(', ') }}</p>@endif
+                                    </div>
+                                @endif
                                 <p class="mt-1 text-sm text-slate-600">{{ config('shop.currency_symbol') }} {{ number_format($item['unit_price'], 2) }} each</p>
                                 <div class="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
                                     @foreach(($item['selected_values'] ?? []) as $value)
@@ -51,6 +64,9 @@
                             </div>
                         </div>
                         <div class="mt-4 flex flex-wrap items-center gap-2">
+                            @if(!empty($item['frame_customization']) && !empty($item['line_key']))
+                                <a class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold" href="{{ route('frames.customize.edit', $item['line_key']) }}">Edit frame design</a>
+                            @endif
                             <form method="POST" action="{{ route('cart.update', $index) }}" class="flex items-center gap-2">
                                 @csrf
                                 @method('PATCH')

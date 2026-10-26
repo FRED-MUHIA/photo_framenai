@@ -17,7 +17,7 @@
 @endpush
 
 @section('content')
-<section class="bg-white">
+<section class="product-index-page">
 <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
     <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -73,7 +73,10 @@
             <a href="{{ route('products.show', $product) }}" class="block rounded-xl border border-slate-200 bg-white p-3 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:rounded-2xl sm:p-4">
                 <div class="aspect-square overflow-hidden rounded-lg bg-slate-100 sm:rounded-xl">
                     @if($thumbnailUrl)
-                        <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
+                        <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+                        <div hidden class="product-image-fallback"><span aria-hidden="true">PF</span><strong>{{ $product->name }}</strong></div>
+                    @else
+                        <div class="product-image-fallback"><span aria-hidden="true">PF</span><strong>{{ $product->name }}</strong></div>
                     @endif
                 </div>
                 <div class="mt-3 flex items-start justify-between gap-2 sm:mt-4 sm:gap-3">

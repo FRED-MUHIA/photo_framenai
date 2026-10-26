@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
+        $isFrameCustomizer = request()->routeIs('frames.customize*');
+        $storefrontLogo = \App\Support\PublicAssetUrl::resolve($siteSettings->get('header_logo_url'));
+        $storefrontBrand = $siteSettings->get('header_brand_label', $siteSettings->get('site_name', config('app.name', 'Photo Frames')));
         $storefrontBreadcrumbs = \App\Support\StorefrontBreadcrumbs::forCurrentRequest(request());
         $metaTitle = trim($__env->yieldContent('meta_title'))
             ?: config('app.name', 'Photo Frames') . ' | ' . config('app.tagline');
@@ -45,11 +48,21 @@
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Fredoka+One&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     @include('partials.canonical-host-guard')
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=37">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
+    @if($isFrameCustomizer)
+        <style>
+            .fc-minimal-header{min-height:62px;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;background:#fff;border-bottom:1px solid #e7e4df}
+            .fc-minimal-header .pf-logo{font-size:25px}
+            .fc-minimal-header .fc-home-link{color:#b51222;font:600 14px/1.2 Inter,Arial,sans-serif;text-decoration:none}
+            .fc-minimal-header .fc-home-link:hover{text-decoration:underline}
+            @media(max-width:600px){.fc-minimal-header{min-height:54px;padding:8px 14px}.fc-minimal-header .pf-logo{font-size:21px}}
+        </style>
+    @endif
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -68,19 +81,28 @@
 </head>
 <body style="background:#f4f4f4; color:#111;">
 <div class="min-h-screen">
-    @include('partials.site-header')
+    @if($isFrameCustomizer)
+        <header class="fc-minimal-header">
+            <a class="pf-logo" href="{{ route('home') }}" aria-label="{{ $storefrontBrand }} home">@if($storefrontLogo)<img src="{{ $storefrontLogo }}" alt="{{ $storefrontBrand }}" class="pf-header-logo-image">@else<span class="pf-logo-mark" aria-hidden="true"></span>{{ $storefrontBrand }}@endif</a>
+            <a class="fc-home-link" href="{{ route('home') }}">{{ $siteSettings->get('header_home_link_label', '← Back to homepage') }}</a>
+        </header>
+    @else
+        @include('partials.frames-header')
+    @endif
 
     @include('partials.flash')
 
-    @include('partials.breadcrumbs', ['items' => $storefrontBreadcrumbs])
+    @unless($isFrameCustomizer)
+        @include('partials.breadcrumbs', ['items' => $storefrontBreadcrumbs])
+    @endunless
 
     <main>
         @yield('content')
     </main>
 
-    @include('partials.managed-before-footer')
-
-    @include('partials.site-footer')
+    @unless($isFrameCustomizer)
+        @include('partials.frames-footer')
+    @endunless
 </div>
 @stack('scripts')
 </body>
