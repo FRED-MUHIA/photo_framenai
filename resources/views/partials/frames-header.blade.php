@@ -32,6 +32,9 @@
         </div>
     </div>
     <div class="pf-topbar">
+        <button class="pf-mobile-menu-toggle" type="button" aria-label="Open menu" aria-controls="pf-mobile-nav" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
         <a class="pf-logo" href="{{ route('home') }}" aria-label="{{ $headerBrand }} home">@if($headerLogo)<img src="{{ $headerLogo }}" alt="{{ $headerBrand }}" class="pf-header-logo-image">@else<span class="pf-logo-mark" aria-hidden="true"></span>{{ $headerBrand }}@endif</a>
         <form class="pf-search" action="{{ route('products.index') }}" method="get" role="search">
             <label class="pf-sr-only" for="frame-search">Search frames</label>
@@ -44,7 +47,11 @@
             <a class="pf-cart" href="{{ route('cart.index') }}" aria-label="Shopping cart" title="Shopping cart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 3h3l3 13h11l3-9H6"/><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/></svg>@if(count(session('print_cart', [])))<span>{{ count(session('print_cart', [])) }}</span>@endif</a>
         </div>
     </div>
-    <nav class="pf-nav" aria-label="Main navigation">
+    <nav class="pf-nav" id="pf-mobile-nav" aria-label="Main navigation">
+        <div class="pf-mobile-nav-heading">
+            <span>Browse</span>
+            <button class="pf-mobile-menu-close" type="button" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+        </div>
         @foreach($headerNav as $navItem)
             @php
                 $navChildren = is_array($navItem['items'] ?? null) ? $navItem['items'] : [];
@@ -150,11 +157,64 @@
             @endif
         @endforeach
     </nav>
+    <button class="pf-nav-backdrop" type="button" aria-label="Close menu" tabindex="-1"></button>
 </header>
 
 <script>
     (() => {
         const initFrameNavigationMenus = () => {
+            document.querySelectorAll('.pf-header').forEach((header) => {
+                const trigger = header.querySelector('.pf-mobile-menu-toggle');
+                const closeButton = header.querySelector('.pf-mobile-menu-close');
+                const backdrop = header.querySelector('.pf-nav-backdrop');
+                const nav = header.querySelector('.pf-nav');
+                if (!trigger || !closeButton || !backdrop || !nav) return;
+
+                const mobileViewport = window.matchMedia('(max-width: 700px)');
+                const setOpen = (open, returnFocus = false) => {
+                    const isOpen = mobileViewport.matches && open;
+                    header.classList.toggle('pf-mobile-menu-open', isOpen);
+                    document.body.classList.toggle('pf-mobile-menu-lock', isOpen);
+                    trigger.setAttribute('aria-expanded', String(isOpen));
+                    trigger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+                    nav.inert = mobileViewport.matches && !isOpen;
+                    if (isOpen) {
+                        window.requestAnimationFrame(() => closeButton.focus());
+                    } else if (returnFocus) {
+                        trigger.focus();
+                    }
+                };
+
+                setOpen(false);
+                trigger.addEventListener('click', () => setOpen(!header.classList.contains('pf-mobile-menu-open')));
+                closeButton.addEventListener('click', () => setOpen(false, true));
+                backdrop.addEventListener('click', () => setOpen(false, true));
+                nav.addEventListener('click', (event) => {
+                    if (event.target.closest('a')) setOpen(false, true);
+                });
+                nav.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        event.preventDefault();
+                        setOpen(false, true);
+                        return;
+                    }
+                    if (event.key !== 'Tab' || !mobileViewport.matches || !header.classList.contains('pf-mobile-menu-open')) return;
+                    const focusable = [...nav.querySelectorAll('a[href], button:not([disabled]), summary')]
+                        .filter((element) => element.getClientRects().length > 0);
+                    if (!focusable.length) return;
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+                    if (event.shiftKey && document.activeElement === first) {
+                        event.preventDefault();
+                        last.focus();
+                    } else if (!event.shiftKey && document.activeElement === last) {
+                        event.preventDefault();
+                        first.focus();
+                    }
+                });
+                mobileViewport.addEventListener('change', () => setOpen(false));
+            });
+
             document.querySelectorAll('.pf-header .pf-nav').forEach((nav) => {
                 const menus = [...nav.querySelectorAll('.pf-nav-dropdown')];
                 let timer;
