@@ -42,6 +42,27 @@ class FrameCustomizerController extends Controller
         ]);
     }
 
+    private function accessoryOptions(Frame $frame): array
+    {
+        $options = collect($frame->accessories ?? [])->values();
+        $existingNames = $options
+            ->map(fn ($option) => mb_strtolower(trim((string) ($option['name'] ?? ''))))
+            ->all();
+        $defaults = [
+            ['id' => 'with-glass', 'name' => 'With glass', 'price' => 0],
+            ['id' => 'stand-handle', 'name' => 'Stand handle', 'price' => 0],
+            ['id' => 'wall-mount', 'name' => 'Wall mount', 'price' => 0],
+        ];
+
+        foreach ($defaults as $option) {
+            if (! in_array(mb_strtolower($option['name']), $existingNames, true)) {
+                $options->push($option);
+            }
+        }
+
+        return $options->values()->all();
+    }
+
     private function renderCustomizer(?array $initialCustomization = null, ?string $lineKey = null)
     {
         // Keep active, sold-out designs in the gallery so guests can still preview them.
@@ -65,7 +86,7 @@ class FrameCustomizerController extends Controller
             'orientations' => $frame->orientations ?? [],
             'sizes' => $frame->sizes ?? [],
             'mats' => $frame->mats ?? [],
-            'accessories' => $frame->accessories ?? [],
+            'accessories' => $this->accessoryOptions($frame),
             'inventory' => $frame->inventory,
         ])->values();
 
@@ -147,7 +168,7 @@ class FrameCustomizerController extends Controller
             throw ValidationException::withMessages(['orientation' => 'Print dimensions must match the selected production orientation.']);
         }
 
-        $availableAccessories = collect($frame->accessories ?? [])->keyBy(fn ($item) => (string) ($item['id'] ?? $item['name'] ?? ''));
+        $availableAccessories = collect($this->accessoryOptions($frame))->keyBy(fn ($item) => (string) ($item['id'] ?? $item['name'] ?? ''));
         $accessoryKeys = array_values(array_unique($validated['accessories'] ?? []));
         foreach ($accessoryKeys as $key) {
             if (! $availableAccessories->has($key)) {
