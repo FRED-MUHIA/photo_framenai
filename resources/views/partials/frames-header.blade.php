@@ -244,7 +244,10 @@
                     });
                 });
 
-                nav.addEventListener('pointerleave', scheduleClose);
+                nav.addEventListener('pointerleave', (event) => {
+                    if (event.pointerType === 'touch') return;
+                    scheduleClose();
+                });
                 nav.addEventListener('pointerenter', () => window.clearTimeout(timer));
                 document.addEventListener('pointerdown', (event) => {
                     if (!nav.contains(event.target)) closeOthers();

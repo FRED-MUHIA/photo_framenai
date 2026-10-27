@@ -238,7 +238,7 @@
         const d=dimensions();const profile=Math.max(.035,Math.min(.19,state.width/Math.max(1,Math.min(d.w,d.h)+2*state.width)));
         const insetX=W*profile,insetY=H*profile;
         ctx.save();ctx.translate(W/2,H/2);const rad=state.frameRotation*Math.PI/180;const rotatedW=Math.abs(W*Math.cos(rad))+Math.abs(H*Math.sin(rad));const rotatedH=Math.abs(W*Math.sin(rad))+Math.abs(H*Math.cos(rad));const scale=Math.min(W/rotatedW,H/rotatedH);ctx.scale(scale,scale);ctx.rotate(rad);ctx.translate(-W/2,-H/2);
-        ctx.fillStyle='#b7a27e';ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#e6e6e6';ctx.fillRect(0,0,W,H);
         if(state.mat){ctx.fillStyle=state.mat;ctx.fillRect(insetX*.72,insetY*.72,W-2*insetX*.72,H-2*insetY*.72)}
         const ix=insetX,iy=insetY,iw=W-2*insetX,ih=H-2*insetY;
         if(state.photo){ctx.save();ctx.beginPath();ctx.rect(ix,iy,iw,ih);ctx.clip();ctx.translate(ix+iw/2+state.panX*iw/100,iy+ih/2+state.panY*ih/100);ctx.rotate(state.imageRotation*Math.PI/180);const base=state.fit==='fill'?Math.max(iw/state.photo.width,ih/state.photo.height):Math.min(iw/state.photo.width,ih/state.photo.height);const z=base*state.zoom;ctx.drawImage(state.photo,-state.photo.width*z/2,-state.photo.height*z/2,state.photo.width*z,state.photo.height*z);ctx.restore()}
