@@ -87,7 +87,7 @@ class PageBuilderController extends Controller
             $sections = $this->defaultSectionsForSlug($pageBuilder->slug);
         }
         if ($pageBuilder->slug === 'home') {
-            $sections = $this->ensureHomeEditorSections($sections);
+            $sections = $this->homepageEditorSections($sections);
         }
         if ($pageBuilder->slug === 'design-services') {
             $sections = DesignServicesContentDefaults::mergedSections($sections);
@@ -108,6 +108,15 @@ class PageBuilderController extends Controller
         $validated = $this->validatePayload($request, $pageBuilder->id);
         $sections = $this->decodeSections($validated['sections_json'] ?? null);
         $sections = $this->applyUploadedImages($request, $sections);
+        if ($pageBuilder->slug === 'home') {
+            $sections = array_merge(
+                collect($pageBuilder->sections ?? [])
+                    ->reject(fn ($section) => in_array(data_get($section, 'component'), $this->homepageComponentKeys(), true))
+                    ->values()
+                    ->all(),
+                $this->homepageEditorSections($sections)
+            );
+        }
 
         $pageBuilder->update([
             'name' => $validated['name'],
@@ -217,27 +226,25 @@ class PageBuilderController extends Controller
         };
     }
 
-    private function ensureHomeEditorSections(array $sections): array
+    private function homepageComponentKeys(): array
     {
-        $defaults = collect(HomepageContentDefaults::sections())->keyBy('component');
-        $components = collect($sections)->pluck('component');
+        return collect(HomepageContentDefaults::storefrontSections())->pluck('component')->all();
+    }
 
-        if (! $components->contains('home_pet_promo') && $defaults->has('home_pet_promo')) {
-            array_unshift($sections, $defaults->get('home_pet_promo'));
-        }
+    private function homepageEditorSections(array $sections): array
+    {
+        $defaults = collect(HomepageContentDefaults::storefrontSections())->keyBy('component');
+        $saved = collect($sections)
+            ->filter(fn ($section) => is_array($section) && $defaults->has(data_get($section, 'component')))
+            ->keyBy('component');
 
-        if (! $components->contains('home_top_picks') && $defaults->has('home_top_picks')) {
-            $sections[] = $defaults->get('home_top_picks');
-        }
-
-        $storefrontDefaults = collect(HomepageContentDefaults::storefrontSections())->keyBy('component');
-        $components = collect($sections)->pluck('component');
-        foreach ($storefrontDefaults as $component => $section) {
-            if (! $components->contains($component)) {
-                $sections[] = $section;
+        return $defaults->map(function (array $default, string $component) use ($saved) {
+            $section = array_merge($default, (array) $saved->get($component, []));
+            if (array_key_exists('items', (array) $saved->get($component, []))) {
+                $section['items'] = is_array($saved->get($component)['items']) ? $saved->get($component)['items'] : [];
             }
-        }
 
-        return $sections;
+            return $section;
+        })->values()->all();
     }
 }

@@ -4,31 +4,46 @@
         $initialSections = [];
     }
     $mediaUrls = collect($mediaItems ?? [])->map(fn ($item) => $item->url)->filter()->values();
+    $isHomepage = $page->slug === 'home';
 @endphp
 
-<div class="grid gap-4 sm:grid-cols-2">
-    <input type="text" name="name" value="{{ old('name', $page->name) }}" placeholder="Page name" class="rounded-xl border-slate-300" required>
-    <input type="text" name="slug" value="{{ old('slug', $page->slug) }}" placeholder="Slug (optional)" class="rounded-xl border-slate-300">
-    <select name="layout" class="rounded-xl border-slate-300">
-        <option value="default" @selected(old('layout', $page->layout) === 'default')>Default</option>
-        <option value="wide" @selected(old('layout', $page->layout) === 'wide')>Wide</option>
-    </select>
-    <label class="inline-flex items-center gap-2 text-sm">
+@if($isHomepage)
+    <input type="hidden" name="name" value="{{ old('name', $page->name) }}">
+    <input type="hidden" name="slug" value="home">
+    <input type="hidden" name="layout" value="{{ old('layout', $page->layout ?: 'default') }}">
+    <input type="hidden" name="body" value="{{ old('body', $page->body) }}">
+    <label class="inline-flex items-center gap-2 text-sm font-semibold">
         <input type="hidden" name="is_active" value="0">
         <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $page->is_active ?? true))>
-        Active
+        Homepage enabled
     </label>
-</div>
+@else
+    <div class="grid gap-4 sm:grid-cols-2">
+        <input type="text" name="name" value="{{ old('name', $page->name) }}" placeholder="Page name" class="rounded-xl border-slate-300" required>
+        <input type="text" name="slug" value="{{ old('slug', $page->slug) }}" placeholder="Slug (optional)" class="rounded-xl border-slate-300">
+        <select name="layout" class="rounded-xl border-slate-300">
+            <option value="default" @selected(old('layout', $page->layout) === 'default')>Default</option>
+            <option value="wide" @selected(old('layout', $page->layout) === 'wide')>Wide</option>
+        </select>
+        <label class="inline-flex items-center gap-2 text-sm">
+            <input type="hidden" name="is_active" value="0">
+            <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $page->is_active ?? true))>
+            Active
+        </label>
+    </div>
+@endif
 
 <div class="grid gap-4 sm:grid-cols-2">
     <input type="text" name="meta_title" value="{{ old('meta_title', $page->meta_title) }}" placeholder="Meta title" class="rounded-xl border-slate-300">
     <input type="text" name="meta_description" value="{{ old('meta_description', $page->meta_description) }}" placeholder="Meta description" class="rounded-xl border-slate-300">
 </div>
 
-<div>
-    <label class="mb-1 block text-sm font-bold">Page Intro / Body</label>
-    <textarea name="body" rows="4" class="w-full rounded-xl border-slate-300" placeholder="Top page content...">{{ old('body', $page->body) }}</textarea>
-</div>
+@unless($isHomepage)
+    <div>
+        <label class="mb-1 block text-sm font-bold">Page Intro / Body</label>
+        <textarea name="body" rows="4" class="w-full rounded-xl border-slate-300" placeholder="Top page content...">{{ old('body', $page->body) }}</textarea>
+    </div>
+@endunless
 
 <datalist id="page-builder-media-urls">
     @foreach($mediaUrls as $url)
@@ -36,10 +51,10 @@
     @endforeach
 </datalist>
 
-<div class="rounded-xl border border-slate-200 p-4" x-data="pageSectionsBuilder(@js($initialSections))">
+<div class="rounded-xl border border-slate-200 p-4" x-data="pageSectionsBuilder(@js($initialSections), @js($isHomepage))">
     <div class="mb-3 flex items-center justify-between">
-        <h3 class="text-sm font-bold">Page Sections / Components</h3>
-        <button type="button" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white" @click="add()">Add Section</button>
+        <h3 class="text-sm font-bold">{{ $isHomepage ? 'Homepage Sections' : 'Page Sections / Components' }}</h3>
+        @unless($isHomepage)<button type="button" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white" @click="add()">Add Section</button>@endunless
     </div>
 
     <template x-if="sections.length === 0">
@@ -52,13 +67,25 @@
                 <div class="mb-2 flex items-center justify-between">
                     <p class="text-xs font-bold uppercase text-slate-500">Section <span x-text="idx + 1"></span></p>
                     <div class="flex items-center gap-3">
-                        <button type="button" class="text-xs font-bold text-slate-700" @click="moveUp(idx)" x-show="idx > 0">Move Up</button>
-                        <button type="button" class="text-xs font-bold text-slate-700" @click="moveDown(idx)" x-show="idx < sections.length - 1">Move Down</button>
-                        <button type="button" class="text-xs font-bold text-rose-700" @click="remove(idx)">Remove</button>
+                        @unless($isHomepage)
+                            <button type="button" class="text-xs font-bold text-slate-700" @click="moveUp(idx)" x-show="idx > 0">Move Up</button>
+                            <button type="button" class="text-xs font-bold text-slate-700" @click="moveDown(idx)" x-show="idx < sections.length - 1">Move Down</button>
+                            <button type="button" class="text-xs font-bold text-rose-700" @click="remove(idx)">Remove</button>
+                        @endunless
                     </div>
                 </div>
                 <div class="grid gap-2 sm:grid-cols-2">
-                    <select x-model="section.component" class="rounded-lg border-slate-300 text-sm">
+                    <select x-model="section.component" class="rounded-lg border-slate-300 text-sm" @if($isHomepage) disabled @endif>
+                        @if($isHomepage)
+                            <option value="storefront_hero">Hero slideshow</option>
+                            <option value="storefront_featured">Featured cards</option>
+                            <option value="storefront_intro">Intro banner</option>
+                            <option value="storefront_categories">Frame types</option>
+                            <option value="storefront_colors">Frame colors</option>
+                            <option value="storefront_products">Popular products</option>
+                            <option value="storefront_prints">Custom prints</option>
+                            <option value="storefront_values">Why Photo Frames</option>
+                        @else
                         <option value="storefront_hero">Homepage: Hero and rotating images</option>
                         <option value="storefront_featured">Homepage: Featured cards</option>
                         <option value="storefront_intro">Homepage: Intro banner</option>
@@ -96,8 +123,23 @@
                         <option value="cta">Call To Action</option>
                         <option value="faq">FAQ</option>
                         <option value="gallery">Gallery</option>
+                        @endif
                     </select>
                     <input type="text" x-model="section.title" placeholder="Title" class="rounded-lg border-slate-300 text-sm">
+                    @if($isHomepage)
+                        <template x-if="['storefront_hero', 'storefront_intro', 'storefront_prints'].includes(section.component)">
+                            <input type="text" x-model="section.subtitle" placeholder="Subtitle" class="rounded-lg border-slate-300 text-sm">
+                        </template>
+                        <template x-if="['storefront_hero', 'storefront_intro', 'storefront_prints', 'storefront_values'].includes(section.component)">
+                            <textarea x-model="section.content" rows="3" placeholder="Section text" class="rounded-lg border-slate-300 text-sm sm:col-span-2"></textarea>
+                        </template>
+                        <template x-if="['storefront_hero', 'storefront_intro', 'storefront_categories', 'storefront_colors', 'storefront_products'].includes(section.component)">
+                            <input type="text" x-model="section.button_label" placeholder="Button label" class="rounded-lg border-slate-300 text-sm">
+                        </template>
+                        <template x-if="['storefront_hero', 'storefront_intro', 'storefront_categories', 'storefront_colors', 'storefront_products'].includes(section.component)">
+                            <input type="text" x-model="section.button_url" placeholder="Button link" class="rounded-lg border-slate-300 text-sm">
+                        </template>
+                    @else
                     <input type="text" x-model="section.subtitle" placeholder="Subtitle" class="rounded-lg border-slate-300 text-sm">
                     <div class="grid gap-2 sm:col-span-2 sm:grid-cols-2">
                         <input type="text" x-model="section.image_url" list="page-builder-media-urls" placeholder="Image URL" class="rounded-lg border-slate-300 text-sm">
@@ -116,8 +158,48 @@
                         <input type="text" x-model="section.bg_image_url" list="page-builder-media-urls" placeholder="Background image URL" class="rounded-lg border-slate-300 text-sm">
                         <input type="file" :name="`section_background_images[${idx}]`" accept="image/*" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
                     </div>
+                    @endif
                 </div>
 
+                @if($isHomepage)
+                <div class="mt-3 rounded-lg border border-slate-200 bg-white p-3" x-show="['storefront_hero', 'storefront_featured', 'storefront_colors', 'storefront_prints', 'storefront_values'].includes(section.component)">
+                    <div class="mb-2 flex items-center justify-between">
+                        <p class="text-xs font-bold uppercase text-slate-500">Slides, cards, or items</p>
+                        <button type="button" class="rounded bg-slate-800 px-2 py-1 text-[11px] font-bold text-white" @click="addItem(idx)">Add Item</button>
+                    </div>
+                    <template x-if="!section.items || section.items.length === 0">
+                        <p class="text-xs text-slate-500">No items added yet.</p>
+                    </template>
+                    <div class="space-y-2">
+                        <template x-for="(item, itemIdx) in section.items" :key="itemIdx">
+                            <div class="rounded border border-slate-200 bg-slate-50 p-2">
+                                <div class="mb-2 flex items-center justify-between">
+                                    <p class="text-[11px] font-bold uppercase text-slate-500">Item <span x-text="itemIdx + 1"></span></p>
+                                    <button type="button" class="text-[11px] font-bold text-rose-700" @click="removeItem(idx, itemIdx)">Remove</button>
+                                </div>
+                                <div class="grid gap-2 sm:grid-cols-2">
+                                    <input type="text" x-model="item.title" placeholder="Item title" class="rounded border-slate-300 text-xs">
+                                    <template x-if="section.component === 'storefront_featured'">
+                                        <input type="text" x-model="item.subtitle" placeholder="Item subtitle" class="rounded border-slate-300 text-xs">
+                                    </template>
+                                    <template x-if="['storefront_hero', 'storefront_featured', 'storefront_colors', 'storefront_prints'].includes(section.component)">
+                                        <div class="grid gap-2 sm:col-span-2 sm:grid-cols-2">
+                                            <input type="text" x-model="item.image_url" list="page-builder-media-urls" placeholder="Image URL" class="rounded border-slate-300 text-xs">
+                                            <input type="file" :name="`item_images[${idx}][${itemIdx}]`" accept="image/*" class="rounded border border-slate-300 px-2 py-1 text-xs">
+                                        </div>
+                                    </template>
+                                    <template x-if="['storefront_featured', 'storefront_colors', 'storefront_prints'].includes(section.component)">
+                                        <input type="text" x-model="item.link_url" placeholder="Item link" class="rounded border-slate-300 text-xs sm:col-span-2">
+                                    </template>
+                                    <template x-if="section.component === 'storefront_values'">
+                                        <input type="text" x-model="item.content" placeholder="Short value or symbol" class="rounded border-slate-300 text-xs sm:col-span-2">
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                @else
                 <div class="mt-3 rounded-lg border border-slate-200 bg-white p-3">
                     <div class="mb-2 flex items-center justify-between">
                         <p class="text-xs font-bold uppercase text-slate-500">Section Items (Cards / FAQ / Gallery)</p>
@@ -161,6 +243,7 @@
                         </template>
                     </div>
                 </div>
+                @endif
             </div>
         </template>
     </div>
@@ -171,7 +254,7 @@
 
 @push('scripts')
 <script>
-    function pageSectionsBuilder(initialSections) {
+    function pageSectionsBuilder(initialSections, isHomepage = false) {
         const normalizeSection = (section = {}) => ({
             component: section.component || 'text',
             title: section.title || '',
@@ -203,7 +286,7 @@
         return {
             sections: Array.isArray(initialSections) ? initialSections.map((section) => normalizeSection(section)) : [],
             add() {
-                this.sections.push(normalizeSection());
+                this.sections.push(normalizeSection({ component: isHomepage ? 'storefront_hero' : 'text' }));
             },
             remove(index) {
                 this.sections.splice(index, 1);
