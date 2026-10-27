@@ -133,15 +133,16 @@ class FrameCustomizerController extends Controller
         if (count($frame->sizes ?? []) && ! $selectedSize) {
             throw ValidationException::withMessages(['size_name' => 'Choose a print size available for this frame.']);
         }
-        $dimensionsMatch = $selectedSize && (
-            (abs((float) $selectedSize['width_cm'] - (float) $validated['width_cm']) <= 0.01 && abs((float) $selectedSize['height_cm'] - (float) $validated['height_cm']) <= 0.01)
-            || (abs((float) $selectedSize['height_cm'] - (float) $validated['width_cm']) <= 0.01 && abs((float) $selectedSize['width_cm'] - (float) $validated['height_cm']) <= 0.01)
-        );
-        if ($selectedSize && ! $dimensionsMatch) {
-            throw ValidationException::withMessages(['size_name' => 'The selected dimensions do not match that print size.']);
+        if ($selectedSize) {
+            $printWidth = (float) $selectedSize['width_cm'];
+            $printHeight = (float) $selectedSize['height_cm'];
+            if (($orientation === 'landscape' && $printWidth < $printHeight) || ($orientation === 'portrait' && $printWidth > $printHeight)) {
+                [$printWidth, $printHeight] = [$printHeight, $printWidth];
+            }
+        } else {
+            $printWidth = (float) $validated['width_cm'];
+            $printHeight = (float) $validated['height_cm'];
         }
-        $printWidth = (float) $validated['width_cm'];
-        $printHeight = (float) $validated['height_cm'];
         if (($orientation === 'portrait' && $printWidth > $printHeight) || ($orientation === 'landscape' && $printWidth < $printHeight)) {
             throw ValidationException::withMessages(['orientation' => 'Print dimensions must match the selected production orientation.']);
         }
@@ -194,8 +195,8 @@ class FrameCustomizerController extends Controller
             'orientation' => $orientation,
             'size_name' => $validated['size_name'],
             'unit' => $validated['unit'],
-            'width_cm' => (float) $validated['width_cm'],
-            'height_cm' => (float) $validated['height_cm'],
+            'width_cm' => $printWidth,
+            'height_cm' => $printHeight,
             'frame_width_cm' => $width,
             'frame_rotation' => (float) $validated['frame_rotation'],
             'image_rotation' => (float) $validated['image_rotation'],

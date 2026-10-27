@@ -64,6 +64,9 @@
     @media(max-width:1100px){.frame-customizer .fc-workspace{grid-template-columns:minmax(0,1fr) 300px;gap:10px}.frame-customizer .fc-side-editor{max-height:calc(100vh - 220px)}.frame-customizer .fc-size-row{grid-template-columns:minmax(0,1fr) 60px 60px 50px}}
     @media(max-width:800px){.frame-customizer .fc-workspace{grid-template-columns:1fr}.frame-customizer .fc-side-editor{position:static;max-height:none;overflow:visible}.frame-customizer .fc-stage{height:min(58vh,500px)!important;min-height:320px!important}.frame-customizer .fc-canvas-frame,.frame-customizer .fc-canvas-frame canvas{max-height:min(56vh,480px)!important}}
     @media(max-width:650px){.frame-customizer .fc-stage{height:min(48vh,370px)!important;min-height:260px!important;padding:8px!important}.frame-customizer .fc-canvas-frame,.frame-customizer .fc-canvas-frame canvas{max-height:min(45vh,350px)!important}.frame-customizer .fc-side-content{gap:8px}.frame-customizer .fc-size-row{grid-template-columns:minmax(0,1fr) 1fr 1fr 58px}}
+    .frame-customizer #fc-size-select,.frame-customizer #fc-unit{background-color:#fff!important;color:#171717!important;border-color:#c9c9c9!important;color-scheme:light}
+    .frame-customizer #fc-size-select option,.frame-customizer #fc-unit option{background:#fff;color:#171717}
+    @media(max-width:650px){.frame-customizer .fc-size-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 58px}.frame-customizer #fc-size-select{grid-column:1/-1}}
 </style>
 @endpush
 
