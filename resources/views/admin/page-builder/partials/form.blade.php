@@ -283,6 +283,7 @@
             bg_color: section.bg_color || '#ffffff',
             bg_image_url: section.bg_image_url || '',
             text_color: section.text_color || '#111111',
+            category_slugs: Array.isArray(section.category_slugs) ? section.category_slugs : [],
             items: Array.isArray(section.items) ? section.items.map((item) => ({
                 title: item.title || '',
                 subtitle: item.subtitle || '',
