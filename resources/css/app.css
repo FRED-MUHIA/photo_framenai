@@ -695,4 +695,5 @@ body:has(.pf-header) main a[class*="hover:bg-green-"]:hover {
     body:has(.pf-header) main { font-size: 13px; }
     body:has(.pf-header) main:not(:has(.pf-home)) h1 { font-size: clamp(1.9rem, 8vw, 2.5rem) !important; }
     body:has(.pf-header) main:not(:has(.pf-home)) h2 { font-size: clamp(1.55rem, 6vw, 1.9rem) !important; }
+    body:has(.pf-header) main .product-detail-title { font-size: 20px !important; line-height: 1.2; }
 }
