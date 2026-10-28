@@ -7,11 +7,79 @@
 
 @push('head')
 <style>
+    .product-index-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+    }
+    .product-index-card {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid #eee;
+        border-radius: 9px;
+        background: #fff;
+        color: #171717;
+        text-decoration: none;
+        transition: box-shadow .18s ease, transform .18s ease;
+    }
+    .product-index-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgb(30 25 20 / .08);
+    }
+    .product-index-card-image {
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+        background: #f3f1ed;
+    }
+    .product-index-card-image img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
     .product-index-card-copy {
+        padding: 8px 9px 9px;
+    }
+    .product-index-card-title {
         display: -webkit-box;
         overflow: hidden;
+        min-height: 2.6em;
+        color: #171717;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.3;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
+    }
+    .product-index-card-price {
+        margin-top: 3px;
+        color: #a28d7e;
+        font-size: 10px;
+        line-height: 1.3;
+    }
+    .product-index-card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 7px;
+    }
+    .product-index-card-tag {
+        max-width: 100%;
+        overflow: hidden;
+        border: 1px solid #e9e6e1;
+        border-radius: 999px;
+        padding: 2px 6px;
+        color: #82796f;
+        font-size: 8px;
+        line-height: 1.2;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    @media (max-width: 480px) {
+        .product-index-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .product-index-card-copy { padding: 8px; }
+        .product-index-card-title { font-size: 12px; }
+        .product-index-card-price { font-size: 11px; }
     }
 </style>
 @endpush
@@ -63,15 +131,22 @@
         @endif
     </div>
 
-    <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
+    <div class="product-index-grid mt-8">
         @forelse($products as $product)
             @php
                 $thumbnailUrl = \App\Support\PublicAssetUrl::image($product->thumbnail, 520, 64);
                 $imageLoading = $loop->first ? 'eager' : 'lazy';
                 $imagePriority = $loop->first ? 'high' : 'auto';
+                $productTags = collect(data_get($product->metadata, 'tags', []))
+                    ->filter(fn ($tag) => is_string($tag) && trim($tag) !== '')
+                    ->map(fn ($tag) => trim($tag))
+                    ->take(2);
+                if ($productTags->isEmpty()) {
+                    $productTags = $product->categories->pluck('name')->filter()->take(2);
+                }
             @endphp
-            <a href="{{ route('products.show', $product) }}" class="block rounded-xl border border-slate-200 bg-white p-3 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:rounded-2xl sm:p-4">
-                <div class="aspect-square overflow-hidden rounded-lg bg-slate-100 sm:rounded-xl">
+            <a href="{{ route('products.show', $product) }}" class="product-index-card">
+                <div class="product-index-card-image">
                     @if($thumbnailUrl)
                         <img loading="{{ $imageLoading }}" fetchpriority="{{ $imagePriority }}" decoding="async" src="{{ $thumbnailUrl }}" alt="{{ $product->name }}" class="h-full w-full object-cover" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
                         <div hidden class="product-image-fallback"><span aria-hidden="true">PF</span><strong>{{ $product->name }}</strong></div>
@@ -79,25 +154,20 @@
                         <div class="product-image-fallback"><span aria-hidden="true">PF</span><strong>{{ $product->name }}</strong></div>
                     @endif
                 </div>
-                <div class="mt-3 flex items-start justify-between gap-2 sm:mt-4 sm:gap-3">
-                    <div>
-                        <p class="text-[10px] font-semibold uppercase tracking-wide text-teal-700 sm:text-xs sm:tracking-wider">
-                            {{ $product->categories->pluck('name')->join(' / ') ?: $product->category?->name }}
-                        </p>
-                        <h2 class="mt-1 text-sm font-extrabold leading-tight sm:text-lg">{{ $product->name }}</h2>
-                    </div>
-                    @if($product->is_featured)
-                        <span class="hidden rounded-full bg-teal-50 px-2 py-1 text-xs font-bold text-teal-700 sm:inline-flex">Popular</span>
+                <div class="product-index-card-copy">
+                    <h2 class="product-index-card-title">{{ $product->name }}</h2>
+                    <p class="product-index-card-price">{{ config('shop.currency_symbol') }}{{ number_format($product->base_price, 2) }}</p>
+                    @if($productTags->isNotEmpty())
+                        <div class="product-index-card-tags" aria-label="Product tags">
+                            @foreach($productTags as $tag)
+                                <span class="product-index-card-tag">{{ $tag }}</span>
+                            @endforeach
+                        </div>
                     @endif
-                </div>
-                <p class="product-index-card-copy mt-2 text-xs leading-5 text-slate-600 sm:text-sm">{{ $product->short_description }}</p>
-                <div class="mt-3 flex flex-wrap items-center justify-between gap-2 sm:mt-4">
-                    <span class="text-xs font-extrabold text-slate-900 sm:text-sm">{{ config('shop.currency_symbol') }} {{ number_format($product->base_price, 2) }}</span>
-                    <span class="rounded-lg border border-slate-300 px-2 py-1 text-[11px] font-bold hover:border-slate-400 sm:px-3 sm:py-1.5 sm:text-xs">Order Now</span>
                 </div>
             </a>
         @empty
-            <div class="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500 sm:col-span-2 lg:col-span-3 xl:col-span-4">No products found for your filter.</div>
+            <div class="col-span-full rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500">No products found for your filter.</div>
         @endforelse
     </div>
 
