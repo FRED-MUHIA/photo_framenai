@@ -566,6 +566,9 @@ body.pf-mobile-menu-lock{overflow:hidden;overscroll-behavior:none}
     line-height: 1.4;
 }
 .pf-home #frame-decor .pf-product-card:hover h3 { color: var(--pf-red); }
+.pf-home .pf-frame-type-product { color: #171717; text-align: left; text-decoration: none; }
+.pf-home .pf-frame-type-product h3 { padding: 12px 4px 3px; font-size: clamp(14px, 1vw, 17px); line-height: 1.35; text-align: left; }
+.pf-home .pf-frame-type-product p { padding: 0 4px 10px; color: #a89383; font-size: 14px; line-height: 1.4; }
 @media (max-width: 1000px) {
     .pf-home #frame-decor .pf-product-slider-track > .pf-product-card {
         flex-basis: calc((100% - 2 * clamp(18px, 2.4vw, 32px)) / 3);

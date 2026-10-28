@@ -51,7 +51,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Fredoka+One&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     @include('partials.canonical-host-guard')
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=42">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
     @if($isFrameCustomizer)

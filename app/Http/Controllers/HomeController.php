@@ -53,30 +53,11 @@ class HomeController extends Controller
             ->take(12)
             ->get();
 
-        $imageIsAvailable = static function (?string $url): bool {
-            if (! $url) {
-                return false;
-            }
-
-            $parts = parse_url($url) ?: [];
-            $host = strtolower($parts['host'] ?? '');
-            $appHost = strtolower(parse_url((string) config('app.url'), PHP_URL_HOST) ?: '');
-            if ($host !== '' && $appHost !== '' && $host !== $appHost) {
-                return true;
-            }
-
-            $path = rawurldecode($parts['path'] ?? $url);
-
-            return is_file(public_path(ltrim($path, '/')));
-        };
-
-        $categories->each(function (Category $category) use ($imageIsAvailable): void {
-            $productImages = $category->products->pluck('thumbnail')
-                ->merge($category->linkedProducts->pluck('thumbnail'));
-            $category->setAttribute('homepage_image', collect([$category->image])
-                ->merge($productImages)
-                ->first($imageIsAvailable));
-        });
+        $frameTypeProducts = $categories
+            ->flatMap(fn (Category $category) => $category->products->merge($category->linkedProducts))
+            ->unique('id')
+            ->take(12)
+            ->values();
 
         $featuredProducts = Product::query()
             ->active()
@@ -106,6 +87,6 @@ class HomeController extends Controller
             ->take(3)
             ->get(['title', 'slug', 'excerpt', 'published_at']);
 
-        return view('home', compact('categories', 'featuredProducts', 'topPickProducts', 'sliderProducts', 'latestBlogPosts', 'homeSections', 'storefrontSections', 'cmsHome'));
+        return view('home', compact('categories', 'frameTypeProducts', 'featuredProducts', 'topPickProducts', 'sliderProducts', 'latestBlogPosts', 'homeSections', 'storefrontSections', 'cmsHome'));
     }
 }

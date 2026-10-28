@@ -6,7 +6,7 @@
 
 @push('head')
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=41">
+<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=42">
 <link rel="preload" as="image" href="{{ \App\Support\PublicAssetUrl::resolve(data_get($storefrontSections, 'storefront_hero.items.0.image_url')) ?: asset('images/frames/hero.webp') }}">
 @endpush
 
@@ -64,11 +64,10 @@
             <div class="pf-section-heading"><h2 id="types-heading">{{ $homeCategories['title'] }}</h2><div class="pf-color-slider-actions"><button type="button" class="pf-color-slider-button" data-category-slider="previous" aria-label="Previous product categories">‹</button><button type="button" class="pf-color-slider-button" data-category-slider="next" aria-label="Next product categories">›</button><a class="pf-button pf-button-outline" href="{{ $homeCategories['button_url'] }}">{{ $homeCategories['button_label'] }} <span aria-hidden="true">↗</span></a></div></div>
             <div class="pf-color-slider-viewport pf-category-slider-viewport" id="pf-category-slider-viewport" aria-label="Product categories" tabindex="0">
             <div class="pf-grid pf-grid-four pf-category-slider-track">
-                @forelse($categories as $category)
-                @php($categoryImage = $category->homepage_image ?: asset('images/frames/' . ['print-paper', 'print-canvas', 'print-metal', 'print-acrylic', 'print-wood', 'custom-printing'][$loop->index % 6] . '.webp'))
-                <a class="pf-category" href="{{ route('products.index', ['category' => $category->slug]) }}"><div class="pf-image-wrap">@if($categoryImage)<img loading="lazy" src="{{ $categoryImage }}" alt="{{ $category->name }}" width="400" height="500">@else<div class="pf-category-placeholder">{{ $category->name }}</div>@endif</div><h3>{{ $category->name }}</h3></a>
+                @forelse($frameTypeProducts as $product)
+                <a class="pf-category pf-frame-type-product" href="{{ route('products.show', $product) }}"><div class="pf-image-wrap"><img loading="lazy" src="{{ $product->thumbnail }}" alt="{{ $product->name }}" width="400" height="500"></div><h3>{{ $product->name }}</h3><p>{{ config('shop.currency_symbol') }} {{ number_format((float) $product->base_price, 2) }}</p></a>
                 @empty
-                    <p class="pf-category-empty">Product categories will appear here once active products are assigned to them.</p>
+                    <p class="pf-category-empty">Products from the selected categories will appear here once they have active products with images.</p>
                 @endforelse
             </div>
             </div>
