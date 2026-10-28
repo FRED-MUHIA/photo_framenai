@@ -92,7 +92,12 @@ class HomeController extends Controller
             ->take(40)
             ->get();
 
+        $popularCategorySlug = trim((string) data_get($storefrontSections->get('storefront_products'), 'category_slug', ''));
         $sliderProducts = Product::query()->active()
+            ->when($popularCategorySlug !== '', fn ($query) => $query->where(function ($products) use ($popularCategorySlug) {
+                $products->whereHas('category', fn ($category) => $category->active()->where('slug', $popularCategorySlug))
+                    ->orWhereHas('categories', fn ($category) => $category->active()->where('slug', $popularCategorySlug));
+            }))
             ->whereNotNull('thumbnail')->where('thumbnail', '!=', '')
             ->inRandomOrder()->take(8)->get();
 

@@ -139,6 +139,16 @@
                         <template x-if="['storefront_hero', 'storefront_intro', 'storefront_categories', 'storefront_colors', 'storefront_products'].includes(section.component)">
                             <input type="text" x-model="section.button_url" placeholder="Button link" class="rounded-lg border-slate-300 text-sm">
                         </template>
+                        <template x-if="section.component === 'storefront_products'">
+                            <label class="text-sm font-semibold text-slate-600">Product category
+                                <select x-model="section.category_slug" class="mt-1 w-full rounded-lg border-slate-300 font-normal">
+                                    <option value="">All categories</option>
+                                    @foreach($productCategories ?? [] as $category)
+                                        <option value="{{ $category->slug }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                        </template>
                     @else
                     <input type="text" x-model="section.subtitle" placeholder="Subtitle" class="rounded-lg border-slate-300 text-sm">
                     <div class="grid gap-2 sm:col-span-2 sm:grid-cols-2">

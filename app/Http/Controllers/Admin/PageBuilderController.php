@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\CmsPage;
 use App\Models\MediaItem;
 use App\Support\ContactContentDefaults;
@@ -95,11 +96,13 @@ class PageBuilderController extends Controller
 
         $sectionsJson = json_encode($sections, JSON_PRETTY_PRINT);
         $mediaItems = MediaItem::query()->latest()->take(200)->get();
+        $productCategories = Category::query()->active()->orderBy('name')->get(['name', 'slug']);
 
         return view('admin.page-builder.edit', [
             'page' => $pageBuilder,
             'sectionsJson' => $sectionsJson ?: "[]",
             'mediaItems' => $mediaItems,
+            'productCategories' => $productCategories,
         ]);
     }
 
