@@ -28,6 +28,9 @@ class HomeController extends Controller
 
             return $resolved;
         });
+        $homepageCategorySlugs = collect(data_get($storefrontSections->get('storefront_categories'), 'category_slugs', []))
+            ->filter(fn ($slug) => is_string($slug) && trim($slug) !== '')
+            ->values();
 
         $activeProductImages = fn ($query) => $query->active()
             ->whereNotNull('thumbnail')
@@ -37,6 +40,7 @@ class HomeController extends Controller
 
         $categories = Category::query()
             ->active()
+            ->when($homepageCategorySlugs->isNotEmpty(), fn ($query) => $query->whereIn('slug', $homepageCategorySlugs))
             ->where(fn ($query) => $query
                 ->whereHas('products', fn ($products) => $products->active())
                 ->orWhereHas('linkedProducts', fn ($products) => $products->active()))
@@ -92,12 +96,7 @@ class HomeController extends Controller
             ->take(40)
             ->get();
 
-        $popularCategorySlug = trim((string) data_get($storefrontSections->get('storefront_products'), 'category_slug', ''));
         $sliderProducts = Product::query()->active()
-            ->when($popularCategorySlug !== '', fn ($query) => $query->where(function ($products) use ($popularCategorySlug) {
-                $products->whereHas('category', fn ($category) => $category->active()->where('slug', $popularCategorySlug))
-                    ->orWhereHas('categories', fn ($category) => $category->active()->where('slug', $popularCategorySlug));
-            }))
             ->whereNotNull('thumbnail')->where('thumbnail', '!=', '')
             ->inRandomOrder()->take(8)->get();
 

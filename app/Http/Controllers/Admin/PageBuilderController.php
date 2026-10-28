@@ -96,13 +96,13 @@ class PageBuilderController extends Controller
 
         $sectionsJson = json_encode($sections, JSON_PRETTY_PRINT);
         $mediaItems = MediaItem::query()->latest()->take(200)->get();
-        $productCategories = Category::query()->active()->orderBy('name')->get(['name', 'slug']);
+        $homepageCategories = Category::query()->active()->orderBy('name')->get(['name', 'slug']);
 
         return view('admin.page-builder.edit', [
             'page' => $pageBuilder,
             'sectionsJson' => $sectionsJson ?: "[]",
             'mediaItems' => $mediaItems,
-            'productCategories' => $productCategories,
+            'homepageCategories' => $homepageCategories,
         ]);
     }
 

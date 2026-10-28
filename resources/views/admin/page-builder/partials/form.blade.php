@@ -139,15 +139,22 @@
                         <template x-if="['storefront_hero', 'storefront_intro', 'storefront_categories', 'storefront_colors', 'storefront_products'].includes(section.component)">
                             <input type="text" x-model="section.button_url" placeholder="Button link" class="rounded-lg border-slate-300 text-sm">
                         </template>
-                        <template x-if="section.component === 'storefront_products'">
-                            <label class="text-sm font-semibold text-slate-600">Product category
-                                <select x-model="section.category_slug" class="mt-1 w-full rounded-lg border-slate-300 font-normal">
-                                    <option value="">All categories</option>
-                                    @foreach($productCategories ?? [] as $category)
-                                        <option value="{{ $category->slug }}">{{ $category->name }}</option>
+                        <template x-if="section.component === 'storefront_categories'">
+                            <fieldset class="rounded-lg border border-slate-200 p-3 sm:col-span-2">
+                                <legend class="px-1 text-sm font-semibold text-slate-700">Categories to show</legend>
+                                <p class="mb-2 text-xs text-slate-500">Leave all unchecked to show every active category.</p>
+                                <div class="grid gap-2 sm:grid-cols-3">
+                                    @foreach($homepageCategories ?? [] as $category)
+                                        <label class="flex items-center gap-2 text-sm font-normal text-slate-700">
+                                            <input type="checkbox"
+                                                value="{{ $category->slug }}"
+                                                :checked="(section.category_slugs || []).includes($el.value)"
+                                                @change="section.category_slugs = $event.target.checked ? [...(section.category_slugs || []), $event.target.value] : (section.category_slugs || []).filter(slug => slug !== $event.target.value)">
+                                            {{ $category->name }}
+                                        </label>
                                     @endforeach
-                                </select>
-                            </label>
+                                </div>
+                            </fieldset>
                         </template>
                     @else
                     <input type="text" x-model="section.subtitle" placeholder="Subtitle" class="rounded-lg border-slate-300 text-sm">

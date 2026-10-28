@@ -18,7 +18,7 @@ class HomepageContentDefaults
                 ['title' => 'Find Your Favorite', 'subtitle' => 'Shop Picture Frames', 'image_url' => '/images/frames/best-sellers.webp', 'link_url' => '/products'],
             ]],
             ['component' => 'storefront_intro', 'title' => 'Thoughtfully Framed. Unmistakably Yours.', 'subtitle' => 'A beautiful home starts with you', 'content' => 'A little art. A favorite photograph. A moment you never want to forget. Find a frame that brings your story to life, in a style that feels like you.', 'button_label' => 'Shop All Picture Frames', 'button_url' => '/products'],
-            ['component' => 'storefront_categories', 'title' => 'Frame Types', 'button_label' => 'Shop All Types', 'button_url' => '/products'],
+            ['component' => 'storefront_categories', 'title' => 'Frame Types', 'button_label' => 'Shop All Types', 'button_url' => '/products', 'category_slugs' => []],
             ['component' => 'storefront_colors', 'title' => 'Frame Colors', 'button_label' => 'Shop All Colors', 'button_url' => '/products', 'items' => [
                 ['title' => 'Black', 'image_url' => '/images/frames/color-black.webp', 'link_url' => 'black'], ['title' => 'Gold', 'image_url' => '/images/frames/color-gold.webp', 'link_url' => 'gold'], ['title' => 'Brown', 'image_url' => '/images/frames/color-brown.webp', 'link_url' => 'brown'], ['title' => 'White', 'image_url' => '/images/frames/color-white.webp', 'link_url' => 'white'], ['title' => 'Black & Gold', 'image_url' => '/images/frames/color-black-gold.webp', 'link_url' => 'black gold'], ['title' => 'Natural', 'image_url' => '/images/frames/color-natural.webp', 'link_url' => 'natural'],
             ]],
