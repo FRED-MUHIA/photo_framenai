@@ -51,6 +51,10 @@
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
     }
+    body:has(.pf-header) main .product-index-grid .product-index-card-title {
+        font-size: 12px !important;
+        line-height: 1.3 !important;
+    }
     .product-index-card-price {
         margin-top: 3px;
         color: #a28d7e;
