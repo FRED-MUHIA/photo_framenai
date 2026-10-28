@@ -202,7 +202,7 @@
 
             <div class="space-y-6">
                 <div>
-                    <h1 class="text-[28px] font-extrabold leading-tight text-slate-950">{{ $product->name }}</h1>
+                    <h1 class="text-[24px] font-extrabold leading-tight text-slate-950">{{ $product->name }}</h1>
                     <div class="mt-4 flex flex-wrap items-baseline gap-3">
                         <span class="text-[22px] font-extrabold leading-none text-[#ff0037]">KES {{ number_format((float) $product->base_price, 0) }}</span>
                     </div>

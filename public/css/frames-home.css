@@ -550,7 +550,7 @@ body.pf-mobile-menu-lock{overflow:hidden;overscroll-behavior:none}
 .pf-home #frame-decor .pf-product-card .pf-image-wrap img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
 }
 .pf-home #frame-decor .pf-product-card h3 {
