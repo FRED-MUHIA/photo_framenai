@@ -526,11 +526,9 @@ body.pf-mobile-menu-lock{overflow:hidden;overscroll-behavior:none}
 
 /* Homepage popular products */
 .pf-home #frame-decor {
-    position: relative;
-    left: 50%;
-    width: min(100% - 48px, 1800px);
+    width: min(92%, 1800px);
     max-width: none;
-    margin-left: -50%;
+    margin-inline: auto;
     padding: clamp(28px, 3.5vw, 44px) 0 24px;
     background: #fff;
 }

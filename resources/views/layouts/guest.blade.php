@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     @include('partials.canonical-host-guard')
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=39">
+<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=40">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
