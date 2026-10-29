@@ -6,7 +6,7 @@
 
 @push('head')
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=45">
+<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=46">
 <link rel="preload" as="image" href="{{ \App\Support\PublicAssetUrl::resolve(data_get($storefrontSections, 'storefront_hero.items.0.image_url')) ?: asset('images/frames/hero.webp') }}">
 @endpush
 
