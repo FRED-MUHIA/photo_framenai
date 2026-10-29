@@ -269,7 +269,7 @@ body:has(.pf-header) .pf-whatsapp-widget .pf-whatsapp-float svg{width:30px;heigh
     width: 100%;
     height: clamp(14px, 1.2vw, 22px);
     background-color: #17130f;
-    background-image: url('../images/frames/woven-textile-strip.webp');
+    background-image: url('../images/frames/woven-textile-strip.webp?v=2');
     background-repeat: repeat-x;
     background-position: center;
     background-size: auto 100%;
