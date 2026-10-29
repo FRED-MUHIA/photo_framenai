@@ -6,7 +6,7 @@
 
 @push('head')
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=42">
+<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=43">
 <link rel="preload" as="image" href="{{ \App\Support\PublicAssetUrl::resolve(data_get($storefrontSections, 'storefront_hero.items.0.image_url')) ?: asset('images/frames/hero.webp') }}">
 @endpush
 
@@ -43,6 +43,10 @@
             </div>
         </div>
     </section>
+
+    <div class="pf-woven-strip" aria-hidden="true">
+        <img src="{{ asset('images/frames/woven-textile-strip.png') }}" alt="" width="2171" height="724" fetchpriority="high">
+    </div>
 
     <section class="pf-featured pf-container" aria-label="Explore frames and prints">
         @foreach($homeFeatured['items'] ?? [] as $item)

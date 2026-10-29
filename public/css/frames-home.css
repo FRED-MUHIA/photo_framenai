@@ -265,6 +265,19 @@ body:has(.pf-header) .pf-whatsapp-widget .pf-whatsapp-float svg{width:30px;heigh
 }
 
 /* Homepage hero image slider */
+.pf-woven-strip {
+    width: 100%;
+    height: clamp(32px, 4vw, 58px);
+    overflow: hidden;
+    background: #17130f;
+}
+.pf-woven-strip img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 50%;
+}
 .pf-hero-visual {
     position: relative;
     min-width: 0;
