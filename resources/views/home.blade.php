@@ -44,8 +44,6 @@
         </div>
     </section>
 
-    <div class="pf-woven-strip" aria-hidden="true"></div>
-
     <section class="pf-featured pf-container" aria-label="Explore frames and prints">
         @foreach($homeFeatured['items'] ?? [] as $item)
         <a class="pf-feature-card" href="{{ $item['link_url'] ?? '/products' }}"><div class="pf-image-wrap"><img src="{{ $homeImage($item['image_url'] ?? '') }}" alt="{{ $item['title'] ?? '' }}" width="600" height="400"></div><div class="pf-feature-caption"><h2>{{ $item['title'] ?? '' }}</h2><span>{{ $item['subtitle'] ?? '' }}</span></div></a>
