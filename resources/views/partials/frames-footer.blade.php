@@ -10,6 +10,7 @@
     $footerHref = fn ($target) => preg_match('~^(https?://|mailto:|tel:|#)~i', (string) $target) ? $target : url(ltrim((string) $target, '/'));
     $footerBrand = $siteSettings->get('footer_brand_name', $siteSettings->get('site_name', config('app.name', 'Photo Frames')));
 @endphp
+<div class="pf-woven-strip" aria-hidden="true"></div>
 <footer class="pf-footer">
     <a class="pf-logo pf-footer-logo" href="{{ route('home') }}"><span class="pf-logo-mark" aria-hidden="true"></span>{{ $footerBrand }}</a>
     <div class="pf-footer-grid pf-container">
