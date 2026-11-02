@@ -40,14 +40,14 @@ class SiteSettingController extends Controller
             ['label' => 'Resources', 'url' => '/help', 'items' => [['label' => 'Help & FAQs', 'url' => '/help'], ['label' => 'Contact Us', 'url' => '/contact']]],
             ['label' => 'Clearance', 'url' => '/products?q=clearance'],
         ];
-        $savedHeaderNav = json_decode($settings->get('header_nav_json', ''), true);
+        $savedHeaderNav = json_decode($settings->get('header_nav', ''), true);
         $headerNavJson = json_encode(is_array($savedHeaderNav) ? $savedHeaderNav : $headerNavDefaults, JSON_PRETTY_PRINT);
         $footerColumnsDefaults = [
             ['heading' => 'About Us', 'links' => [['label' => 'Our story', 'url' => '/about'], ['label' => 'Why Photo Frames', 'url' => '/about'], ['label' => 'Ideas & inspiration', 'url' => '/blog'], ['label' => 'Get in touch', 'url' => '/contact']]],
             ['heading' => 'Support', 'links' => [['label' => 'Contact us', 'url' => '/contact'], ['label' => 'Framing help', 'url' => '/help'], ['label' => 'Shipping & returns', 'url' => '/help'], ['label' => 'FAQs', 'url' => '/help'], ['label' => 'My orders', 'url' => '/login']]],
             ['heading' => 'Find Your Frame', 'links' => [['label' => 'Shop by type', 'url' => '#frame-types'], ['label' => 'Shop by color', 'url' => '#frame-colors'], ['label' => 'Shop by décor', 'url' => '#frame-decor'], ['label' => 'Custom prints', 'url' => '#custom-prints'], ['label' => 'Explore all frames', 'url' => '/products']]],
         ];
-        $savedFooterColumns = json_decode($settings->get('footer_columns_json', ''), true);
+        $savedFooterColumns = json_decode($settings->get('footer_columns', ''), true);
         $footerColumnsJson = json_encode(is_array($savedFooterColumns) ? $savedFooterColumns : $footerColumnsDefaults, JSON_PRETTY_PRINT);
         $productLinks = Product::query()
             ->active()
@@ -156,16 +156,19 @@ class SiteSettingController extends Controller
         $menuJson = $validated['all_products_mega_menu_json'] ?? null;
         unset($validated['all_products_mega_menu_json']);
 
-        $menu = AllProductsMegaMenu::normalize(json_decode($menuJson ?: '[]', true));
-        $validated['all_products_mega_menu'] = json_encode($menu, JSON_PRETTY_PRINT);
+        if ($menuJson !== null) {
+            $menu = AllProductsMegaMenu::normalize(json_decode($menuJson, true));
+            $validated['all_products_mega_menu'] = json_encode($menu, JSON_PRETTY_PRINT);
+        }
 
         $themeMenuJson = $validated['header_theme_mega_menu_json'] ?? null;
         unset($validated['header_theme_mega_menu_json']);
 
-        $themeMenuPayload = json_decode($themeMenuJson ?: '[]', true);
+        $themeMenuPayload = null;
 
-        if (! is_array($themeMenuPayload)) {
-            $themeMenuPayload = [];
+        if ($themeMenuJson !== null) {
+            $themeMenuPayload = json_decode($themeMenuJson, true);
+            $themeMenuPayload = is_array($themeMenuPayload) ? $themeMenuPayload : [];
         }
 
         foreach ($request->file('header_theme_mega_menu_images', []) as $menuIndex => $tileFiles) {
@@ -178,7 +181,7 @@ class SiteSettingController extends Controller
                     continue;
                 }
 
-                if (! isset($themeMenuPayload[$menuIndex]['items'][$tileIndex])) {
+                if (! is_array($themeMenuPayload) || ! isset($themeMenuPayload[$menuIndex]['items'][$tileIndex])) {
                     continue;
                 }
 
@@ -188,12 +191,15 @@ class SiteSettingController extends Controller
             }
         }
 
-        $themeMenu = HeaderThemeMegaMenu::normalize($themeMenuPayload);
-        $validated['header_theme_mega_menu'] = json_encode($themeMenu, JSON_PRETTY_PRINT);
+        if (is_array($themeMenuPayload)) {
+            $themeMenu = HeaderThemeMegaMenu::normalize($themeMenuPayload);
+            $validated['header_theme_mega_menu'] = json_encode($themeMenu, JSON_PRETTY_PRINT);
+        }
 
-        $headerNavPayload = json_decode($validated['header_nav_json'] ?? '[]', true);
+        $headerNavJson = $validated['header_nav_json'] ?? null;
         unset($validated['header_nav_json']);
-        if (! is_array($headerNavPayload)) {
+        $headerNavPayload = $headerNavJson !== null ? json_decode($headerNavJson, true) : null;
+        if ($headerNavJson !== null && ! is_array($headerNavPayload)) {
             $headerNavPayload = [];
         }
         foreach ($request->file('header_nav_images', []) as $menuIndex => $childFiles) {
@@ -209,23 +215,29 @@ class SiteSettingController extends Controller
                 $headerNavPayload[$menuIndex]['items'][$childIndex]['image'] = '/storage/' . $path;
             }
         }
-        $headerNavPayload = collect($headerNavPayload)->filter(fn ($item) => is_array($item))
-            ->map(fn ($item) => [
-                'label' => mb_substr(trim((string) ($item['label'] ?? '')), 0, 90),
-                'url' => $this->safeMenuUrl($item['url'] ?? '/'),
-                'items' => collect(is_array($item['items'] ?? null) ? $item['items'] : [])
-                    ->filter(fn ($child) => is_array($child))
-                    ->map(fn ($child) => [
-                        'label' => mb_substr(trim((string) ($child['label'] ?? '')), 0, 90),
-                        'url' => $this->safeMenuUrl($child['url'] ?? '/'),
-                        'image' => trim((string) ($child['image'] ?? '')),
-                    ])->values()->all(),
-            ])->values()->all();
-        $validated['header_nav'] = json_encode($headerNavPayload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if (is_array($headerNavPayload)) {
+            $headerNavPayload = collect($headerNavPayload)->filter(fn ($item) => is_array($item))
+                ->map(fn ($item) => [
+                    'label' => mb_substr(trim((string) ($item['label'] ?? '')), 0, 90),
+                    'url' => $this->safeMenuUrl($item['url'] ?? '/'),
+                    'items' => collect(is_array($item['items'] ?? null) ? $item['items'] : [])
+                        ->filter(fn ($child) => is_array($child))
+                        ->map(fn ($child) => [
+                            'label' => mb_substr(trim((string) ($child['label'] ?? '')), 0, 90),
+                            'url' => $this->safeMenuUrl($child['url'] ?? '/'),
+                            'image' => trim((string) ($child['image'] ?? '')),
+                        ])->values()->all(),
+                ])->values()->all();
+            $validated['header_nav'] = json_encode($headerNavPayload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
 
         foreach (['footer_columns_json' => 'footer_columns'] as $input => $setting) {
-            $decoded = json_decode($validated[$input] ?? '[]', true);
+            $json = $validated[$input] ?? null;
             unset($validated[$input]);
+            if ($json === null) {
+                continue;
+            }
+            $decoded = json_decode($json, true);
             $decoded = is_array($decoded) ? array_values($decoded) : [];
             $decoded = collect($decoded)->filter(fn ($column) => is_array($column))
                 ->map(fn ($column) => [

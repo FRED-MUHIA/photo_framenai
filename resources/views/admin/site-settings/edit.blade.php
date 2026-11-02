@@ -124,7 +124,7 @@
                     </div>
                 </template>
             </div>
-            <input type="hidden" name="header_nav_json" :value="json">
+            <input type="hidden" name="header_nav_json" value="{{ json_encode($initialHeaderNav) }}" :value="json">
         </div>
     </section>
 
@@ -200,7 +200,7 @@
             </template>
         </div>
 
-        <input type="hidden" name="all_products_mega_menu_json" :value="json">
+        <input type="hidden" name="all_products_mega_menu_json" value="{{ json_encode($initialMegaMenu) }}" :value="json">
     </section>
 
     <section
@@ -294,7 +294,7 @@
             </template>
         </div>
 
-        <input type="hidden" name="header_theme_mega_menu_json" :value="json">
+        <input type="hidden" name="header_theme_mega_menu_json" value="{{ json_encode($initialThemeMegaMenu) }}" :value="json">
     </section>
 
     <section>
@@ -331,7 +331,7 @@
                             </div>
                         </template>
                     </div>
-                    <input type="hidden" name="footer_columns_json" :value="json">
+                    <input type="hidden" name="footer_columns_json" value="{{ json_encode($initialFooterColumns) }}" :value="json">
                 </div>
             </div>
         </div>
