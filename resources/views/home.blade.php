@@ -6,7 +6,7 @@
 
 @push('head')
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=47">
+<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=48">
 <link rel="preload" as="image" href="{{ \App\Support\PublicAssetUrl::resolve(data_get($storefrontSections, 'storefront_hero.items.0.image_url')) ?: asset('images/frames/hero.webp') }}">
 @endpush
 
@@ -128,6 +128,40 @@
         </span><h3>{!! nl2br(e(str_replace('|', "\n", $item['title'] ?? ''))) !!}</h3></div>
         @endforeach
     </div></section>
+
+    <section class="pf-faq pf-container" aria-labelledby="faq-heading">
+        <div class="pf-faq-intro">
+            <p class="pf-eyebrow">A little help</p>
+            <h2 id="faq-heading">Questions, answered</h2>
+            <p>Quick answers about framing, printing, payment and delivery. More in our <a href="{{ route('pages.help') }}">help centre</a>.</p>
+        </div>
+        <div class="pf-faq-list">
+            <details class="pf-faq-item">
+                <summary><span>Where can I get professional photo mounting in Kenya?</span><span class="pf-faq-icon" aria-hidden="true"></span></summary>
+                <div class="pf-faq-answer"><p>We make custom picture frames and prints to help your photos and artwork feel at home. Explore our <a href="{{ route('products.index') }}">frame collection</a> or <a href="{{ route('pages.contact') }}">talk to us</a> about your project.</p></div>
+            </details>
+            <details class="pf-faq-item">
+                <summary><span>Should I choose a canvas print or a framed photo?</span><span class="pf-faq-icon" aria-hidden="true"></span></summary>
+                <div class="pf-faq-answer"><p>Canvas gives your image a soft, gallery-like finish without glass. A framed photo adds a defined border and a choice of frame styles. Browse <a href="{{ route('products.index', ['q' => 'canvas']) }}">canvas prints</a> and <a href="{{ route('products.index') }}">picture frames</a> to find the right look.</p></div>
+            </details>
+            <details class="pf-faq-item">
+                <summary><span>How do I pay?</span><span class="pf-faq-icon" aria-hidden="true"></span></summary>
+                <div class="pf-faq-answer"><p>Choose from the payment options shown at checkout. Your order summary will show the details before you place your order.</p></div>
+            </details>
+            <details class="pf-faq-item">
+                <summary><span>Do you deliver photo prints and frames across Kenya?</span><span class="pf-faq-icon" aria-hidden="true"></span></summary>
+                <div class="pf-faq-answer"><p>Yes, we deliver across Kenya. Delivery details for your location are provided during checkout. If you need help, <a href="{{ route('pages.contact') }}">get in touch</a>.</p></div>
+            </details>
+            <details class="pf-faq-item">
+                <summary><span>What photo print sizes can I order?</span><span class="pf-faq-icon" aria-hidden="true"></span></summary>
+                <div class="pf-faq-answer"><p>Available sizes depend on the print or frame you choose. Check the product options for its sizes and finishes, or <a href="{{ route('pages.contact') }}">contact us</a> if you need a particular size.</p></div>
+            </details>
+            <details class="pf-faq-item">
+                <summary><span>Can I order personalised photo gifts?</span><span class="pf-faq-icon" aria-hidden="true"></span></summary>
+                <div class="pf-faq-answer"><p>Yes. Turn a favourite image into a personal print or framed piece. Start with our <a href="{{ route('frames.customize') }}">frame customizer</a> to explore your options.</p></div>
+            </details>
+        </div>
+    </section>
 </div>
 @endsection
 
