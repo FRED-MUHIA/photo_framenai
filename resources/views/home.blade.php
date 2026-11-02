@@ -6,7 +6,7 @@
 
 @push('head')
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=51">
+<link rel="stylesheet" href="{{ asset('css/frames-home.css') }}?v=53">
 <link rel="preload" as="image" href="{{ \App\Support\PublicAssetUrl::resolve(data_get($storefrontSections, 'storefront_hero.items.0.image_url')) ?: asset('images/frames/hero.webp') }}">
 @endpush
 
@@ -20,6 +20,8 @@
     $homeProducts = $storefrontSections['storefront_products'];
     $homePrints = $storefrontSections['storefront_prints'];
     $homeValues = $storefrontSections['storefront_values'];
+    $homeGuide = $storefrontSections['storefront_home_guide'];
+    $homeGuideParagraphs = preg_split('/\R\s*\R/', trim((string) ($homeGuide['content'] ?? '')), -1, PREG_SPLIT_NO_EMPTY);
     $homeImage = fn ($url) => preg_match('~^https?://~i', (string) $url) ? $url : asset(ltrim((string) $url, '/'));
 @endphp
 <div id="homepage" class="pf-home">
@@ -164,10 +166,10 @@
     </section>
 
     <section class="pf-home-guide pf-container" aria-labelledby="home-guide-heading">
-        <h2 id="home-guide-heading">Photo frames and custom prints in Kenya</h2>
-        <p>Make more of the photos and artwork you love with <a href="{{ route('products.index') }}">picture frames</a> and custom prints from Photo Frames. Choose from <a href="{{ route('products.index', ['q' => 'canvas']) }}">canvas</a>, paper, metal, acrylic and wood print styles, or use our <a href="{{ route('frames.customize') }}">frame customizer</a> to create a piece for your space.</p>
-        <p>Explore frame styles, colours and sizes on each product page, then choose the options that suit your image. Checkout shows the payment and delivery choices available for your order, including delivery across Kenya.</p>
-        <p>Need help choosing a finish or preparing a photo? Visit our <a href="{{ route('pages.help') }}">help centre</a> or <a href="{{ route('pages.contact') }}">contact our team</a> for advice.</p>
+        <h2 id="home-guide-heading">{{ $homeGuide['title'] }}</h2>
+        @foreach($homeGuideParagraphs as $paragraph)
+            <p>{{ $paragraph }}</p>
+        @endforeach
     </section>
 </div>
 @endsection

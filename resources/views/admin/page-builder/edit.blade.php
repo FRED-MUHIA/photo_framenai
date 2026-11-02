@@ -10,7 +10,7 @@
 @endif
 @if($page->slug === 'home')
     <div class="mb-4 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-        The homepage layout is fixed. Edit its text, images, featured cards, frame colors, print categories, and value statements here. Header, navigation, and footer settings are in <a class="font-bold underline" href="{{ route('admin.site-settings.edit') }}">Site Settings</a>.
+        The homepage layout is fixed. Edit its text, images, featured cards, frame colors, print categories, value statements, and the text section below the FAQs here. Header, navigation, and footer settings are in <a class="font-bold underline" href="{{ route('admin.site-settings.edit') }}">Site Settings</a>.
     </div>
 @endif
 <form method="POST" action="{{ route('admin.page-builder.update', $page) }}" enctype="multipart/form-data" class="space-y-4 rounded-xl bg-white p-5 shadow-sm">

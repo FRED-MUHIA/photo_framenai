@@ -29,6 +29,7 @@ class HomepageContentDefaults
             ['component' => 'storefront_values', 'title' => 'Why Photo Frames?', 'content' => 'For the little moments and the big milestones. Find a frame that makes them yours.', 'items' => [
                 ['title' => 'Made for|Your Memories', 'content' => '♡'], ['title' => 'A Style for|Every Space', 'content' => '◇'], ['title' => 'Your Photos,|Beautifully Printed', 'content' => '▧'], ['title' => 'Thoughtful|Finishing Touches', 'content' => '✧'], ['title' => 'Delivered|Across Kenya', 'content' => '⌂'], ['title' => 'A Little Help,|Whenever You Need', 'content' => '☏'],
             ]],
+            ['component' => 'storefront_home_guide', 'title' => 'Photo frames and custom prints in Kenya', 'content' => "Make more of the photos and artwork you love with picture frames and custom prints from Photo Frames. Choose from canvas, paper, metal, acrylic and wood print styles, or use our frame customizer to create a piece for your space.\n\nExplore frame styles, colours and sizes on each product page, then choose the options that suit your image. Checkout shows the payment and delivery choices available for your order, including delivery across Kenya.\n\nNeed help choosing a finish or preparing a photo? Visit our help centre or contact our team for advice."],
         ];
     }
 

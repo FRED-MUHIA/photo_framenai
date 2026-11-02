@@ -85,6 +85,7 @@
                             <option value="storefront_products">Popular products</option>
                             <option value="storefront_prints">Custom prints</option>
                             <option value="storefront_values">Why Photo Frames</option>
+                            <option value="storefront_home_guide">Homepage text section</option>
                         @else
                         <option value="storefront_hero">Homepage: Hero and rotating images</option>
                         <option value="storefront_featured">Homepage: Featured cards</option>
@@ -94,6 +95,7 @@
                         <option value="storefront_products">Homepage: Popular products heading</option>
                         <option value="storefront_prints">Homepage: Custom prints section</option>
                         <option value="storefront_values">Homepage: Why Photo Frames</option>
+                        <option value="storefront_home_guide">Homepage: Photo frames and custom prints text</option>
                         <option value="home_pet_promo">Home: Pet Promo Hero</option>
                         <option value="home_hero_main">Home: Hero Main</option>
                         <option value="home_hero_newsletter">Home: Hero Newsletter</option>
@@ -129,6 +131,9 @@
                     @if($isHomepage)
                         <template x-if="['storefront_hero', 'storefront_intro', 'storefront_prints'].includes(section.component)">
                             <input type="text" x-model="section.subtitle" placeholder="Subtitle" class="rounded-lg border-slate-300 text-sm">
+                        </template>
+                        <template x-if="section.component === 'storefront_home_guide'">
+                            <textarea x-model="section.content" rows="5" placeholder="Section text (separate paragraphs with a blank line)" class="rounded-lg border-slate-300 text-sm sm:col-span-2"></textarea>
                         </template>
                         <template x-if="['storefront_hero', 'storefront_intro', 'storefront_prints', 'storefront_values'].includes(section.component)">
                             <textarea x-model="section.content" rows="3" placeholder="Section text" class="rounded-lg border-slate-300 text-sm sm:col-span-2"></textarea>
