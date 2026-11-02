@@ -473,6 +473,13 @@ header.pf-header .pf-nav .pf-popular-image-card img{box-sizing:border-box;width:
 .pf-faq-answer p { margin: 0; }
 @media (min-width: 1100px) { .pf-faq-intro h2 { white-space: nowrap; } }
 @media (max-width: 700px) { .pf-faq { grid-template-columns: 1fr; gap: 18px; padding-block: 28px; }.pf-faq-intro h2 { font-size: 2.25rem; }.pf-faq-intro > p:last-child { font-size: 13px; }.pf-faq-item summary { min-height: 50px; padding-block: 11px; font-size: 15px; }.pf-faq-answer { padding-right: 25px; font-size: 12px; } }
+.pf-home-guide { border-top: 1px solid #e2dfd8; padding-block: 28px 34px; }
+.pf-home-guide h2 { margin: 0 0 12px; color: var(--pf-dark); font-family: var(--pf-serif), Georgia, serif; font-size: clamp(1.55rem, 2.1vw, 2rem); font-weight: 500; line-height: 1.2; }
+.pf-home-guide p { margin: 0 0 12px; color: #65645f; font-family: Inter, Arial, sans-serif; font-size: 13px; line-height: 1.75; }
+.pf-home-guide p:last-child { margin-bottom: 0; }
+.pf-home-guide a { color: var(--pf-dark); text-decoration: underline; text-decoration-color: #b10f1e; text-underline-offset: 3px; }
+.pf-home-guide a:hover { color: var(--pf-red); }
+@media (max-width: 700px) { .pf-home-guide { padding-block: 22px 28px; }.pf-home-guide h2 { margin-bottom: 9px; font-size: 1.55rem; }.pf-home-guide p { font-size: 12px; line-height: 1.7; } }
 .pf-color-slider-actions { display: flex; align-items: center; gap: 8px; }
 .pf-color-slider-button { display: inline-grid; width: 34px; height: 34px; place-items: center; border: 1px solid #c8c4be; background: transparent; color: var(--pf-dark); font: 24px/1 Inter,Arial,sans-serif; cursor: pointer; }
 .pf-color-slider-button:hover { border-color: var(--pf-red); background: var(--pf-red); color: #fff; }
