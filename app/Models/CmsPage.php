@@ -17,12 +17,14 @@ class CmsPage extends Model
         'sections',
         'meta_title',
         'meta_description',
+        'tags',
         'is_active',
     ];
 
     protected $casts = [
         'sections' => 'array',
         'is_active' => 'boolean',
+        'tags' => 'array',
     ];
 
     public function scopeActive($query)

@@ -25,6 +25,13 @@
                 <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ optional($post->published_at ?: $post->created_at)->format('d M Y') }}</p>
                 <h2 class="mt-2 text-lg font-bold">{{ $post->title }}</h2>
                 <p class="mt-2 text-sm text-slate-600">{{ $post->excerpt }}</p>
+                @if(! empty($post->tags))
+                    <ul class="mt-3 flex flex-wrap gap-1.5" aria-label="Post topics">
+                        @foreach($post->tags as $tag)
+                            <li><span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] text-slate-600">{{ $tag }}</span></li>
+                        @endforeach
+                    </ul>
+                @endif
                 <a href="{{ route('pages.blog.show', ['post' => $post->slug]) }}" class="mt-4 inline-block text-xs font-bold text-teal-700">Read more</a>
             </article>
         @empty

@@ -4,6 +4,7 @@
     <input type="text" name="cover_image" value="{{ old('cover_image', $post->cover_image) }}" placeholder="Cover image URL" class="rounded-xl border-slate-300 sm:col-span-2">
     <input type="text" name="meta_title" value="{{ old('meta_title', $post->meta_title) }}" placeholder="Meta title" class="rounded-xl border-slate-300">
     <input type="text" name="meta_description" value="{{ old('meta_description', $post->meta_description) }}" placeholder="Meta description" class="rounded-xl border-slate-300">
+    <input type="text" name="tags" value="{{ old('tags', collect($post->tags ?? [])->join(', ')) }}" placeholder="Tags (comma separated)" class="rounded-xl border-slate-300 sm:col-span-2">
     <label class="inline-flex items-center gap-2 text-sm">
         <input type="hidden" name="is_published" value="0">
         <input type="checkbox" name="is_published" value="1" @checked(old('is_published', $post->is_published ?? true))>

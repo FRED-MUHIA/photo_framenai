@@ -68,6 +68,7 @@ class BlogPostController extends Controller
             'cover_image' => ['nullable', 'string', 'max:255'],
             'meta_title' => ['nullable', 'string', 'max:190'],
             'meta_description' => ['nullable', 'string', 'max:255'],
+            'tags' => ['nullable', 'string', 'max:2000'],
             'is_published' => ['nullable', 'boolean'],
             'published_at' => ['nullable', 'date'],
         ]);
@@ -82,6 +83,12 @@ class BlogPostController extends Controller
             'cover_image' => $validated['cover_image'] ?? null,
             'meta_title' => $validated['meta_title'] ?? null,
             'meta_description' => $validated['meta_description'] ?? null,
+            'tags' => collect(explode(',', $validated['tags'] ?? ''))
+                ->map(fn (string $tag) => trim($tag))
+                ->filter()
+                ->unique(fn (string $tag) => mb_strtolower($tag))
+                ->values()
+                ->all(),
             'is_published' => ! empty($validated['is_published']),
             'published_at' => $validated['published_at'] ?? null,
         ];

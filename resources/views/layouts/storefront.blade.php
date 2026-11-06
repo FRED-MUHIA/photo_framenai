@@ -19,6 +19,12 @@
         $canonicalUrl = trim($__env->yieldContent('canonical_url')) ?: $defaultCanonicalUrl;
         $metaType = trim($__env->yieldContent('meta_type')) ?: 'website';
         $metaImage = trim($__env->yieldContent('meta_image'));
+        $seoTagSource = $post ?? $cmsPage ?? $cmsHome ?? null;
+        $seoTags = collect(data_get($seoTagSource, 'tags', []))
+            ->filter(fn ($tag) => is_string($tag) && trim($tag) !== '')
+            ->map(fn ($tag) => trim($tag))
+            ->unique(fn ($tag) => mb_strtolower($tag))
+            ->values();
         $faviconUrl = \App\Support\PublicAssetUrl::resolve($siteSettings->get('favicon_url'))
             ?: $configuredRoot . '/favicon.svg';
     @endphp
@@ -27,6 +33,8 @@
     <meta name="robots" content="{{ $metaRobots }}">
     @if(trim($__env->yieldContent('meta_keywords')) !== '')
         <meta name="keywords" content="{{ trim($__env->yieldContent('meta_keywords')) }}">
+    @elseif($seoTags->isNotEmpty())
+        <meta name="keywords" content="{{ $seoTags->join(', ') }}">
     @endif
     <link rel="canonical" href="{{ $canonicalUrl }}">
     <meta property="og:site_name" content="{{ config('app.name', 'Photo Frames') }}">
@@ -98,6 +106,16 @@
 
     <main>
         @yield('content')
+        @if($seoTags->isNotEmpty())
+            <nav class="mx-auto max-w-6xl px-4 pb-8 sm:px-6 lg:px-8" aria-label="Page topics">
+                <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Topics</p>
+                <ul class="flex flex-wrap gap-2">
+                    @foreach($seoTags as $tag)
+                        <li><span class="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">{{ $tag }}</span></li>
+                    @endforeach
+                </ul>
+            </nav>
+        @endif
     </main>
 
     @unless($isFrameCustomizer)

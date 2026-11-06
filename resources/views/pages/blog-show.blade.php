@@ -12,6 +12,7 @@
         '@type' => 'BlogPosting',
         'headline' => $post->title,
         'description' => $post->meta_description ?: $post->excerpt,
+        'keywords' => collect($post->tags ?? [])->join(', '),
         'url' => rtrim(config('seo.site_url'), '/') . route('pages.blog.show', ['post' => $post->slug], false),
         'datePublished' => optional($post->published_at ?: $post->created_at)?->toAtomString(),
         'dateModified' => optional($post->updated_at)?->toAtomString(),
@@ -32,6 +33,13 @@
     <a href="{{ route('pages.blog') }}" class="text-sm font-semibold text-teal-700">&larr; Back to blog</a>
     <h1 class="np-type-page-title mt-2">{{ $post->title }}</h1>
     <p class="mt-2 text-sm text-slate-500">{{ optional($post->published_at ?: $post->created_at)->format('d M Y') }}</p>
+    @if(! empty($post->tags))
+        <ul class="mt-3 flex flex-wrap gap-2" aria-label="Post topics">
+            @foreach($post->tags as $tag)
+                <li><span class="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">{{ $tag }}</span></li>
+            @endforeach
+        </ul>
+    @endif
 
     @php
         $coverImageUrl = \App\Support\PublicAssetUrl::resolve($post->cover_image);

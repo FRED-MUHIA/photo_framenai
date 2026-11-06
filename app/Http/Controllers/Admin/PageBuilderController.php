@@ -75,6 +75,7 @@ class PageBuilderController extends Controller
             'sections' => $sections,
             'meta_title' => $validated['meta_title'] ?? null,
             'meta_description' => $validated['meta_description'] ?? null,
+            'tags' => $this->normalizeTags($validated['tags'] ?? ''),
             'is_active' => ! empty($validated['is_active']),
         ]);
 
@@ -129,6 +130,7 @@ class PageBuilderController extends Controller
             'sections' => $sections,
             'meta_title' => $validated['meta_title'] ?? null,
             'meta_description' => $validated['meta_description'] ?? null,
+            'tags' => $this->normalizeTags($validated['tags'] ?? ''),
             'is_active' => ! empty($validated['is_active']),
         ]);
 
@@ -152,6 +154,7 @@ class PageBuilderController extends Controller
             'sections_json' => ['nullable', 'string'],
             'meta_title' => ['nullable', 'string', 'max:190'],
             'meta_description' => ['nullable', 'string', 'max:255'],
+            'tags' => ['nullable', 'string', 'max:2000'],
             'is_active' => ['nullable', 'boolean'],
             'section_images' => ['nullable', 'array'],
             'section_images.*' => ['nullable', 'image', 'max:8192'],
@@ -227,6 +230,16 @@ class PageBuilderController extends Controller
             'design-services' => DesignServicesContentDefaults::sections(),
             default => [],
         };
+    }
+
+    private function normalizeTags(string $tags): array
+    {
+        return collect(explode(',', $tags))
+            ->map(fn (string $tag) => trim($tag))
+            ->filter()
+            ->unique(fn (string $tag) => mb_strtolower($tag))
+            ->values()
+            ->all();
     }
 
     private function homepageComponentKeys(): array

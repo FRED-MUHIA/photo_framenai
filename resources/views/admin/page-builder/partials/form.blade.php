@@ -36,6 +36,7 @@
 <div class="grid gap-4 sm:grid-cols-2">
     <input type="text" name="meta_title" value="{{ old('meta_title', $page->meta_title) }}" placeholder="Meta title" class="rounded-xl border-slate-300">
     <input type="text" name="meta_description" value="{{ old('meta_description', $page->meta_description) }}" placeholder="Meta description" class="rounded-xl border-slate-300">
+    <input type="text" name="tags" value="{{ old('tags', collect($page->tags ?? [])->join(', ')) }}" placeholder="Page tags (comma separated)" class="rounded-xl border-slate-300 sm:col-span-2">
 </div>
 
 @unless($isHomepage)

@@ -20,6 +20,7 @@ class BlogPost extends Model
         'cover_image',
         'meta_title',
         'meta_description',
+        'tags',
         'is_published',
         'published_at',
         'author_id',
@@ -28,6 +29,7 @@ class BlogPost extends Model
     protected $casts = [
         'is_published' => 'boolean',
         'published_at' => 'datetime',
+        'tags' => 'array',
     ];
 
     public function author(): BelongsTo
